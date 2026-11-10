@@ -1,14 +1,16 @@
 @import 'tailwindcss';
 
+/* Palette: Tabbi red for consonants, the Liha Books palette for everything else. */
 @theme {
-  --color-consonant: #ff7a52;
-  --color-consonant-dark: #d9582f;
-  --color-vowel: #2f9bf0;
-  --color-vowel-dark: #1a74c0;
-  --color-sun: #ffd23c;
-  --color-ink: #2b2a3a;
-  --color-paper: #fdf6ec;
-  --color-slot: #d8cbb8;
+  --color-consonant: #bf3143; /* Tabbi red */
+  --color-consonant-dark: #8f2232;
+  --color-vowel: #67839f; /* Liha denim, deep shade (readable under white glyphs) */
+  --color-vowel-dark: #4c6580;
+  --color-rose: #ce8095; /* Liha rose */
+  --color-ink: #2a3a4a; /* Liha ink */
+  --color-paper: #f5efe4; /* Liha paper */
+  --color-wash: #eae0ce; /* Liha wash */
+  --color-slot: #d8c7a8;
 }
 
 :root {
@@ -33,7 +35,7 @@ body {
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
-  background: var(--color-paper);
+  background: linear-gradient(150deg, var(--color-paper), #f0e7d6 60%, #efdce0);
   color: var(--color-ink);
   font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, sans-serif;
 }
@@ -87,7 +89,7 @@ body {
   width: 100cqmin;
   height: 100cqmin;
   container-type: size;
-  box-shadow: 0 10px 0 #eadfce;
+  box-shadow: 0 10px 0 var(--color-wash), 0 22px 50px -18px rgba(42, 58, 74, 0.3);
 }
 
 .slot {

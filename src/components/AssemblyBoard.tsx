@@ -38,8 +38,8 @@ const POP: Keyframe[] = [
 ]
 
 const GLOW: Keyframe[] = [
-  { boxShadow: '0 0 0 0 rgba(255, 205, 60, 0.9)' },
-  { boxShadow: '0 0 0 28px rgba(255, 205, 60, 0)' },
+  { boxShadow: '0 0 0 0 rgba(206, 128, 149, 0.85)' },
+  { boxShadow: '0 0 0 28px rgba(206, 128, 149, 0)' },
 ]
 
 function Slot({ box, kind, char, hidden }: { box: Box; kind: 'consonant' | 'vowel'; char?: string; hidden: boolean }) {
