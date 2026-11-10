@@ -6,6 +6,7 @@ import App from './App'
 import { installUnlock, preload, setLocalRecording } from './audio'
 import { allSoundNames } from './jamo'
 import { loadRecordings } from './recordings'
+import { wordSoundNames } from './words'
 
 // Block browser gestures a 4-year-old will trigger by accident: pinch, double-tap zoom,
 // rubber-band scroll, long-press menus.
@@ -20,7 +21,7 @@ document.addEventListener('dblclick', block)
 // On-device recordings (from the recorder page) take priority over public/audio/.
 loadRecordings().then((takes) => {
   takes.forEach((mp3, name) => setLocalRecording(name, mp3))
-  preload(allSoundNames())
+  preload([...allSoundNames(), ...wordSoundNames()])
 })
 installUnlock()
 

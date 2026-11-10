@@ -11,8 +11,12 @@ import {
   type Vowel,
   type VowelLayout,
 } from '../jamo'
+import { wordFor, wordSound, type Word } from '../words'
 import { GridIcon, ResetIcon } from './Icons'
 import { Tile } from './Tile'
+
+/** After the syllable glyph appears, wait for the syllable sound before the word pops up. */
+const WORD_DELAY_MS = 650
 
 /** How long the consonant takes to slide between the side and stack positions. */
 const MOVE_MS = 420
@@ -35,6 +39,12 @@ const POP: Keyframe[] = [
   { transform: 'scale(0.7)', opacity: 0 },
   { transform: 'scale(1.12)', opacity: 1, offset: 0.55 },
   { transform: 'scale(1)', opacity: 1 },
+]
+
+const WORD_POP: Keyframe[] = [
+  { transform: 'scale(0.3) rotate(-8deg)', opacity: 0 },
+  { transform: 'scale(1.08) rotate(2deg)', opacity: 1, offset: 0.6 },
+  { transform: 'scale(1) rotate(0)', opacity: 1 },
 ]
 
 const GLOW: Keyframe[] = [
@@ -71,6 +81,9 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
   // Bumped on every completion so tapping the same jamo again replays the celebration.
   const [round, setRound] = useState(0)
   const timer = useRef<number | undefined>(undefined)
+  const wordTimer = useRef<number | undefined>(undefined)
+  const [word, setWord] = useState<Word | null>(null)
+  const wordRef = useRef<HTMLButtonElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const glyphRef = useRef<HTMLDivElement>(null)
 
@@ -79,6 +92,8 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
 
   function place(nextCons: Consonant | null, nextVowel: Vowel | null) {
     window.clearTimeout(timer.current)
+    window.clearTimeout(wordTimer.current)
+    setWord(null)
     setComposed(false)
     setCons(nextCons)
     setVowel(nextVowel)
@@ -90,6 +105,13 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
       timer.current = window.setTimeout(() => {
         setComposed(true)
         setRound((r) => r + 1)
+        const w = wordFor(nextCons, nextVowel)
+        if (w) {
+          wordTimer.current = window.setTimeout(() => {
+            setWord(w)
+            play(wordSound(nextCons, nextVowel))
+          }, WORD_DELAY_MS)
+        }
       }, moved ? MOVE_MS : 160)
     } else if (nextCons) {
       play(consonantSound(nextCons))
@@ -98,7 +120,17 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
     }
   }
 
-  useEffect(() => () => window.clearTimeout(timer.current), [])
+  useEffect(
+    () => () => {
+      window.clearTimeout(timer.current)
+      window.clearTimeout(wordTimer.current)
+    },
+    [],
+  )
+
+  useEffect(() => {
+    if (word) wordRef.current?.animate(WORD_POP, { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1.25)' })
+  }, [word])
 
   useEffect(() => {
     if (!composed) return
@@ -128,6 +160,26 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
               >
                 {composeSyllable(cons, vowel)}
               </div>
+            )}
+            {word && cons && vowel && (
+              <button
+                ref={wordRef}
+                type="button"
+                className="word-card"
+                aria-label={word.word}
+                onPointerDown={(e) => {
+                  e.preventDefault()
+                  play(wordSound(cons, vowel))
+                  wordRef.current?.animate(WORD_POP, { duration: 420 })
+                }}
+              >
+                <span className="word-emoji">{word.emoji}</span>
+                <span className="word-text">
+                  {/* The syllable just built, in red, at the start of the word. */}
+                  <b className="text-consonant">{word.word[0]}</b>
+                  {word.word.slice(1)}
+                </span>
+              </button>
             )}
           </div>
         </div>

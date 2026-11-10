@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { setLocalRecording, stop as stopGameAudio } from '../audio'
-import { RECORD_GROUPS, type RecordItem } from '../jamo'
+import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
+import { WORD_RECORD_GROUP } from '../words'
 import {
   deleteRecording,
   encodeMp3,
@@ -26,6 +27,8 @@ const PRESS_NOISE_S = 0.12
 const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
+
+const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP]
 
 function errText(err: unknown): string {
   if (err instanceof Error) return `${err.name}: ${err.message}`.slice(0, 140)

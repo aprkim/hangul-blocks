@@ -121,3 +121,50 @@ body {
     aspect-ratio: 1;
   }
 }
+
+/* Picture word that pops up beside the frame (sizes are relative to the frame). */
+.word-card {
+  position: absolute;
+  left: calc(100% + 5cqmin);
+  top: 50%;
+  translate: 0 -50%;
+  width: 62cqmin;
+  padding: 5cqmin 4cqmin;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2cqmin;
+  border-radius: 7cqmin;
+  background: white;
+  box-shadow: 0 8px 0 var(--color-wash), 0 22px 40px -18px rgba(42, 58, 74, 0.4);
+  touch-action: none;
+  cursor: pointer;
+}
+.word-emoji {
+  font-size: 30cqmin;
+  line-height: 1;
+}
+.word-text {
+  font-size: 13cqmin;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+/* No room beside the frame (phone held upright): below the frame instead. */
+@media (max-aspect-ratio: 1/1) {
+  .word-card {
+    left: 50%;
+    top: calc(100% + 6cqmin);
+    translate: -50% 0;
+    width: 52cqmin;
+    padding: 3cqmin;
+  }
+  .word-emoji {
+    font-size: 22cqmin;
+  }
+  .word-text {
+    font-size: 10cqmin;
+  }
+}
