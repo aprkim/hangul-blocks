@@ -53,8 +53,8 @@ export async function loadRecordings(): Promise<Map<string, Blob>> {
 
 // ---------- processing ----------
 
-const PAD_START = 0.04 // seconds of silence kept before the voice
-const PAD_END = 0.08 // and after (the vowel tail fades out here)
+const PAD_START = 0.08 // kept before the voice: protects quiet onsets (the hiss of ㅅ ㅈ ㅊ ㅎ ㅋ ㅌ ㅍ)
+const PAD_END = 0.1 // and after (the vowel tail fades out here)
 const TARGET_PEAK = 0.89 // about -1 dBFS
 
 /** Mono samples, trimmed to the voice and normalized. Returns null if nothing was heard. */
@@ -67,6 +67,7 @@ export function trimAndNormalize(buf: AudioBuffer): Float32Array | null {
   }
 
   // RMS in 10ms windows; the voice is where RMS clears a threshold relative to the loudest window.
+  // The threshold is low on purpose: fricative and aspirated onsets are far quieter than the vowel.
   const win = Math.max(1, Math.round(buf.sampleRate * 0.01))
   const rms: number[] = []
   for (let i = 0; i < n; i += win) {
@@ -77,7 +78,7 @@ export function trimAndNormalize(buf: AudioBuffer): Float32Array | null {
   }
   const loudest = Math.max(...rms)
   if (loudest < 0.01) return null
-  const threshold = Math.max(0.006, loudest * 0.06)
+  const threshold = Math.max(0.004, loudest * 0.02)
   const first = rms.findIndex((r) => r > threshold)
   let last = rms.length - 1
   while (last > first && rms[last] <= threshold) last--
