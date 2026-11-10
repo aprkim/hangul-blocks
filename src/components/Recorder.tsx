@@ -295,14 +295,45 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     setNote('지웠어요')
   }
 
-  async function download() {
-    if (!takes.size) return
-    const zip = await exportZip(takes)
+  // The zip is built ahead of time: iOS only allows a download or share sheet that starts
+  // synchronously inside the tap, so nothing may be awaited between the tap and the share.
+  const [zipFile, setZipFile] = useState<File | null>(null)
+  useEffect(() => {
+    let live = true
+    setZipFile(null)
+    if (takes.size) {
+      exportZip(takes).then((zip) => {
+        if (live) setZipFile(new File([zip], 'hangul-audio.zip', { type: 'application/zip' }))
+      })
+    }
+    return () => {
+      live = false
+    }
+  }, [takes])
+
+  function download() {
+    if (!zipFile) return
+    // iPhone/iPad: the share sheet (Save to Files, AirDrop, Messages, ...).
+    if (navigator.canShare?.({ files: [zipFile] })) {
+      navigator.share({ files: [zipFile], title: 'hangul-audio.zip' }).catch((err: DOMException) => {
+        if (err.name !== 'AbortError') {
+          console.warn('[recorder] share failed', err)
+          saveAs(zipFile)
+        }
+      })
+      return
+    }
+    saveAs(zipFile)
+  }
+
+  function saveAs(file: File) {
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(zip)
-    a.download = 'hangul-audio.zip'
+    a.href = URL.createObjectURL(file)
+    a.download = file.name
+    document.body.appendChild(a)
     a.click()
-    setTimeout(() => URL.revokeObjectURL(a.href), 10_000)
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(a.href), 30_000)
   }
 
   const hasTake = takes.has(item.name)
@@ -331,9 +362,9 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             )
           })}
           <span className="flex-1" />
-          <button type="button" onClick={download} disabled={!takes.size}
+          <button type="button" onClick={download} disabled={!zipFile}
             className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold disabled:opacity-40">
-            zip 받기 ({takes.size})
+            {takes.size && !zipFile ? 'zip 준비 중…' : `zip 받기 (${takes.size})`}
           </button>
           <button type="button" onClick={onExit} className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold">
             게임으로
