@@ -27,6 +27,11 @@ const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
+function errText(err: unknown): string {
+  if (err instanceof Error) return `${err.name}: ${err.message}`.slice(0, 140)
+  return String(err).slice(0, 140)
+}
+
 export function Recorder({ onExit }: { onExit: () => void }) {
   const [groupId, setGroupId] = useState(RECORD_GROUPS[0].id)
   const [index, setIndex] = useState(0)
@@ -166,7 +171,10 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         source = await liveStream()
         ctx.current ??= new AudioContext()
         await ctx.current.resume()
-        const r = new MediaRecorder(source)
+        const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find((t) =>
+          MediaRecorder.isTypeSupported?.(t),
+        )
+        const r = type ? new MediaRecorder(source, { mimeType: type }) : new MediaRecorder(source)
         r.start()
         rec = r
       } catch (err) {
@@ -222,33 +230,59 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         setNote('녹음이 비어 있어요. 한 번 더 눌러 주세요.')
         return
       }
-      const raw = new Blob(chunks.current, { type: mimeType })
-      const decoded = await Promise.race([
-        ctx.current!.decodeAudioData(await raw.arrayBuffer()),
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('decode timeout')), 6000)),
-      ])
-      const samples = trimAndNormalize(decoded, PRESS_NOISE_S)
-      if (!samples) {
-        setNote('소리가 안 들렸어요. 버튼을 누른 채로 말하고, 다 말한 뒤 손을 떼세요.')
-        return
+      let stage = '디코딩'
+      try {
+        const raw = new Blob(chunks.current, { type: mimeType })
+        const decoded = await decodeTake(await raw.arrayBuffer())
+        stage = '다듬기'
+        const samples = trimAndNormalize(decoded, PRESS_NOISE_S)
+        if (!samples) {
+          setNote('소리가 안 들렸어요. 버튼을 누른 채로 말하고, 다 말한 뒤 손을 떼세요.')
+          return
+        }
+        if (samples.length / decoded.sampleRate < MIN_TAKE_S) {
+          // An accidental tap must never overwrite a good take.
+          setNote('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
+          return
+        }
+        stage = 'mp3 변환'
+        const mp3 = encodeMp3(samples, decoded.sampleRate)
+        // Use the take even if on-device storage fails (e.g. Safari private browsing).
+        setLocalRecording(target.name, mp3)
+        setTakes((prev) => new Map(prev).set(target.name, mp3))
+        playBlob(mp3)
+        const secs = (samples.length / decoded.sampleRate).toFixed(2)
+        stage = '기기에 저장'
+        try {
+          await saveRecording(target.name, mp3)
+          setNote(`저장됨 · ${secs}초 · 마음에 안 들면 다시 녹음하세요`)
+        } catch (err) {
+          console.warn('[recorder] storage failed', err)
+          setNote(
+            `녹음됨 · ${secs}초 · 단, 이 브라우저에 저장이 안 돼요 (개인정보 보호 모드?). 끝나면 꼭 zip 받기를 누르세요. [${errText(err)}]`,
+          )
+        }
+      } catch (err) {
+        console.warn('[recorder] take failed at', stage, err)
+        dropStream()
+        setNote(`녹음을 처리하지 못했어요 (${stage} 단계: ${errText(err)}). 다시 해 주세요. 계속 나오면 이 문구를 Claude에게 보내 주세요.`)
       }
-      if (samples.length / decoded.sampleRate < MIN_TAKE_S) {
-        // An accidental tap must never overwrite a good take.
-        setNote('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
-        return
-      }
-      const mp3 = encodeMp3(samples, decoded.sampleRate)
-      await saveRecording(target.name, mp3)
-      setLocalRecording(target.name, mp3)
-      setTakes((prev) => new Map(prev).set(target.name, mp3))
-      playBlob(mp3)
-      setNote(`저장됨 · ${(samples.length / decoded.sampleRate).toFixed(2)}초 · 마음에 안 들면 다시 녹음하세요`)
-    } catch (err) {
-      console.warn('[recorder] take failed', err)
-      dropStream()
-      setNote('녹음을 처리하지 못했어요. 다시 해 주세요.')
     } finally {
       setPhase('idle')
+    }
+  }
+
+  /** Decode the recorder's output. Falls back to a fresh offline context if the live one refuses. */
+  async function decodeTake(bytes: ArrayBuffer): Promise<AudioBuffer> {
+    const withTimeout = (p: Promise<AudioBuffer>) =>
+      Promise.race([p, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 6000))])
+    try {
+      return await withTimeout(ctx.current!.decodeAudioData(bytes.slice(0)))
+    } catch (err) {
+      console.warn('[recorder] live decode failed, trying offline context', err)
+      const Offline = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext: typeof OfflineAudioContext }).webkitOfflineAudioContext
+      const off = new Offline(1, 1, 44100)
+      return await withTimeout(off.decodeAudioData(bytes.slice(0)))
     }
   }
 

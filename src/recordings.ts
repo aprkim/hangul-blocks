@@ -28,7 +28,11 @@ async function tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBReq
   })
 }
 
-export const saveRecording = (name: string, mp3: Blob) => tx('readwrite', (s) => s.put(mp3, name))
+// Stored as raw bytes, not a Blob: Safari (notably private browsing) can refuse Blobs in IndexedDB.
+export async function saveRecording(name: string, mp3: Blob) {
+  const bytes = await mp3.arrayBuffer()
+  return tx('readwrite', (s) => s.put(bytes, name))
+}
 export const deleteRecording = (name: string) => tx('readwrite', (s) => s.delete(name))
 
 export async function loadRecordings(): Promise<Map<string, Blob>> {
@@ -40,7 +44,8 @@ export async function loadRecordings(): Promise<Map<string, Blob>> {
       req.onsuccess = () => {
         const cur = req.result
         if (!cur) return resolve(out)
-        out.set(String(cur.key), cur.value as Blob)
+        const v = cur.value as Blob | ArrayBuffer
+        out.set(String(cur.key), v instanceof Blob ? v : new Blob([v], { type: 'audio/mpeg' }))
         cur.continue()
       }
       req.onerror = () => reject(req.error)
