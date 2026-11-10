@@ -13,7 +13,7 @@ export function JamoBoard({ onNext, onRecord }: { onNext: () => void; onRecord: 
   const release = () => window.clearTimeout(hold.current)
   return (
     <div className="flex h-full flex-col justify-center gap-[3vh] p-[2.5vh]">
-      <section className="grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
+      <section className="board-grid grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
         {CONSONANTS.map((c) => (
           <Tile key={c.char} kind="consonant" onTap={() => play(consonantSound(c))}>
             {c.char}
@@ -23,7 +23,7 @@ export function JamoBoard({ onNext, onRecord }: { onNext: () => void; onRecord: 
 
       {/* Same 7 columns as above so tiles match in size. Vowels sit in columns 2-6:
           top row side-by-side vowels, bottom row stacked vowels. */}
-      <section className="grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
+      <section className="board-grid grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
         {VOWELS.map((v, i) => (
           <Tile
             key={v.char}

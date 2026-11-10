@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { setLocalRecording, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS, type RecordItem } from '../jamo'
 import {
@@ -11,15 +11,19 @@ import {
 } from '../recordings'
 
 // Adult-only recording page. Open with ?record, or hold the empty corner of the jamo
-// board for 3 seconds. One sound per take: tap record, say it, tap stop.
+// board for 3 seconds. One sound per take: hold the button, say it, let go.
 
 type Phase = 'idle' | 'recording' | 'processing'
 
 /** Keep recording after the finger lifts: people let go while the vowel is still sounding,
     and Safari also drops the last moment of audio when a recording stops. */
 const RELEASE_TAIL_MS = 600
-/** Stops by itself if nobody taps stop. */
+/** Safety stop if the lift is never reported. */
 const MAX_TAKE_MS = 5000
+/** Ignore the start of each take: the finger landing on the glass is audible. */
+const PRESS_NOISE_S = 0.12
+/** A press shorter than this is a mis-tap. */
+const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
@@ -126,8 +130,31 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   const stopMeter = useRef<() => void>(() => {})
 
+  /** Finger is on the record button. Only a real lift clears it (not a Safari pointercancel). */
+  const holding = useRef(false)
+  const startedAt = useRef(0)
+  /** Set when a take should be thrown away (a press too short to be a sound). */
+  const discard = useRef(false)
+
+  // Listen for the lift on the whole window: iOS can cancel the button's own pointer
+  // stream mid-hold, but still reports the finger leaving the screen.
+  useEffect(() => {
+    const lift = () => {
+      if (!holding.current) return
+      holding.current = false
+      stopTake()
+    }
+    window.addEventListener('pointerup', lift)
+    window.addEventListener('touchend', lift)
+    return () => {
+      window.removeEventListener('pointerup', lift)
+      window.removeEventListener('touchend', lift)
+    }
+  }, [])
+
   async function startTake() {
     if (phase !== 'idle') return
+    holding.current = true
     window.clearTimeout(stopTimer.current)
     player.current?.pause()
     setNote('')
@@ -165,25 +192,30 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     }
     setElapsed(0)
     setPhase('recording')
+    startedAt.current = performance.now()
+    discard.current = false
     autoStop.current = window.setTimeout(stopTake, MAX_TAKE_MS)
+    // Finger lifted while the mic was still starting.
+    if (!holding.current) stopTake()
   }
 
   function stopTake() {
     window.clearTimeout(autoStop.current)
     const rec = recorder.current
     if (!rec || rec.state !== 'recording') return
+    // A brush or quick tap is not a take: never let it overwrite a good recording.
+    if (performance.now() - startedAt.current < MIN_PRESS_MS) discard.current = true
     setPhase('processing')
     stopTimer.current = window.setTimeout(() => rec.stop(), RELEASE_TAIL_MS)
-  }
-
-  function toggleTake() {
-    if (phase === 'idle') startTake()
-    else if (phase === 'recording') stopTake()
   }
 
   async function finishTake(target: RecordItem, mimeType: string) {
     setPhase('processing')
     try {
+      if (discard.current) {
+        setNote('너무 짧게 눌렀어요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
+        return
+      }
       if (!chunks.current.length) {
         // The mic delivered nothing: usually a dead stream after a device change.
         dropStream()
@@ -195,14 +227,14 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         ctx.current!.decodeAudioData(await raw.arrayBuffer()),
         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('decode timeout')), 6000)),
       ])
-      const samples = trimAndNormalize(decoded)
+      const samples = trimAndNormalize(decoded, PRESS_NOISE_S)
       if (!samples) {
-        setNote('소리가 안 들렸어요. 녹음 버튼을 누르고 말한 다음, 멈추기를 눌러 주세요.')
+        setNote('소리가 안 들렸어요. 버튼을 누른 채로 말하고, 다 말한 뒤 손을 떼세요.')
         return
       }
       if (samples.length / decoded.sampleRate < MIN_TAKE_S) {
         // An accidental tap must never overwrite a good take.
-        setNote('너무 짧아요. 녹음을 누르고 말한 뒤 멈추기를 눌러 주세요. (이전 녹음은 그대로 있어요)')
+        setNote('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
         return
       }
       const mp3 = encodeMp3(samples, decoded.sampleRate)
@@ -282,30 +314,35 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <div className="text-[22px]">
             「<b className="text-consonant">{item.say}</b>」 라고 말하기
           </div>
-          <div className="text-[14px] text-[#8a7c6e]">녹음 누르기 → 말하기 → 멈추기. 평평한 톤, 자모는 살짝 길게.</div>
+          <div className="text-[14px] text-[#8a7c6e]">버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.</div>
 
           <button
             type="button"
-            onClick={toggleTake}
+            onPointerDown={(e) => {
+              e.preventDefault()
+              startTake()
+            }}
+            onContextMenu={(e) => e.preventDefault()}
             disabled={phase === 'processing'}
-            aria-label={phase === 'recording' ? 'stop' : 'record'}
+            aria-label="record"
+            style={{ touchAction: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' } as CSSProperties}
             className={`mt-2 flex size-40 flex-col items-center justify-center gap-2 rounded-full text-[22px] font-bold text-white active:translate-y-1 ${
               phase === 'recording'
-                ? 'bg-ink shadow-[0_10px_0_#16212c]'
+                ? 'scale-105 bg-ink shadow-[0_10px_0_#16212c]'
                 : 'bg-consonant shadow-[0_10px_0_var(--color-consonant-dark)]'
             } disabled:opacity-60`}
           >
             {phase === 'recording' ? (
               <>
-                <span className="block size-10 rounded-md bg-white" />
-                멈추기
+                <span className="block size-10 animate-pulse rounded-full bg-consonant" />
+                <span className="text-[18px]">말하세요</span>
               </>
             ) : phase === 'processing' ? (
               '저장 중…'
             ) : (
               <>
                 <span className="block size-10 rounded-full bg-white" />
-                녹음
+                <span className="text-[18px]">누르고 있기</span>
               </>
             )}
           </button>

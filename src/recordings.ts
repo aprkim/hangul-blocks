@@ -58,13 +58,15 @@ const PAD_END = 0.1 // and after (the vowel tail fades out here)
 const TARGET_PEAK = 0.89 // about -1 dBFS
 
 /** Mono samples, trimmed to the voice and normalized. Returns null if nothing was heard. */
-export function trimAndNormalize(buf: AudioBuffer): Float32Array | null {
+export function trimAndNormalize(buf: AudioBuffer, skipStartS = 0): Float32Array | null {
   const n = buf.length
   const mono = new Float32Array(n)
   for (let c = 0; c < buf.numberOfChannels; c++) {
     const d = buf.getChannelData(c)
     for (let i = 0; i < n; i++) mono[i] += d[i] / buf.numberOfChannels
   }
+  // Silence the first moment (the press on the glass) so it never counts as voice.
+  mono.fill(0, 0, Math.min(n, Math.round(skipStartS * buf.sampleRate)))
 
   // RMS in 10ms windows; the voice is where RMS clears a threshold relative to the loudest window.
   // The threshold is low on purpose: fricative and aspirated onsets are far quieter than the vowel.
