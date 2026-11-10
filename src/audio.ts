@@ -6,6 +6,8 @@ const BASE = `${import.meta.env.BASE_URL}audio/`
 const clips = new Map<string, HTMLAudioElement>()
 const missing = new Set<string>()
 let current: HTMLAudioElement | null = null
+/** Recordings made on this device (blob URLs). They win over public/audio/. */
+const local = new Map<string, string>()
 
 function warnMissing(name: string) {
   if (missing.has(name)) return
@@ -19,10 +21,23 @@ function load(name: string): HTMLAudioElement {
   el = new Audio()
   el.preload = 'auto'
   el.addEventListener('error', () => warnMissing(name), { once: true })
-  el.src = `${BASE}${name}.mp3`
+  el.src = local.get(name) ?? `${BASE}${name}.mp3`
   el.load()
   clips.set(name, el)
   return el
+}
+
+/** Use an on-device recording for this sound from now on (replaces any loaded clip). */
+export function setLocalRecording(name: string, mp3: Blob | null) {
+  const old = local.get(name)
+  if (old) URL.revokeObjectURL(old)
+  if (mp3) local.set(name, URL.createObjectURL(mp3))
+  else local.delete(name)
+  const el = clips.get(name)
+  if (el === current) stop()
+  clips.delete(name)
+  missing.delete(name)
+  if (el) load(name)
 }
 
 export function preload(names: string[]) {

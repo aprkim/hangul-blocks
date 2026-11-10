@@ -78,3 +78,50 @@ export function allSoundNames(): string[] {
   ASSEMBLE_CONSONANTS.forEach((c) => VOWELS.forEach((v) => names.add(syllableSound(c, v))))
   return [...names]
 }
+
+// ---------- recording script (docs/AUDIO.md) ----------
+
+export type RecordItem = {
+  /** File name without .mp3 */
+  name: string
+  /** What is shown big: the jamo or the syllable. */
+  shown: string
+  /** What to say out loud (consonants are said by their sound, not their name). */
+  say: string
+}
+
+export type RecordGroup = { id: string; label: string; items: RecordItem[] }
+
+const EU = VOWELS.find((v) => v.roman === 'eu')!
+const IEUNG = CONSONANTS.find((c) => c.roman === 'ng')!
+
+function syllableItems(cs: Consonant[]): RecordItem[] {
+  return cs.flatMap((c) =>
+    VOWELS.map((v) => {
+      const s = composeSyllable(c, v)
+      return { name: syllableSound(c, v), shown: s, say: s }
+    }),
+  )
+}
+
+export const RECORD_GROUPS: RecordGroup[] = [
+  {
+    id: 'jamo',
+    label: '1차 · 자모 소리',
+    items: [
+      ...CONSONANTS.map((c) => ({ name: consonantSound(c), shown: c.char, say: composeSyllable(c, EU) })),
+      ...VOWELS.map((v) => ({ name: vowelSound(v), shown: v.char, say: composeSyllable(IEUNG, v) })),
+    ],
+  },
+  {
+    id: 'syl-p1',
+    label: '2차 · 음절',
+    items: syllableItems(ASSEMBLE_CONSONANTS.filter((c) => c.roman !== 'ng')),
+  },
+  {
+    id: 'syl-rest',
+    label: '3차 · 나머지 음절',
+    // ㅇ row is skipped: it reuses the vowel files.
+    items: syllableItems(CONSONANTS.filter((c) => !c.assemble && c.roman !== 'ng')),
+  },
+]
