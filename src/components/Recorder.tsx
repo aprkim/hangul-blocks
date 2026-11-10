@@ -208,13 +208,13 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
           <div className="min-h-6 text-center text-[15px]">{note}</div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
-              className="rounded-full bg-paper px-5 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
+              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
             <button type="button" disabled={!hasTake} onClick={() => playBlob(takes.get(item.name)!)}
-              className="rounded-full bg-paper px-5 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
+              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
             <button type="button" disabled={!hasTake} onClick={removeTake}
-              className="rounded-full bg-paper px-5 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
+              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
             <button type="button" onClick={() => goTo(nextUnrecorded(index, takes))}
               className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white">다음</button>
           </div>
