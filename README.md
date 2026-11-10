@@ -16,7 +16,7 @@ On the iPad, use Share → Add to Home Screen. It then opens full screen with no
 ## Recording (no external tools)
 
 Open the app with `?record`, or on the jamo board hold the empty space left of the vowels for 3 seconds.
-Hold the button, say the sound, and let go. Each take is trimmed, its loudness evened out, saved as mp3 on this device, and used by the game right away.
+Tap record, say the sound, tap stop. Each take is trimmed, its loudness evened out, saved as mp3 on this device, and used by the game right away.
 `zip 받기` downloads every take with its AUDIO.md file name, ready to commit to `public/audio/`.
 The mic needs HTTPS (the deployed URL, or localhost). On iPad, record inside the Home Screen app: it doesn't share storage with Safari.
 

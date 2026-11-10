@@ -11,13 +11,15 @@ import {
 } from '../recordings'
 
 // Adult-only recording page. Open with ?record, or hold the empty corner of the jamo
-// board for 3 seconds. One sound per take: hold the button, say it, let go.
+// board for 3 seconds. One sound per take: tap record, say it, tap stop.
 
 type Phase = 'idle' | 'recording' | 'processing'
 
 /** Keep recording after the finger lifts: people let go while the vowel is still sounding,
     and Safari also drops the last moment of audio when a recording stops. */
 const RELEASE_TAIL_MS = 600
+/** Stops by itself if nobody taps stop. */
+const MAX_TAKE_MS = 5000
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
@@ -34,8 +36,10 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const ctx = useRef<AudioContext | null>(null)
   const player = useRef<HTMLAudioElement | null>(null)
   const stopTimer = useRef<number | undefined>(undefined)
-  /** Finger is still on the button (it can lift before the mic finishes starting). */
-  const pressed = useRef(false)
+  const autoStop = useRef<number | undefined>(undefined)
+  const meterRaf = useRef<number | undefined>(undefined)
+  const [level, setLevel] = useState(0)
+  const [elapsed, setElapsed] = useState(0)
 
   const group = RECORD_GROUPS.find((g) => g.id === groupId)!
   const item: RecordItem = group.items[index]
@@ -95,19 +99,47 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     return stream.current!
   }
 
+  /** Live mic level, so it's obvious the page is hearing you. */
+  function startMeter(source: MediaStream) {
+    const ac = ctx.current!
+    const analyser = ac.createAnalyser()
+    analyser.fftSize = 1024
+    const node = ac.createMediaStreamSource(source)
+    node.connect(analyser)
+    const data = new Float32Array(analyser.fftSize)
+    const t0 = performance.now()
+    const tick = () => {
+      analyser.getFloatTimeDomainData(data)
+      let sum = 0
+      for (const v of data) sum += v * v
+      setLevel(Math.min(1, Math.sqrt(sum / data.length) * 6))
+      setElapsed((performance.now() - t0) / 1000)
+      meterRaf.current = requestAnimationFrame(tick)
+    }
+    tick()
+    return () => {
+      cancelAnimationFrame(meterRaf.current!)
+      node.disconnect()
+      setLevel(0)
+    }
+  }
+
+  const stopMeter = useRef<() => void>(() => {})
+
   async function startTake() {
     if (phase !== 'idle') return
-    pressed.current = true
     window.clearTimeout(stopTimer.current)
     player.current?.pause()
     setNote('')
     const target = item
     let rec: MediaRecorder | null = null
+    let source: MediaStream | null = null
     for (let attempt = 0; attempt < 2 && !rec; attempt++) {
       try {
-        const s = await liveStream()
+        source = await liveStream()
         ctx.current ??= new AudioContext()
-        const r = new MediaRecorder(s)
+        await ctx.current.resume()
+        const r = new MediaRecorder(source)
         r.start()
         rec = r
       } catch (err) {
@@ -115,24 +147,38 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         dropStream()
       }
     }
-    if (!rec) {
-      setNote('마이크를 쓸 수 없어요. 설정에서 마이크를 허용했는지 확인하고, 이 페이지를 다시 열어 주세요.')
+    if (!rec || !source) {
+      setNote('마이크를 쓸 수 없어요. 설정 → Safari(또는 앱) → 마이크를 허용하고, 이 페이지를 다시 열어 주세요.')
       return
     }
     chunks.current = []
     rec.ondataavailable = (e) => e.data.size && chunks.current.push(e.data)
-    rec.onstop = () => finishTake(target, rec.mimeType)
+    rec.onstop = () => {
+      stopMeter.current()
+      finishTake(target, rec.mimeType)
+    }
     recorder.current = rec
+    try {
+      stopMeter.current = startMeter(source)
+    } catch {
+      stopMeter.current = () => {}
+    }
+    setElapsed(0)
     setPhase('recording')
-    // Finger already lifted while the mic was starting: still give it a short take.
-    if (!pressed.current) endTake()
+    autoStop.current = window.setTimeout(stopTake, MAX_TAKE_MS)
   }
 
-  function endTake() {
-    pressed.current = false
+  function stopTake() {
+    window.clearTimeout(autoStop.current)
     const rec = recorder.current
     if (!rec || rec.state !== 'recording') return
+    setPhase('processing')
     stopTimer.current = window.setTimeout(() => rec.stop(), RELEASE_TAIL_MS)
+  }
+
+  function toggleTake() {
+    if (phase === 'idle') startTake()
+    else if (phase === 'recording') stopTake()
   }
 
   async function finishTake(target: RecordItem, mimeType: string) {
@@ -151,12 +197,12 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       ])
       const samples = trimAndNormalize(decoded)
       if (!samples) {
-        setNote('소리가 안 들렸어요. 버튼을 누른 채로 말해 주세요.')
+        setNote('소리가 안 들렸어요. 녹음 버튼을 누르고 말한 다음, 멈추기를 눌러 주세요.')
         return
       }
       if (samples.length / decoded.sampleRate < MIN_TAKE_S) {
         // An accidental tap must never overwrite a good take.
-        setNote('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
+        setNote('너무 짧아요. 녹음을 누르고 말한 뒤 멈추기를 눌러 주세요. (이전 녹음은 그대로 있어요)')
         return
       }
       const mp3 = encodeMp3(samples, decoded.sampleRate)
@@ -164,7 +210,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       setLocalRecording(target.name, mp3)
       setTakes((prev) => new Map(prev).set(target.name, mp3))
       playBlob(mp3)
-      setNote(`저장됨 · ${(samples.length / decoded.sampleRate).toFixed(2)}초 · 마음에 안 들면 다시 누르세요`)
+      setNote(`저장됨 · ${(samples.length / decoded.sampleRate).toFixed(2)}초 · 마음에 안 들면 다시 녹음하세요`)
     } catch (err) {
       console.warn('[recorder] take failed', err)
       dropStream()
@@ -236,28 +282,50 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <div className="text-[22px]">
             「<b className="text-consonant">{item.say}</b>」 라고 말하기
           </div>
-          <div className="text-[14px] text-[#8a7c6e]">평평한 톤, 또박또박. 자모는 살짝 길게. 끝을 올리지 않기.</div>
+          <div className="text-[14px] text-[#8a7c6e]">녹음 누르기 → 말하기 → 멈추기. 평평한 톤, 자모는 살짝 길게.</div>
 
           <button
             type="button"
-            onPointerDown={(e) => {
-              e.currentTarget.setPointerCapture(e.pointerId)
-              startTake()
-            }}
-            onPointerUp={endTake}
-            onPointerCancel={endTake}
+            onClick={toggleTake}
             disabled={phase === 'processing'}
-            className={`mt-2 flex size-40 select-none items-center justify-center rounded-full text-[20px] font-bold text-white transition-transform ${
-              phase === 'recording' ? 'scale-110 bg-consonant-dark' : 'bg-consonant'
-            } disabled:opacity-50`}
-            style={{ touchAction: 'none' }}
+            aria-label={phase === 'recording' ? 'stop' : 'record'}
+            className={`mt-2 flex size-40 flex-col items-center justify-center gap-2 rounded-full text-[22px] font-bold text-white active:translate-y-1 ${
+              phase === 'recording'
+                ? 'bg-ink shadow-[0_10px_0_#16212c]'
+                : 'bg-consonant shadow-[0_10px_0_var(--color-consonant-dark)]'
+            } disabled:opacity-60`}
           >
-            {phase === 'recording' ? '듣는 중…' : phase === 'processing' ? '저장 중…' : '누르고 말하기'}
+            {phase === 'recording' ? (
+              <>
+                <span className="block size-10 rounded-md bg-white" />
+                멈추기
+              </>
+            ) : phase === 'processing' ? (
+              '저장 중…'
+            ) : (
+              <>
+                <span className="block size-10 rounded-full bg-white" />
+                녹음
+              </>
+            )}
           </button>
+
+          {/* Mic level: moves when the mic hears you. */}
+          <div className="flex h-6 w-64 items-center gap-3">
+            <div className="h-3 flex-1 overflow-hidden rounded-full bg-paper">
+              <div
+                className="h-full rounded-full bg-vowel transition-[width] duration-75"
+                style={{ width: `${phase === 'recording' ? Math.max(4, level * 100) : 0}%` }}
+              />
+            </div>
+            <span className="w-10 text-right text-[15px] tabular-nums text-[#8a7c6e]">
+              {phase === 'recording' ? `${elapsed.toFixed(1)}s` : ''}
+            </span>
+          </div>
 
           <div className="min-h-6 text-center text-[15px]">{note}</div>
 
-          <div className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
+          <fieldset disabled={phase !== 'idle'} className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
               className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
             <button type="button" disabled={!hasTake} onClick={() => playBlob(takes.get(item.name)!)}
@@ -265,8 +333,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             <button type="button" disabled={!hasTake} onClick={removeTake}
               className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
             <button type="button" onClick={() => goTo(nextUnrecorded(index, takes))}
-              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white">다음</button>
-          </div>
+              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white disabled:opacity-40">다음</button>
+          </fieldset>
         </section>
 
         <section>
