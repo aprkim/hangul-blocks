@@ -30,6 +30,25 @@ const MIN_TAKE_S = 0.2
 
 const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP]
 
+/** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */
+async function serverCopies(takes: Map<string, Blob>): Promise<Set<string>> {
+  const same = new Set<string>()
+  const names = [...takes.keys()]
+  const worker = async () => {
+    for (let name = names.pop(); name; name = names.pop()) {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}audio/${name}.mp3`, { method: 'HEAD', cache: 'no-store' })
+        const len = Number(res.headers.get('content-length'))
+        if (res.ok && len === takes.get(name)!.size) same.add(name)
+      } catch {
+        /* offline or blocked: treat as not uploaded */
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: 8 }, worker))
+  return same
+}
+
 function errText(err: unknown): string {
   if (err instanceof Error) return `${err.name}: ${err.message}`.slice(0, 140)
   return String(err).slice(0, 140)
@@ -300,19 +319,40 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   // The zip is built ahead of time: iOS only allows a download or share sheet that starts
   // synchronously inside the tap, so nothing may be awaited between the tap and the share.
+  // Only takes the site doesn't already have go in the zip. A take counts as already on the
+  // site when the deployed file of that name has exactly the same size (same take = same bytes).
+  const [onSite, setOnSite] = useState<Set<string> | null>(null)
+  useEffect(() => {
+    let live = true
+    setOnSite(null)
+    serverCopies(takes).then((same) => live && setOnSite(same))
+    return () => {
+      live = false
+    }
+  }, [takes])
+
+  const unsent = useMemo(() => {
+    if (!onSite) return null
+    return new Map([...takes].filter(([name]) => !onSite.has(name)))
+  }, [takes, onSite])
+
+  // The zip is built ahead of time: iOS only allows a download or share sheet that starts
+  // synchronously inside the tap, so nothing may be awaited between the tap and the share.
   const [zipFile, setZipFile] = useState<File | null>(null)
+  const [zipAll, setZipAll] = useState(false)
   useEffect(() => {
     let live = true
     setZipFile(null)
-    if (takes.size) {
-      exportZip(takes).then((zip) => {
+    const pick = zipAll ? takes : unsent
+    if (pick?.size) {
+      exportZip(pick).then((zip) => {
         if (live) setZipFile(new File([zip], 'hangul-audio.zip', { type: 'application/zip' }))
       })
     }
     return () => {
       live = false
     }
-  }, [takes])
+  }, [takes, unsent, zipAll])
 
   function download() {
     if (!zipFile) return
@@ -337,6 +377,14 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     a.click()
     a.remove()
     setTimeout(() => URL.revokeObjectURL(a.href), 30_000)
+  }
+
+  function zipLabel() {
+    if (!takes.size) return 'zip 받기 (0)'
+    if (!zipAll && !unsent) return '확인 중…'
+    const n = zipAll ? takes.size : unsent!.size
+    if (n === 0) return '모두 올라가 있어요 ✓'
+    return zipFile ? `${zipAll ? '전체' : '새 녹음'} zip 받기 (${n})` : 'zip 준비 중…'
   }
 
   const hasTake = takes.has(item.name)
@@ -367,8 +415,14 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <span className="flex-1" />
           <button type="button" onClick={download} disabled={!zipFile}
             className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold disabled:opacity-40">
-            {takes.size && !zipFile ? 'zip 준비 중…' : `zip 받기 (${takes.size})`}
+            {zipLabel()}
           </button>
+          {takes.size > 0 && (
+            <label className="flex items-center gap-1 text-[13px] text-[#8a7c6e]">
+              <input type="checkbox" checked={zipAll} onChange={(e) => setZipAll(e.target.checked)} />
+              전체
+            </label>
+          )}
           <button type="button" onClick={onExit} className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold">
             게임으로
           </button>
