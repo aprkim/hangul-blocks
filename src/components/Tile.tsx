@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from 'react'
+import { tapFeedback } from '../native'
 
 export type TileKind = 'consonant' | 'vowel' | 'control'
 
@@ -35,6 +36,7 @@ export function Tile({ kind, onTap, children, selected, className = '', label }:
       onPointerDown={(e) => {
         e.preventDefault()
         ref.current?.animate(BOUNCE, { duration: 320, easing: 'ease-out' })
+        tapFeedback()
         onTap()
       }}
       className={`tile ${KIND_CLASS[kind]} ${selected ? 'ring-[5px] ring-ink ring-offset-4 ring-offset-paper' : ''} ${className}`}

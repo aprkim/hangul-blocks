@@ -5,6 +5,7 @@ import './index.css'
 import App from './App'
 import { installUnlock, preload, setLocalRecording } from './audio'
 import { allSoundNames } from './jamo'
+import { initNative } from './native'
 import { loadRecordings } from './recordings'
 import { wordSoundNames } from './words'
 
@@ -24,6 +25,7 @@ loadRecordings().then((takes) => {
   preload([...allSoundNames(), ...wordSoundNames()])
 })
 installUnlock()
+void initNative()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

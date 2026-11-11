@@ -11,6 +11,7 @@ import {
   type Vowel,
   type VowelLayout,
 } from '../jamo'
+import { successFeedback } from '../native'
 import { cardFor, type Card } from '../words'
 import { GridIcon, ResetIcon } from './Icons'
 import { Tile } from './Tile'
@@ -133,6 +134,7 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     if (!composed) return
+    successFeedback()
     glyphRef.current?.animate(POP, { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
     frameRef.current?.animate(GLOW, { duration: 480, easing: 'ease-out' })
   }, [composed, round])

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { setLocalRecording, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { WORD_RECORD_GROUP } from '../words'
+import { isNativeApp, shareFileNative } from '../native'
 import {
   deleteRecording,
   encodeMp3,
@@ -399,6 +400,14 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   function download() {
     if (!zipFile) return
+    // Inside the iOS app: write the zip to the app's cache and open the native share sheet.
+    if (isNativeApp) {
+      shareFileNative(zipFile).catch((err) => {
+        console.warn('[recorder] native share failed', err)
+        setNote(`zip을 공유하지 못했어요 (${errText(err)})`)
+      })
+      return
+    }
     // iPhone/iPad: the share sheet (Save to Files, AirDrop, Messages, ...).
     if (navigator.canShare?.({ files: [zipFile] })) {
       navigator.share({ files: [zipFile], title: 'hangul-audio.zip' }).catch((err: DOMException) => {
