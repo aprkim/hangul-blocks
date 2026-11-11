@@ -4,14 +4,16 @@
 const BASE = `${import.meta.env.BASE_URL}audio/`
 
 const clips = new Map<string, HTMLAudioElement>()
-const missing = new Set<string>()
+/** Sounds that failed to load, with when. Retried after a while: a file may be uploaded later. */
+const missing = new Map<string, number>()
+const RETRY_MISSING_MS = 5000
 let current: HTMLAudioElement | null = null
 /** Recordings made on this device (blob URLs). They win over public/audio/. */
 const local = new Map<string, string>()
 
 function warnMissing(name: string) {
   if (missing.has(name)) return
-  missing.add(name)
+  missing.set(name, Date.now())
   console.warn(`[audio] missing or unplayable: ${name}.mp3`)
 }
 
@@ -57,7 +59,13 @@ export function stop() {
 
 export function play(name: string) {
   stop()
-  if (missing.has(name)) return
+  const failedAt = missing.get(name)
+  if (failedAt !== undefined) {
+    if (Date.now() - failedAt < RETRY_MISSING_MS) return
+    // Try again from scratch: the file may have been deployed since.
+    missing.delete(name)
+    clips.delete(name)
+  }
   const el = load(name)
   current = el
   el.muted = false
