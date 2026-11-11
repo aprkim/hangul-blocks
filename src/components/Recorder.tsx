@@ -49,6 +49,27 @@ async function serverCopies(takes: Map<string, Blob>): Promise<Set<string>> {
   return same
 }
 
+const SITE_AUDIO = `${import.meta.env.BASE_URL}audio/`
+
+/** Which of these sounds are already deployed on the site (recorded on any device and uploaded). */
+async function siteFiles(names: string[]): Promise<Set<string>> {
+  const found = new Set<string>()
+  const queue = [...names]
+  const worker = async () => {
+    for (let name = queue.pop(); name; name = queue.pop()) {
+      try {
+        const res = await fetch(`${SITE_AUDIO}${name}.mp3`, { method: 'HEAD', cache: 'no-store' })
+        // A dev server may answer a missing file with index.html, so check it is audio.
+        if (res.ok && /audio|mpeg/.test(res.headers.get('content-type') ?? '')) found.add(name)
+      } catch {
+        /* offline: unknown */
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: 8 }, worker))
+  return found
+}
+
 function errText(err: unknown): string {
   if (err instanceof Error) return `${err.name}: ${err.message}`.slice(0, 140)
   return String(err).slice(0, 140)
@@ -74,7 +95,13 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   const group = RECORD_GROUPS.find((g) => g.id === groupId)!
   const item: RecordItem = group.items[index]
-  const doneCount = useMemo(() => group.items.filter((i) => takes.has(i.name)).length, [group, takes])
+  // Recorded on this device, or already uploaded to the site from any device.
+  const [onSiteAll, setOnSiteAll] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    siteFiles(RECORD_GROUPS.flatMap((g) => g.items.map((i) => i.name))).then(setOnSiteAll)
+  }, [])
+  const isDone = (name: string) => takes.has(name) || onSiteAll.has(name)
+  const doneCount = group.items.filter((i) => isDone(i.name)).length
 
   useEffect(() => {
     stopGameAudio()
@@ -98,17 +125,27 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     el.play().catch(() => {})
   }
 
+  /** Play this device's take, or else the uploaded one. */
+  function listen(name: string) {
+    const take = takes.get(name)
+    if (take) return playBlob(take)
+    if (!onSiteAll.has(name)) return
+    player.current?.pause()
+    const el = new Audio(`${SITE_AUDIO}${name}.mp3`)
+    player.current = el
+    el.play().catch(() => {})
+  }
+
   function goTo(i: number) {
     setIndex(i)
     setNote('')
-    const take = takes.get(group.items[i].name)
-    if (take) playBlob(take)
+    listen(group.items[i].name)
   }
 
-  function nextUnrecorded(from: number, have: Map<string, Blob>) {
+  function nextUnrecorded(from: number) {
     for (let k = 1; k <= group.items.length; k++) {
       const j = (from + k) % group.items.length
-      if (!have.has(group.items[j].name)) return j
+      if (!isDone(group.items[j].name)) return j
     }
     return Math.min(from + 1, group.items.length - 1)
   }
@@ -388,20 +425,21 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   }
 
   const hasTake = takes.has(item.name)
+  const canListen = hasTake || onSiteAll.has(item.name)
 
   return (
     <div data-scroll className="h-full overflow-y-auto bg-paper text-ink" style={{ touchAction: 'pan-y' }}>
       <div className="mx-auto flex max-w-3xl flex-col gap-5 p-5">
         <header className="flex flex-wrap items-center gap-2">
           {RECORD_GROUPS.map((g) => {
-            const done = g.items.filter((i) => takes.has(i.name)).length
+            const done = g.items.filter((i) => isDone(i.name)).length
             return (
               <button
                 key={g.id}
                 type="button"
                 onClick={() => {
                   setGroupId(g.id)
-                  setIndex(Math.max(0, g.items.findIndex((i) => !takes.has(i.name))))
+                  setIndex(Math.max(0, g.items.findIndex((i) => !isDone(i.name))))
                   setNote('')
                 }}
                 className={`rounded-full px-4 py-2 text-[15px] font-semibold ${
@@ -487,11 +525,11 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <fieldset disabled={phase !== 'idle'} className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
               className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
-            <button type="button" disabled={!hasTake} onClick={() => playBlob(takes.get(item.name)!)}
+            <button type="button" disabled={!canListen} onClick={() => listen(item.name)}
               className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
             <button type="button" disabled={!hasTake} onClick={removeTake}
               className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
-            <button type="button" onClick={() => goTo(nextUnrecorded(index, takes))}
+            <button type="button" onClick={() => goTo(nextUnrecorded(index))}
               className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white disabled:opacity-40">다음</button>
           </fieldset>
         </section>
@@ -500,14 +538,25 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <div className="mb-2 text-[15px] text-[#8a7c6e]">
             {group.label}: {doneCount}/{group.items.length} 완료 · 눌러서 이동
           </div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-2">
+          <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#8a7c6e]">
+            <span><i className="mr-1 inline-block size-3 rounded bg-vowel align-middle" />이 기기에서 녹음</span>
+            <span><i className="mr-1 inline-block size-3 rounded bg-[#b9c8d8] align-middle" />사이트에 올라가 있음</span>
+            <span><i className="mr-1 inline-block size-3 rounded border border-[#d8c7a8] bg-white align-middle" />아직 없음</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
             {group.items.map((it, i) => (
               <button
                 key={it.name}
                 type="button"
                 onClick={() => goTo(i)}
-                className={`h-13 rounded-xl text-[24px] font-bold ${
-                  takes.has(it.name) ? 'bg-vowel text-white' : 'bg-white text-ink'
+                className={`h-13 min-w-13 whitespace-nowrap rounded-xl px-2 font-bold ${
+                  it.shown.length > 1 ? 'text-[18px]' : 'text-[24px]'
+                } ${
+                  takes.has(it.name)
+                    ? 'bg-vowel text-white'
+                    : onSiteAll.has(it.name)
+                      ? 'bg-[#b9c8d8] text-white'
+                      : 'bg-white text-ink'
                 } ${i === index ? 'ring-[3px] ring-ink' : ''}`}
               >
                 {it.shown}
