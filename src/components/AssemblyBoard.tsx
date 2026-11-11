@@ -11,7 +11,7 @@ import {
   type Vowel,
   type VowelLayout,
 } from '../jamo'
-import { wordFor, wordSound, type Word } from '../words'
+import { cardFor, type Card } from '../words'
 import { GridIcon, ResetIcon } from './Icons'
 import { Tile } from './Tile'
 
@@ -82,7 +82,7 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
   const [round, setRound] = useState(0)
   const timer = useRef<number | undefined>(undefined)
   const wordTimer = useRef<number | undefined>(undefined)
-  const [word, setWord] = useState<Word | null>(null)
+  const [card, setCard] = useState<Card | null>(null)
   const wordRef = useRef<HTMLButtonElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const glyphRef = useRef<HTMLDivElement>(null)
@@ -93,7 +93,7 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
   function place(nextCons: Consonant | null, nextVowel: Vowel | null) {
     window.clearTimeout(timer.current)
     window.clearTimeout(wordTimer.current)
-    setWord(null)
+    setCard(null)
     setComposed(false)
     setCons(nextCons)
     setVowel(nextVowel)
@@ -105,13 +105,12 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
       timer.current = window.setTimeout(() => {
         setComposed(true)
         setRound((r) => r + 1)
-        const w = wordFor(nextCons, nextVowel)
-        if (w) {
-          wordTimer.current = window.setTimeout(() => {
-            setWord(w)
-            play(wordSound(nextCons, nextVowel))
-          }, WORD_DELAY_MS)
-        }
+        // Every syllable gets something: its picture word, or an animal friend saying it.
+        const next = cardFor(nextCons, nextVowel)
+        wordTimer.current = window.setTimeout(() => {
+          setCard(next)
+          play(next.sound)
+        }, WORD_DELAY_MS)
       }, moved ? MOVE_MS : 160)
     } else if (nextCons) {
       play(consonantSound(nextCons))
@@ -129,8 +128,8 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
   )
 
   useEffect(() => {
-    if (word) wordRef.current?.animate(WORD_POP, { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1.25)' })
-  }, [word])
+    if (card) wordRef.current?.animate(WORD_POP, { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1.25)' })
+  }, [card])
 
   useEffect(() => {
     if (!composed) return
@@ -161,23 +160,24 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
                 {composeSyllable(cons, vowel)}
               </div>
             )}
-            {word && cons && vowel && (
+            {card && (
               <button
                 ref={wordRef}
                 type="button"
-                className="word-card"
-                aria-label={word.word}
+                className={`word-card ${card.kind === 'friend' ? 'is-friend' : ''}`}
+                aria-label={card.before + card.syllable + card.after}
                 onPointerDown={(e) => {
                   e.preventDefault()
-                  play(wordSound(cons, vowel))
+                  play(card.sound)
                   wordRef.current?.animate(WORD_POP, { duration: 420 })
                 }}
               >
-                <span className="word-emoji">{word.emoji}</span>
+                <span className="word-emoji">{card.emoji}</span>
                 <span className="word-text">
-                  {/* The syllable just built, in red, at the start of the word. */}
-                  <b className="text-consonant">{word.word[0]}</b>
-                  {word.word.slice(1)}
+                  {/* The syllable just built, in red, wherever it sits in the word. */}
+                  {card.before}
+                  <b className="text-consonant">{card.syllable}</b>
+                  {card.after}
                 </span>
               </button>
             )}

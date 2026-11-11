@@ -12,11 +12,12 @@ import {
   type Consonant,
   type RecordGroup,
   type Vowel,
+  syllableSound,
 } from './jamo'
 
 export type Word = { word: string; emoji: string }
 
-/** Keyed by the syllable the word starts with. The word must start with exactly that syllable. */
+/** Keyed by the syllable. The word contains that syllable (usually first; it's highlighted wherever it is). */
 export const WORDS: Record<string, Word> = {
   가: { word: '가방', emoji: '🎒' },
   갸: { word: '갸우뚱', emoji: '🤔' },
@@ -70,4 +71,57 @@ export const WORD_RECORD_GROUP: RecordGroup = {
       return w ? [{ name: wordSound(c, v), shown: w.word, say: w.word }] : []
     }),
   ),
+}
+
+// ---------- what pops up after a syllable is built ----------
+
+/**
+ * Animal friends for syllables with no word: they pop up and say the syllable back.
+ * Each syllable has its own animal, none reused by a picture word, so a child can
+ * remember "뮤 is the cow".
+ */
+const FRIEND_FOR: Record<string, string> = {
+  규: '🐸',
+  녀: '🐰',
+  뇨: '🐥',
+  니: '🦄',
+  먀: '🐯',
+  며: '🐻',
+  뮤: '🐮',
+  므: '🐑',
+  뱌: '🐼',
+  뵤: '🐷',
+  뷰: '🐳',
+}
+/** For syllables of consonants enabled later that have no word and no assigned friend yet. */
+const FRIENDS = ['🐶', '🦊', '🐨', '🐵', '🐧', '🦁', '🐹', '🐙', '🦒', '🐞']
+
+export type Card = {
+  emoji: string
+  /** Text under the picture, split so the built syllable can be shown in red. */
+  before: string
+  syllable: string
+  after: string
+  /** Sound to play when the card appears or is tapped. */
+  sound: string
+  kind: 'word' | 'friend'
+}
+
+/** Every syllable gets a card: its picture word if it has one, otherwise an animal friend saying it. */
+export function cardFor(c: Consonant, v: Vowel): Card {
+  const syl = composeSyllable(c, v)
+  const w = WORDS[syl]
+  if (w) {
+    const i = Math.max(0, w.word.indexOf(syl))
+    return {
+      emoji: w.emoji,
+      before: w.word.slice(0, i),
+      syllable: syl,
+      after: w.word.slice(i + syl.length),
+      sound: wordSound(c, v),
+      kind: 'word',
+    }
+  }
+  const friend = FRIEND_FOR[syl] ?? FRIENDS[(c.cho * 21 + v.jung) % FRIENDS.length]
+  return { emoji: friend, before: '', syllable: syl, after: '!', sound: syllableSound(c, v), kind: 'friend' }
 }

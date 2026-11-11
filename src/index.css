@@ -168,3 +168,8 @@ body {
     font-size: 10cqmin;
   }
 }
+
+/* Animal friend (syllables with no word): a speech-bubble look instead of a picture card. */
+.word-card.is-friend {
+  border-radius: 999px 999px 999px 8cqmin;
+}
