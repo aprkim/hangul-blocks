@@ -6,6 +6,7 @@ import {
   deleteRecording,
   encodeMp3,
   exportZip,
+  loudestDb,
   loadRecordings,
   saveRecording,
   trimAndNormalize,
@@ -296,7 +297,12 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         stage = '다듬기'
         const samples = trimAndNormalize(decoded, PRESS_NOISE_S)
         if (!samples) {
-          setNote('소리가 안 들렸어요. 버튼을 누른 채로 말하고, 다 말한 뒤 손을 떼세요.')
+          const db = loudestDb(decoded)
+          setNote(
+            db < -80
+              ? `마이크에서 아무 소리도 안 들어와요 (${db}dB). 마이크 권한과, 어떤 마이크가 선택돼 있는지 확인해 주세요.`
+              : `소리가 너무 작아요 (${db}dB). 마이크에 더 가까이 대고 조금 크게 말해 주세요.`,
+          )
           return
         }
         if (samples.length / decoded.sampleRate < MIN_TAKE_S) {

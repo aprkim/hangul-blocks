@@ -61,6 +61,21 @@ export async function loadRecordings(): Promise<Map<string, Blob>> {
 const PAD_START = 0.08 // kept before the voice: protects quiet onsets (the hiss of ㅅ ㅈ ㅊ ㅎ ㅋ ㅌ ㅍ)
 const PAD_END = 0.1 // and after (the vowel tail fades out here)
 const TARGET_PEAK = 0.89 // about -1 dBFS
+const SILENCE_RMS = 0.002
+
+/** Loudest 10ms RMS of a take in dBFS, for telling the user how much the mic heard. */
+export function loudestDb(buf: AudioBuffer): number {
+  const d = buf.getChannelData(0)
+  const win = Math.max(1, Math.round(buf.sampleRate * 0.01))
+  let best = 0
+  for (let i = 0; i < d.length; i += win) {
+    let sum = 0
+    const end = Math.min(d.length, i + win)
+    for (let j = i; j < end; j++) sum += d[j] * d[j]
+    best = Math.max(best, Math.sqrt(sum / (end - i)))
+  }
+  return best > 0 ? Math.round(20 * Math.log10(best)) : -120
+}
 
 /** Mono samples, trimmed to the voice and normalized. Returns null if nothing was heard. */
 export function trimAndNormalize(buf: AudioBuffer, skipStartS = 0): Float32Array | null {
@@ -84,8 +99,10 @@ export function trimAndNormalize(buf: AudioBuffer, skipStartS = 0): Float32Array
     rms.push(Math.sqrt(sum / (end - i)))
   }
   const loudest = Math.max(...rms)
-  if (loudest < 0.01) return null
-  const threshold = Math.max(0.004, loudest * 0.02)
+  // Quiet mics (laptops, a phone held far away) give a real voice an RMS well under 0.01,
+  // so only true silence (about -54 dBFS) is rejected. Normalization brings the rest up.
+  if (loudest < SILENCE_RMS) return null
+  const threshold = Math.max(SILENCE_RMS * 0.5, loudest * 0.02)
   const first = rms.findIndex((r) => r > threshold)
   let last = rms.length - 1
   while (last > first && rms[last] <= threshold) last--
