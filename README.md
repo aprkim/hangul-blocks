@@ -1,4 +1,4 @@
-# 한글 블록 (hangul-blocks)
+# 소리블록 · Sori Blocks (hangul-blocks)
 
 A Hangul sound-to-letter game for a 4-year-old. iPad Safari, landscape. Specs: `docs/SPEC.md`, `docs/AUDIO.md`.
 

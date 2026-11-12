@@ -1,4 +1,4 @@
-# 앱스토어 출시 가이드 (한글 블록)
+# 앱스토어 출시 가이드 (소리블록 · Sori Blocks)
 
 웹앱을 Capacitor로 감싼 iOS 앱이다. 코드는 이 저장소의 `ios/` 폴더에 있다.
 **빌드와 제출은 Mac + Xcode에서만 된다.** 아래 순서대로 하면 된다.
@@ -32,7 +32,7 @@ npm run ios
 
 1. 왼쪽 목록 맨 위 **App** → 가운데 **TARGETS: App** → **Signing & Capabilities** 탭
 2. **Team**: 본인 개발자 계정 선택
-3. **Bundle Identifier**: `com.aprkim.hangulblocks` (원하면 바꿔도 됨. **첫 업로드 후에는 못 바꾼다**)
+3. **Bundle Identifier**: `com.lihallc.soriblocks` (**첫 업로드 후에는 못 바꾼다**)
 4. **General** 탭 → **Version** `1.0`, **Build** `1`
 
 ## 3. 실제 기기에서 테스트
@@ -56,17 +56,19 @@ appstoreconnect.apple.com → 앱 → `+` → 신규 앱
 | 항목 | 값 |
 |---|---|
 | 플랫폼 | iOS |
-| 이름 | 한글 블록 (이미 있으면 "한글 블록 - 소리로 배우는 한글" 등) |
+| 이름 | 소리블록 (영어 이름: Sori Blocks) |
+| 부제 | 소리로 조립하는 한글 (영어: Build Korean letters by sound) |
 | 기본 언어 | 한국어 |
-| 번들 ID | `com.aprkim.hangulblocks` |
-| SKU | `hangulblocks` (아무 문자열) |
+| 번들 ID | `com.lihallc.soriblocks` |
+| SKU | `soriblocks` (아무 문자열) |
 
 ### 앱 정보
 - **카테고리**: 교육 (보조: 게임 > 교육)
 - **키즈 카테고리**: 만 5세 이하 (또는 6–8세)
 - **개인정보 처리방침 URL**: `https://hangul-blocks-blush.vercel.app/privacy.html`
-  - ⚠️ 제출 전에 `public/privacy.html` 의 `[연락처 이메일]` 을 실제 이메일로 바꿀 것
-- **지원 URL**: 위와 같은 주소를 써도 된다
+- **이용약관 (EULA)**: 앱 정보 → 라이선스 계약 → 사용자 지정 EULA에 `https://hangul-blocks-blush.vercel.app/terms.html` 의 내용을 붙여넣거나, 앱 설명 맨 끝에 이 주소를 적는다 (안 하면 애플 기본 EULA가 적용되고, 그것도 괜찮다)
+- **지원 URL**: `https://hangul-blocks-blush.vercel.app/privacy.html` (문의 이메일이 적혀 있음)
+- **판매자**: Liha LLC
 
 ### 앱 개인정보 (App Privacy)
 - "데이터를 수집합니까?" → **아니요** (Data Not Collected)
@@ -120,5 +122,5 @@ Xcode에서 **Build 번호를 1 올리고** (예: 1 → 2) 6번을 반복한다.
 | 4.2 최소 기능 ("웹사이트를 감싼 것") | 오프라인 동작, 햅틱, 무음 스위치 무시 재생, 네이티브 공유 |
 | 키즈 카테고리 1.3 | 광고·분석·외부 링크·구매 없음, 어른 영역에 부모 확인 문제 |
 | 마이크 사용 이유 | Info.plist `NSMicrophoneUsageDescription` 에 한/영 설명 |
-| 개인정보 처리방침 | `public/privacy.html` (연락처만 채우면 됨) |
+| 개인정보 처리방침·이용약관 | `public/privacy.html`, `public/terms.html` |
 | 암호화 질문 | Info.plist `ITSAppUsesNonExemptEncryption = NO` 로 자동 처리 |
