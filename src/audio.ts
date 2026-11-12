@@ -76,13 +76,28 @@ function load(name: string): Promise<Clip | null> {
   if (p) return p
   p = (async () => {
     const url = local.get(name) ?? `${BASE}${name}.mp3`
-    let bytes: ArrayBuffer
+    let bytes: ArrayBuffer | null = null
     try {
       const res = await fetch(url)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      bytes = await res.arrayBuffer()
+      // Inside the iOS app (capacitor:// scheme) bundled files arrive with status 0, not 200.
+      if (res.status === 404) throw new Error('HTTP 404')
+      if (res.ok || res.status === 0) {
+        const b = await res.arrayBuffer()
+        if (b.byteLength > 0) bytes = b
+      }
+      if (!bytes) throw new Error(`HTTP ${res.status}, empty body`)
     } catch (err) {
-      warnMissing(name, err)
+      if (err instanceof Error && err.message === 'HTTP 404') {
+        warnMissing(name, err)
+        loading.delete(name)
+        return null
+      }
+      // Couldn't read the bytes, but <audio> may still play the file: fall back to it.
+      console.warn(`[audio] fetch failed, using <audio> for ${name}.mp3`, err instanceof Error ? err.message : err)
+      const el = new Audio(url)
+      el.preload = 'auto'
+      htmlFallback.set(name, el)
+      needsUnlock.add(el)
       loading.delete(name)
       return null
     }

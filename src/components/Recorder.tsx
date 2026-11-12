@@ -41,7 +41,7 @@ async function serverCopies(takes: Map<string, Blob>): Promise<Set<string>> {
       try {
         const res = await fetch(`${import.meta.env.BASE_URL}audio/${name}.mp3`, { method: 'HEAD', cache: 'no-store' })
         const len = Number(res.headers.get('content-length'))
-        if (res.ok && len === takes.get(name)!.size) same.add(name)
+        if ((res.ok || res.status === 0) && len === takes.get(name)!.size) same.add(name)
       } catch {
         /* offline or blocked: treat as not uploaded */
       }
@@ -62,7 +62,9 @@ async function siteFiles(names: string[]): Promise<Set<string>> {
       try {
         const res = await fetch(`${SITE_AUDIO}${name}.mp3`, { method: 'HEAD', cache: 'no-store' })
         // A dev server may answer a missing file with index.html, so check it is audio.
-        if (res.ok && /audio|mpeg/.test(res.headers.get('content-type') ?? '')) found.add(name)
+        // Inside the iOS app, bundled files answer with status 0 instead of 200.
+        const type = res.headers.get('content-type') ?? ''
+        if ((res.ok || res.status === 0) && !/html/.test(type)) found.add(name)
       } catch {
         /* offline: unknown */
       }
