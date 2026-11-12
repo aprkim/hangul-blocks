@@ -10,6 +10,23 @@ type Clip = { buffer: AudioBuffer; offset: number }
 const clips = new Map<string, Clip>()
 /** Sounds Web Audio couldn't decode: played with a plain <audio> element instead. */
 const htmlFallback = new Map<string, HTMLAudioElement>()
+/** iOS only lets an <audio> element play from a timer once it has played inside a tap. */
+const needsUnlock = new Set<HTMLAudioElement>()
+function unlockFallbacks() {
+  for (const el of needsUnlock) {
+    if (el === currentHtml) continue
+    el.muted = true
+    el.play()
+      .then(() => {
+        if (el !== currentHtml) el.pause()
+        needsUnlock.delete(el)
+      })
+      .catch(() => {})
+      .finally(() => {
+        el.muted = false
+      })
+  }
+}
 let currentHtml: HTMLAudioElement | null = null
 const loading = new Map<string, Promise<Clip | null>>()
 /** Sounds that failed to load, with when. Retried after a while: a file may be uploaded later. */
@@ -80,6 +97,7 @@ function load(name: string): Promise<Clip | null> {
       const el = new Audio(url)
       el.preload = 'auto'
       htmlFallback.set(name, el)
+      needsUnlock.add(el)
       return null
     } finally {
       loading.delete(name)
@@ -164,6 +182,7 @@ export function play(name: string) {
 function playHtml(name: string): boolean {
   const el = htmlFallback.get(name)
   if (!el) return false
+  el.muted = false
   el.currentTime = 0
   currentHtml = el
   el.play().catch(() => {})
@@ -175,6 +194,8 @@ function playHtml(name: string): boolean {
  * play one silent sample so every later tap is instant.
  */
 export function installUnlock() {
+  // Every touch also unlocks any <audio> fallbacks created since the last one.
+  window.addEventListener('pointerdown', unlockFallbacks, true)
   const unlock = () => {
     const ac = audioContext()
     void ac.resume()
