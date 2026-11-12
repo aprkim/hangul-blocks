@@ -27,7 +27,7 @@ export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
             onTab(id)
           }}
           className={`tab flex flex-1 items-center justify-center rounded-[22px] ${
-            tab === id ? 'bg-white shadow-[0_6px_0_var(--color-wash)]' : 'opacity-55'
+            tab === id ? 'is-active bg-white shadow-[0_6px_0_var(--color-wash)]' : ''
           }`}
         >
           <Icon />

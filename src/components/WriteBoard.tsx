@@ -3,6 +3,7 @@ import { play } from '../audio'
 import { CONSONANTS, VOWELS, consonantSound, vowelSound } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
 import { STROKES, strokePath, traceMatches, type Pt } from '../strokes'
+import { ArrowIcon } from './Icons'
 import { Tile } from './Tile'
 
 // Tracing: the jamo appears as a pale guide; the next stroke shows where to start and which way
@@ -21,14 +22,6 @@ const POP: Keyframe[] = [
   { transform: 'scale(1.08)', offset: 0.4 },
   { transform: 'scale(1)' },
 ]
-
-function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {
-  return (
-    <svg viewBox="0 0 48 48" className="h-[55%] w-[55%]" fill="none" stroke="currentColor" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round">
-      {dir === 'left' ? <path d="M30 10 16 24l14 14" /> : <path d="M18 10l14 14-14 14" />}
-    </svg>
-  )
-}
 
 export function WriteBoard() {
   const [index, setIndex] = useState(0)

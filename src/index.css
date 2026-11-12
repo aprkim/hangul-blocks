@@ -277,7 +277,12 @@ body {
 .tab {
   max-width: 220px;
   touch-action: none;
-  transition: opacity 0.15s;
+}
+/* Inactive tabs go grey, so the current one is the only one in color. */
+.tab:not(.is-active) .icon {
+  filter: grayscale(1);
+  opacity: 0.45;
+  transition: filter 0.2s, opacity 0.2s;
 }
 .tabbar .tab svg {
   width: auto !important;
