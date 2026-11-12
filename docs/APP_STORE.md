@@ -65,9 +65,9 @@ appstoreconnect.apple.com → 앱 → `+` → 신규 앱
 ### 앱 정보
 - **카테고리**: 교육 (보조: 게임 > 교육)
 - **키즈 카테고리**: 만 5세 이하 (또는 6–8세)
-- **개인정보 처리방침 URL**: `https://hangul-blocks-blush.vercel.app/privacy.html`
-- **이용약관 (EULA)**: 앱 정보 → 라이선스 계약 → 사용자 지정 EULA에 `https://hangul-blocks-blush.vercel.app/terms.html` 의 내용을 붙여넣거나, 앱 설명 맨 끝에 이 주소를 적는다 (안 하면 애플 기본 EULA가 적용되고, 그것도 괜찮다)
-- **지원 URL**: `https://hangul-blocks-blush.vercel.app/privacy.html` (문의 이메일이 적혀 있음)
+- **개인정보 처리방침 URL**: `https://soriblocks.lihallc.com/privacy.html`
+- **이용약관 (EULA)**: 앱 정보 → 라이선스 계약 → 사용자 지정 EULA에 `https://soriblocks.lihallc.com/terms.html` 의 내용을 붙여넣거나, 앱 설명 맨 끝에 이 주소를 적는다 (안 하면 애플 기본 EULA가 적용되고, 그것도 괜찮다)
+- **지원 URL**: `https://soriblocks.lihallc.com/privacy.html` (문의 이메일이 적혀 있음)
 - **판매자**: Liha LLC
 
 ### 앱 개인정보 (App Privacy)

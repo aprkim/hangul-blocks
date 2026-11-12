@@ -1,5 +1,7 @@
 # 소리블록 · Sori Blocks (hangul-blocks)
 
+Live: https://soriblocks.lihallc.com · Privacy: /privacy.html · Terms: /terms.html
+
 A Hangul sound-to-letter game for a 4-year-old. iPad Safari, landscape. Specs: `docs/SPEC.md`, `docs/AUDIO.md`.
 
 - **P0, the jamo board:** 14 consonants and 10 vowels. Tap a tile to hear its sound.
