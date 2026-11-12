@@ -95,7 +95,7 @@ Tap ㄱ to hear "g", tap ㅏ to hear "a", put them together and hear "ga"! Kids 
 Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound.
 
 - Sounds, not letter names
-ㄱ says "g", not its name "giyeok", because sounds are what combine into syllables: g + a → ga.
+ㄱ says "g", not its name "giyeok", because sounds are what combine into syllables: g + a = ga.
 
 - Letter board
 14 consonants and 10 vowels. Tap any of them to hear its sound right away. No order, no score.
