@@ -184,3 +184,100 @@ body {
 .tray {
   gap: max(2vh, 12px);
 }
+
+/* ---------- Write (tracing) ---------- */
+.write-wrap {
+  container-type: size;
+}
+.write-card {
+  /* Room for the finish pop and glow without touching the screen edges or the tabs. */
+  width: 92cqmin;
+  height: 92cqmin;
+  box-shadow: 0 10px 0 var(--color-wash), 0 22px 50px -18px rgba(42, 58, 74, 0.3);
+}
+.write-card.is-complete {
+  box-shadow: 0 10px 0 var(--color-wash), 0 0 0 10px rgba(206, 128, 149, 0.35);
+}
+.stroke-guide,
+.stroke-done,
+.stroke-demo,
+.stroke-ink {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.stroke-guide {
+  stroke: #ece3d4;
+  stroke-width: 13;
+}
+.stroke-done {
+  stroke-width: 13;
+}
+/* The stroke to write, drawn over and over in its writing direction. */
+.stroke-demo {
+  stroke: #cdbfa8;
+  stroke-width: 13;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: stroke-demo 2.2s ease-in-out infinite;
+}
+@keyframes stroke-demo {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  55%,
+  85% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+.stroke-start {
+  animation: stroke-start 1.1s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes stroke-start {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.75;
+  }
+}
+.stroke-ink {
+  stroke-width: 11;
+  opacity: 0.75;
+}
+/* After a letter is finished, the next arrow gently invites the next one. */
+.next-ready {
+  animation: next-ready 1.4s ease-in-out infinite;
+}
+@keyframes next-ready {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+/* ---------- Bottom tabs ---------- */
+.tabbar {
+  height: clamp(72px, 11dvh, 104px);
+}
+.tab {
+  max-width: 220px;
+  touch-action: none;
+  transition: opacity 0.15s;
+}
+.tabbar .tab svg {
+  width: auto !important;
+  height: 84% !important;
+}

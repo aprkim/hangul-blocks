@@ -1,14 +1,13 @@
 import { useRef } from 'react'
 import { play } from '../audio'
 import { CONSONANTS, VOWELS, consonantSound, vowelSound } from '../jamo'
-import { BuildIcon } from './Icons'
 import { Tile } from './Tile'
 
 /** Adults open the recorder by holding the empty cell left of the vowels for 3 seconds. */
 const HOLD_MS = 3000
 
 /** P0: every jamo on one screen. Tap = sound + bounce. No order, no locks, no score. */
-export function JamoBoard({ onNext, onRecord }: { onNext: () => void; onRecord: () => void }) {
+export function JamoBoard({ onRecord }: { onRecord: () => void }) {
   const hold = useRef<number | undefined>(undefined)
   const release = () => window.clearTimeout(hold.current)
   return (
@@ -45,9 +44,6 @@ export function JamoBoard({ onNext, onRecord }: { onNext: () => void; onRecord: 
           onPointerCancel={release}
           onPointerLeave={release}
         />
-        <Tile kind="control" onTap={onNext} className="col-start-7 row-start-2" label="build">
-          <BuildIcon />
-        </Tile>
       </section>
     </div>
   )

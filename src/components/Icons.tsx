@@ -51,3 +51,25 @@ export function ResetIcon() {
     </svg>
   )
 }
+
+/** Tab: the sound board. */
+export function SoundIcon() {
+  return (
+    <svg {...common}>
+      <path d="M8 19h7l10-8v26l-10-8H8z" fill="var(--color-consonant)" stroke="var(--color-consonant)" />
+      <path d="M32 17a10 10 0 0 1 0 14" stroke="var(--color-vowel)" />
+      <path d="M37 12a17 17 0 0 1 0 24" stroke="var(--color-vowel)" />
+    </svg>
+  )
+}
+
+/** Tab: tracing. */
+export function PencilIcon() {
+  return (
+    <svg {...common}>
+      <path d="M10 38l3-10L32 9l7 7-19 19z" fill="var(--color-sun-pencil, #f2c14e)" stroke="var(--color-ink)" />
+      <path d="M13 28l7 7" stroke="var(--color-ink)" />
+      <path d="M10 38l4-1" stroke="var(--color-consonant)" strokeWidth={5} />
+    </svg>
+  )
+}

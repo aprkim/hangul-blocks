@@ -13,7 +13,7 @@ import {
 } from '../jamo'
 import { successFeedback } from '../native'
 import { cardFor, type Card } from '../words'
-import { GridIcon, ResetIcon } from './Icons'
+import { ResetIcon } from './Icons'
 import { Tile } from './Tile'
 
 /** After the syllable glyph appears, wait for the syllable sound before the word pops up. */
@@ -75,7 +75,7 @@ function Slot({ box, kind, char, hidden }: { box: Box; kind: 'consonant' | 'vowe
 }
 
 /** P1: tap a consonant and a vowel; the frame rearranges and plays the syllable. Every combo is valid. */
-export function AssemblyBoard({ onBack }: { onBack: () => void }) {
+export function AssemblyBoard() {
   const [cons, setCons] = useState<Consonant | null>(null)
   const [vowel, setVowel] = useState<Vowel | null>(null)
   const [composed, setComposed] = useState(false)
@@ -141,13 +141,9 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="assembly flex h-full flex-col gap-[2.5vh] p-[2.5vh]">
-      {/* Frame row: back | frame | reset */}
+      {/* Frame row: spacer | frame | reset (the spacer keeps the frame centered) */}
       <div className="flex min-h-0 flex-1 items-stretch justify-between gap-[2vh]">
-        <div className="flex w-(--tile) flex-col justify-start">
-          <Tile kind="control" onTap={onBack} label="back" className="size-(--tile)">
-            <GridIcon />
-          </Tile>
-        </div>
+        <div className="w-(--tile)" aria-hidden />
 
         <div className="frame-wrap flex min-w-0 flex-1 items-center justify-center">
           <div ref={frameRef} className="frame relative rounded-[8cqmin] bg-white">
