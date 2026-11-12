@@ -8,6 +8,9 @@ const BASE = `${import.meta.env.BASE_URL}audio/`
 type Clip = { buffer: AudioBuffer; offset: number }
 
 const clips = new Map<string, Clip>()
+/** Sounds Web Audio couldn't decode: played with a plain <audio> element instead. */
+const htmlFallback = new Map<string, HTMLAudioElement>()
+let currentHtml: HTMLAudioElement | null = null
 const loading = new Map<string, Promise<Clip | null>>()
 /** Sounds that failed to load, with when. Retried after a while: a file may be uploaded later. */
 const missing = new Map<string, number>()
@@ -30,10 +33,10 @@ function audioContext(): AudioContext {
   return ctx
 }
 
-function warnMissing(name: string) {
+function warnMissing(name: string, reason?: unknown) {
   if (missing.has(name)) return
   missing.set(name, Date.now())
-  console.warn(`[audio] missing or unplayable: ${name}.mp3`)
+  console.warn(`[audio] missing or unplayable: ${name}.mp3`, reason instanceof Error ? `${reason.name}: ${reason.message}` : (reason ?? ''))
 }
 
 /**
@@ -55,15 +58,28 @@ function load(name: string): Promise<Clip | null> {
   let p = loading.get(name)
   if (p) return p
   p = (async () => {
+    const url = local.get(name) ?? `${BASE}${name}.mp3`
+    let bytes: ArrayBuffer
     try {
-      const res = await fetch(local.get(name) ?? `${BASE}${name}.mp3`)
+      const res = await fetch(url)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const buffer = await audioContext().decodeAudioData(await res.arrayBuffer())
+      bytes = await res.arrayBuffer()
+    } catch (err) {
+      warnMissing(name, err)
+      loading.delete(name)
+      return null
+    }
+    try {
+      const buffer = await audioContext().decodeAudioData(bytes)
       const clip = { buffer, offset: voiceOffset(buffer) }
       clips.set(name, clip)
       return clip
-    } catch {
-      warnMissing(name)
+    } catch (err) {
+      // The file exists but this decoder refused it: keep it playable through <audio>.
+      console.warn(`[audio] decode failed, using <audio> for ${name}.mp3`, err instanceof Error ? `${err.name}: ${err.message}` : err)
+      const el = new Audio(url)
+      el.preload = 'auto'
+      htmlFallback.set(name, el)
       return null
     } finally {
       loading.delete(name)
@@ -80,6 +96,7 @@ export function setLocalRecording(name: string, mp3: Blob | null) {
   if (mp3) local.set(name, URL.createObjectURL(mp3))
   else local.delete(name)
   clips.delete(name)
+  htmlFallback.delete(name)
   missing.delete(name)
   void load(name)
 }
@@ -95,6 +112,10 @@ export function preload(names: string[]) {
 
 export function stop() {
   wanted = null
+  if (currentHtml) {
+    currentHtml.pause()
+    currentHtml = null
+  }
   if (!current) return
   try {
     current.stop()
@@ -130,11 +151,23 @@ export function play(name: string) {
 
   const clip = clips.get(name)
   if (clip) return start(clip)
+  if (playHtml(name)) return
   // Not decoded yet (first seconds after opening): play it as soon as it is, unless
   // another tap has come in meanwhile.
   void load(name).then((c) => {
-    if (c && wanted === name) start(c)
+    if (wanted !== name) return
+    if (c) start(c)
+    else playHtml(name)
   })
+}
+
+function playHtml(name: string): boolean {
+  const el = htmlFallback.get(name)
+  if (!el) return false
+  el.currentTime = 0
+  currentHtml = el
+  el.play().catch(() => {})
+  return true
 }
 
 /**
