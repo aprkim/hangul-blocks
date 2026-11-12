@@ -174,3 +174,13 @@ body {
 .word-card.is-friend {
   border-radius: 999px 999px 999px 8cqmin;
 }
+
+/* The selected tile's outline reaches about 9px past the tile. On small screens the vh-based
+   gaps get narrower than that, so the outline touched the frame and the next tile. */
+.assembly {
+  gap: max(2.5vh, 14px);
+}
+.trays,
+.tray {
+  gap: max(2vh, 12px);
+}

@@ -140,7 +140,7 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
   }, [composed, round])
 
   return (
-    <div className="flex h-full flex-col gap-[2.5vh] p-[2.5vh]">
+    <div className="assembly flex h-full flex-col gap-[2.5vh] p-[2.5vh]">
       {/* Frame row: back | frame | reset */}
       <div className="flex min-h-0 flex-1 items-stretch justify-between gap-[2vh]">
         <div className="flex w-(--tile) flex-col justify-start">
@@ -194,7 +194,7 @@ export function AssemblyBoard({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Trays. Consonants not yet recorded are hidden, not greyed. */}
-      <div className="flex flex-col items-center gap-[2vh]">
+      <div className="trays flex flex-col items-center gap-[2vh]">
         <div className="tray">
           {ASSEMBLE_CONSONANTS.map((c) => (
             <Tile
