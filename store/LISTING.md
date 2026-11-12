@@ -1,5 +1,7 @@
 # App Store 등록 문구 (복사해서 붙여넣기)
 
+> 설명·키워드 등에는 이모지와 특수 기호(■, •, →)를 쓰지 말 것. App Store Connect가 'invalid characters'로 거부한다.
+
 App Store Connect → 소리블록 → Distribution → iOS App 1.0 의 각 칸에 붙여넣는다.
 스크린샷은 `store/screenshots/` (iPad 13" 4장, iPhone 6.9" 4장).
 
@@ -26,24 +28,24 @@ App Store Connect → 소리블록 → Distribution → iOS App 1.0 의 각 칸�
 ```
 소리블록은 한글을 아직 읽지 못하는 아이가 "모양 = 소리"를 스스로 발견하도록 만든 앱이에요.
 
-■ 자음은 이름이 아니라 소리로
-ㄱ은 "기역"이 아니라 "그". 소리끼리 합쳐야 글자가 만들어지기 때문이에요. 그 + 아 → 가.
+[자음은 이름이 아니라 소리로]
+ㄱ은 "기역"이 아니라 "그". 소리끼리 합쳐야 글자가 만들어지기 때문이에요. 그 + 아 = 가.
 
-■ 자모판
+[자모판]
 자음 14개, 모음 10개. 누르면 바로 소리가 나요. 순서도 점수도 없이 마음껏 눌러 보세요.
 
-■ 조립판
+[조립판]
 자음과 모음을 하나씩 누르면 글자가 완성되고 소리가 나요.
 ㅏ를 ㅗ로 바꾸면 자음이 왼쪽에서 위로 움직여요. 가로로 모이는 글자와 세로로 모이는 글자의 차이를 눈으로 따라가며 배워요.
 
-■ 그림 단어와 동물 친구
-만든 글자로 시작하는 단어가 그림과 함께 튀어나와요 (가 → 🎒 가방, 고 → 🐱 고양이).
+[그림 단어와 동물 친구]
+만든 글자로 시작하는 단어가 그림과 함께 튀어나와요. 가를 만들면 가방, 고를 만들면 고양이.
 단어가 없는 글자는 동물 친구가 그 소리를 따라 말해 줘요. 틀린 답이 없어서 아이가 겁내지 않고 이것저것 조합해 봐요.
 
-■ 우리 가족 목소리로
+[우리 가족 목소리로]
 부모님 전용 녹음 화면에서 모든 소리를 엄마, 아빠, 할머니 목소리로 바꿀 수 있어요. 녹음은 기기 안에만 저장돼요.
 
-■ 안심하고 쓰는 앱
+[안심하고 쓰는 앱]
 광고, 앱 내 구매, 로그인, 데이터 수집이 없어요. 인터넷 없이도 동작해요.
 
 만 3~6세 아이와 한글을 처음 시작하는 가족에게 추천해요.
@@ -92,22 +94,22 @@ Tap ㄱ to hear "g", tap ㅏ to hear "a", put them together and hear "ga"! Kids 
 ```
 Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound.
 
-• Sounds, not letter names
+- Sounds, not letter names
 ㄱ says "g", not its name "giyeok", because sounds are what combine into syllables: g + a → ga.
 
-• Letter board
+- Letter board
 14 consonants and 10 vowels. Tap any of them to hear its sound right away. No order, no score.
 
-• Building board
+- Building board
 Tap a consonant and a vowel to build a syllable and hear it. Switch ㅏ to ㅗ and watch the consonant move from the side to the top, so kids see why syllables are shaped differently.
 
-• Picture words and animal friends
-Syllables that start a word pop up with a picture (가 → 🎒 bag, 고 → 🐱 cat). Others are said back by an animal friend. There are no wrong answers, so kids explore freely.
+- Picture words and animal friends
+Syllables that start a word pop up with a picture (가 makes 가방, bag; 고 makes 고양이, cat). Others are said back by an animal friend. There are no wrong answers, so kids explore freely.
 
-• Your family's voice
+- Your family's voice
 In a parents-only recording screen you can record every sound in your own voice, or a grandparent's. Recordings stay on the device.
 
-• Safe for kids
+- Safe for kids
 No ads, no in-app purchases, no accounts, no data collection. Works offline.
 
 For children ages 3–6 and families starting Korean together.
