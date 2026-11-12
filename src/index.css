@@ -127,9 +127,9 @@ body {
 .word-card {
   position: absolute;
   left: calc(100% + 5cqmin);
-  top: 50%;
-  translate: 0 -50%;
-  width: 62cqmin;
+  /* Top-aligned so it never reaches the reset button at the bottom of the right column. */
+  top: 6cqmin;
+  width: 56cqmin;
   padding: 5cqmin 4cqmin;
   display: flex;
   flex-direction: column;
