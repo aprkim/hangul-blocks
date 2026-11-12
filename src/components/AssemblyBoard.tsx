@@ -141,12 +141,15 @@ export function AssemblyBoard() {
 
   return (
     <div className="assembly flex h-full flex-col gap-[2.5vh] p-[2.5vh]">
-      {/* Frame row: spacer | frame | reset (the spacer keeps the frame centered) */}
-      <div className="flex min-h-0 flex-1 items-stretch justify-between gap-[2vh]">
-        <div className="w-(--tile)" aria-hidden />
-
+      {/* Frame row: the reset button is attached to the frame's lower-left, the word card to its right. */}
+      <div className="flex min-h-0 flex-1 items-stretch justify-center">
         <div className="frame-wrap flex min-w-0 flex-1 items-center justify-center">
           <div ref={frameRef} className="frame relative rounded-[8cqmin] bg-white">
+            <div className="frame-reset">
+              <Tile kind="control" onTap={() => place(null, null)} label="reset" className="size-(--tile)">
+                <ResetIcon />
+              </Tile>
+            </div>
             <Slot box={slots.cons} kind="consonant" char={cons?.char} hidden={composed} />
             <Slot box={slots.vowel} kind="vowel" char={vowel?.char} hidden={composed} />
             {cons && vowel && (
@@ -180,12 +183,6 @@ export function AssemblyBoard() {
               </button>
             )}
           </div>
-        </div>
-
-        <div className="flex w-(--tile) flex-col justify-end">
-          <Tile kind="control" onTap={() => place(null, null)} label="reset" className="size-(--tile)">
-            <ResetIcon />
-          </Tile>
         </div>
       </div>
 

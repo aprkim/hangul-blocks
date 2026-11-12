@@ -87,8 +87,10 @@ body {
   container-type: size;
 }
 .frame {
-  width: 100cqmin;
-  height: 100cqmin;
+  /* Leaves room on the left for the reset button (and the same on the right for balance). */
+  --frame: min(100cqmin, calc(100cqw - 2 * (var(--tile) + 24px)));
+  width: var(--frame);
+  height: var(--frame);
   container-type: size;
   box-shadow: 0 10px 0 var(--color-wash), 0 22px 50px -18px rgba(42, 58, 74, 0.3);
 }
@@ -280,4 +282,11 @@ body {
 .tabbar .tab svg {
   width: auto !important;
   height: 84% !important;
+}
+
+/* Reset sits against the frame's lower-left edge: it clearly belongs to the frame. */
+.frame-reset {
+  position: absolute;
+  right: calc(100% + max(3cqmin, 12px));
+  bottom: 0;
 }
