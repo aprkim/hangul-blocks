@@ -1,17 +1,6 @@
 @import 'tailwindcss';
 
-/* Palette: Tabbi red for consonants, the Liha Books palette for everything else. */
-@theme {
-  --color-consonant: #bf3143; /* Tabbi red */
-  --color-consonant-dark: #8f2232;
-  --color-vowel: #67839f; /* Liha denim, deep shade (readable under white glyphs) */
-  --color-vowel-dark: #4c6580;
-  --color-rose: #ce8095; /* Liha rose */
-  --color-ink: #2a3a4a; /* Liha ink */
-  --color-paper: #f5efe4; /* Liha paper */
-  --color-wash: #eae0ce; /* Liha wash */
-  --color-slot: #d8c7a8;
-}
+@import './tokens.css';
 
 :root {
   /* One tile size for the assembly trays: never under 120px (4-year-old fingers). */
@@ -35,7 +24,7 @@ body {
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
-  background: linear-gradient(150deg, var(--color-paper), #f0e7d6 60%, #efdce0);
+  background: var(--color-page);
   word-break: keep-all;
   color: var(--color-ink);
   font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, sans-serif;
@@ -92,14 +81,19 @@ body {
   width: var(--frame);
   height: var(--frame);
   container-type: size;
-  box-shadow: 0 10px 0 var(--color-wash), 0 22px 50px -18px rgba(42, 58, 74, 0.3);
+  box-shadow: 0 10px 0 var(--color-card-shadow), 0 22px 50px -18px var(--color-drop-shadow);
 }
 
-.slot {
-  font-weight: 700;
-  line-height: 1;
-  transition-property: left, top, width, height, font-size, opacity;
-  transition-timing-function: cubic-bezier(0.34, 1.3, 0.5, 1);
+/* The syllable in the frame is drawn as two shapes: the initial consonant in consonant red and
+   the vowel in vowel blue. Only the consonant moves (side-by-side <-> stacked). */
+.syl-cons {
+  transition: transform 420ms cubic-bezier(0.34, 1.3, 0.5, 1);
+}
+.syl-slot {
+  fill: none;
+  stroke: var(--color-card-shadow);
+  stroke-width: 1.4;
+  stroke-dasharray: 3 3;
 }
 
 /* Phones: the 120px minimum is for a 4-year-old on an iPad and cannot fit a phone screen.
@@ -138,8 +132,8 @@ body {
   align-items: center;
   gap: 2cqmin;
   border-radius: 7cqmin;
-  background: white;
-  box-shadow: 0 8px 0 var(--color-wash), 0 22px 40px -18px rgba(42, 58, 74, 0.4);
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow), 0 22px 40px -18px var(--color-drop-shadow);
   touch-action: none;
   cursor: pointer;
 }
@@ -149,10 +143,20 @@ body {
 }
 .word-text {
   font-size: 13cqmin;
-  font-weight: 800;
-  line-height: 1;
+  font-weight: 400;
+  line-height: 1.15;
   white-space: nowrap;
+  color: var(--color-muted);
+}
+/* The syllable the child just built: ink, bold, 5px ink underline. (Red means "consonant" only.) */
+.word-text b {
   color: var(--color-ink);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: var(--color-ink);
+  text-decoration-thickness: 5px;
+  text-underline-offset: 0.14em;
+  text-decoration-skip-ink: none;
 }
 
 /* No room beside the frame (phone held upright): below the frame instead. */
@@ -195,10 +199,10 @@ body {
   /* Room for the finish pop and glow without touching the screen edges or the tabs. */
   width: 92cqmin;
   height: 92cqmin;
-  box-shadow: 0 10px 0 var(--color-wash), 0 22px 50px -18px rgba(42, 58, 74, 0.3);
+  box-shadow: 0 10px 0 var(--color-card-shadow), 0 22px 50px -18px var(--color-drop-shadow);
 }
 .write-card.is-complete {
-  box-shadow: 0 10px 0 var(--color-wash), 0 0 0 10px rgba(206, 128, 149, 0.35);
+  box-shadow: 0 10px 0 var(--color-card-shadow), 0 0 0 10px var(--color-card-shadow);
 }
 .stroke-guide,
 .stroke-done,
@@ -209,7 +213,7 @@ body {
   stroke-linejoin: round;
 }
 .stroke-guide {
-  stroke: #ece3d4;
+  stroke: var(--color-guide);
   stroke-width: 13;
 }
 .stroke-done {
@@ -217,7 +221,7 @@ body {
 }
 /* The stroke to write, drawn over and over in its writing direction. */
 .stroke-demo {
-  stroke: #cdbfa8;
+  stroke: var(--color-guide-strong);
   stroke-width: 13;
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
@@ -294,4 +298,83 @@ body {
   position: absolute;
   right: calc(100% + max(3cqmin, 12px));
   bottom: 0;
+}
+
+/* Selected tile: lifted 6px (no bottom shadow), with a 5px gap in the page color and then a
+   5px ink ring. The gap follows --color-page, so it changes with the background theme. */
+.tile.is-selected {
+  translate: 0 -6px;
+  box-shadow:
+    0 0 0 5px var(--color-page),
+    0 0 0 10px var(--color-ink) !important;
+}
+.tile {
+  transition: translate 120ms ease-out;
+}
+
+/* ---------- Background theme picker ---------- */
+.tabbar {
+  display: grid;
+  grid-template-columns: minmax(var(--theme-btn), 1fr) minmax(0, 720px) minmax(var(--theme-btn), 1fr);
+  /* One row exactly as tall as the bar (minus padding), whatever the icons' intrinsic size. */
+  grid-template-rows: minmax(0, 1fr);
+  --theme-btn: clamp(56px, 8dvh, 84px);
+}
+.theme-btn {
+  justify-self: end;
+  align-self: center;
+  width: var(--theme-btn);
+  height: var(--theme-btn);
+  border-radius: 24px;
+  background: var(--color-card);
+  box-shadow: 0 6px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.theme-btn svg {
+  width: 70%;
+  height: 70%;
+}
+.theme-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+.theme-pop {
+  position: fixed;
+  z-index: 41;
+  right: max(2.5vh, 16px);
+  bottom: calc(clamp(72px, 11dvh, 104px) + 12px);
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 32px;
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow), 0 22px 40px -18px var(--color-drop-shadow);
+}
+.theme-swatch {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid var(--color-ink);
+  touch-action: none;
+}
+.theme-swatch.is-current {
+  box-shadow:
+    0 0 0 5px var(--color-card),
+    0 0 0 10px var(--color-ink);
+}
+.syl-stroke {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.syllable {
+  transform-origin: 50% 50%;
 }

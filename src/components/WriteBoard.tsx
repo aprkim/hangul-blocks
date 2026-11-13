@@ -4,6 +4,7 @@ import { CONSONANTS, VOWELS, consonantSound, vowelSound } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
 import { STROKES, strokePath, traceMatches, type Pt } from '../strokes'
 import { ArrowIcon } from './Icons'
+import { JamoStrokes } from './JamoStrokes'
 import { Tile } from './Tile'
 
 // Tracing: the jamo appears as a pale guide; the next stroke shows where to start and which way
@@ -109,7 +110,7 @@ export function WriteBoard() {
       </Tile>
 
       <div className="write-wrap flex h-full min-w-0 flex-1 items-center justify-center">
-        <div ref={cardRef} className={`write-card relative rounded-[8cqmin] bg-white ${complete ? 'is-complete' : ''}`}>
+        <div ref={cardRef} className={`write-card relative rounded-[8cqmin] bg-card ${complete ? 'is-complete' : ''}`}>
           <svg
             ref={svgRef}
             viewBox="0 0 100 100"
@@ -121,13 +122,9 @@ export function WriteBoard() {
             aria-label={letter.char}
           >
             {/* Pale guide of the whole letter */}
-            {strokes.map((s, i) => (
-              <path key={`g${i}`} d={strokePath(s)} className="stroke-guide" />
-            ))}
+            <JamoStrokes char={letter.char} className="stroke-guide" />
             {/* Finished strokes, in color */}
-            {strokes.slice(0, done).map((s, i) => (
-              <path key={`d${i}`} d={strokePath(s)} className="stroke-done" style={{ stroke: color }} />
-            ))}
+            <JamoStrokes char={letter.char} count={done} className="stroke-done" style={{ stroke: color }} />
             {/* The stroke to write now: drawn along its direction, with a start dot */}
             {current && (
               <g key={`c${index}-${done}-${miss}`}>

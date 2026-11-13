@@ -7,12 +7,12 @@ const config: CapacitorConfig = {
   ios: {
     // The game fills the screen edge to edge; safe areas are handled in CSS.
     contentInset: 'never',
-    backgroundColor: '#f5efe4',
+    backgroundColor: '#f6eedd',
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 600,
-      backgroundColor: '#f5efe4',
+      backgroundColor: '#f6eedd',
       showSpinner: false,
     },
   },

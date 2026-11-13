@@ -13,14 +13,16 @@ const box = {
 const RED = 'var(--color-consonant)'
 const BLUE = 'var(--color-vowel)'
 const INK = 'var(--color-ink)'
-const GUIDE = '#e3d6c1'
+const GUIDE = 'var(--color-guide-strong)'
+const ON_TILE = 'var(--color-on-tile)'
+const CARD_SHADOW = 'var(--color-card-shadow)'
 
 /** Sound tab: a ㄱ tile that speaks (sound waves in vowel blue). */
 export function SoundIcon() {
   return (
     <svg {...box}>
       <rect x="3" y="9" width="27" height="30" rx="8" fill={RED} />
-      <path d="M10 17h12v14" stroke="white" strokeWidth={4.5} />
+      <path d="M10 17h12v14" stroke={ON_TILE} strokeWidth={4.5} />
       <path d="M35 19.5a6.5 6.5 0 0 1 0 9" stroke={BLUE} strokeWidth={4} />
       <path d="M40 14.5a13 13 0 0 1 0 19" stroke={BLUE} strokeWidth={4} />
     </svg>
@@ -33,8 +35,8 @@ export function BuildIcon() {
     <svg {...box}>
       <rect x="2" y="7" width="25" height="34" rx="8" fill={RED} />
       <rect x="29" y="7" width="17" height="34" rx="7" fill={BLUE} />
-      <path d="M9 15h11c0 9-4 15-11 18" stroke="white" strokeWidth={4.5} />
-      <path d="M36 13v22M36 24h5" stroke="white" strokeWidth={4.5} />
+      <path d="M9 15h11c0 9-4 15-11 18" stroke={ON_TILE} strokeWidth={4.5} />
+      <path d="M36 13v22M36 24h5" stroke={ON_TILE} strokeWidth={4.5} />
     </svg>
   )
 }
@@ -43,8 +45,8 @@ export function BuildIcon() {
 export function PencilIcon() {
   return (
     <svg {...box}>
-      <rect x="4" y="4" width="40" height="40" rx="10" fill="var(--color-paper)" stroke="#d8c7a8" strokeWidth={2.5} />
-      <path d="M14 15h20v20" stroke="#d8c7a8" strokeWidth={7} />
+      <rect x="4" y="4" width="40" height="40" rx="10" fill="var(--color-page)" stroke={CARD_SHADOW} strokeWidth={2.5} />
+      <path d="M14 15h20v20" stroke={GUIDE} strokeWidth={7} />
       <path d="M14 15h20v7" stroke={RED} strokeWidth={7} />
       <circle cx="14" cy="15" r="5.5" fill={RED} />
     </svg>
@@ -71,6 +73,18 @@ export function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {
         stroke={INK}
         strokeWidth={6}
       />
+    </svg>
+  )
+}
+
+/** Background theme button: a card holding three background swatches. */
+export function PaletteIcon() {
+  return (
+    <svg {...box}>
+      <rect x="4" y="4" width="40" height="40" rx="11" fill="var(--color-card)" stroke={INK} strokeWidth={3} />
+      <circle cx="17" cy="18" r="7" fill="var(--theme-sage-page)" stroke={INK} strokeWidth={2.5} />
+      <circle cx="31" cy="18" r="7" fill="var(--theme-butter-page)" stroke={INK} strokeWidth={2.5} />
+      <circle cx="24" cy="31" r="7" fill="var(--theme-blush-page)" stroke={INK} strokeWidth={2.5} />
     </svg>
   )
 }

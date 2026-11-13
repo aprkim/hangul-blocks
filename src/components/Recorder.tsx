@@ -445,7 +445,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const canListen = hasTake || onSiteAll.has(item.name)
 
   return (
-    <div data-scroll className="h-full overflow-y-auto bg-paper text-ink" style={{ touchAction: 'pan-y' }}>
+    <div data-scroll className="h-full overflow-y-auto bg-page text-ink" style={{ touchAction: 'pan-y' }}>
       <div className="mx-auto flex max-w-3xl flex-col gap-5 p-5">
         <header className="flex flex-wrap items-center gap-2">
           {RECORD_GROUPS.map((g) => {
@@ -460,7 +460,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
                   setNote('')
                 }}
                 className={`rounded-full px-4 py-2 text-[15px] font-semibold ${
-                  g.id === groupId ? 'bg-ink text-white' : 'bg-white text-ink'
+                  g.id === groupId ? 'bg-ink text-on-tile' : 'bg-card text-ink'
                 }`}
               >
                 {g.label} {done}/{g.items.length}
@@ -469,29 +469,29 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           })}
           <span className="flex-1" />
           <button type="button" onClick={download} disabled={!zipFile}
-            className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold disabled:opacity-40">
+            className="rounded-full bg-card px-4 py-2 text-[15px] font-semibold disabled:opacity-40">
             {zipLabel()}
           </button>
           {takes.size > 0 && (
-            <label className="flex items-center gap-1 text-[13px] text-[#8a7c6e]">
+            <label className="flex items-center gap-1 text-[13px] text-muted">
               <input type="checkbox" checked={zipAll} onChange={(e) => setZipAll(e.target.checked)} />
               전체
             </label>
           )}
-          <button type="button" onClick={onExit} className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold">
+          <button type="button" onClick={onExit} className="rounded-full bg-card px-4 py-2 text-[15px] font-semibold">
             게임으로
           </button>
         </header>
 
-        <section className="flex flex-col items-center gap-3 rounded-[28px] bg-white px-6 py-6 shadow-[0_16px_40px_-20px_rgba(42,58,74,0.4)]">
-          <div className="text-[15px] text-[#8a7c6e]">
+        <section className="flex flex-col items-center gap-3 rounded-[28px] bg-card px-6 py-6 shadow-[0_16px_40px_-20px_var(--color-drop-shadow)]">
+          <div className="text-[15px] text-muted">
             {index + 1} / {group.items.length} · {item.name}.mp3
           </div>
           <div className="text-[120px] font-bold leading-none">{item.shown}</div>
           <div className="text-[22px]">
-            「<b className="text-consonant">{item.say}</b>」 라고 말하기
+            「<b className="text-ink">{item.say}</b>」 라고 말하기
           </div>
-          <div className="text-[14px] text-[#8a7c6e]">버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.</div>
+          <div className="text-[14px] text-muted">버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.</div>
 
           <button
             type="button"
@@ -503,9 +503,9 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             disabled={phase === 'processing'}
             aria-label="record"
             style={{ touchAction: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' } as CSSProperties}
-            className={`mt-2 flex size-40 flex-col items-center justify-center gap-2 rounded-full text-[22px] font-bold text-white active:translate-y-1 ${
+            className={`mt-2 flex size-40 flex-col items-center justify-center gap-2 rounded-full text-[22px] font-bold text-on-tile active:translate-y-1 ${
               phase === 'recording'
-                ? 'scale-105 bg-ink shadow-[0_10px_0_#16212c]'
+                ? 'scale-105 bg-ink shadow-[0_10px_0_var(--color-muted)]'
                 : 'bg-consonant shadow-[0_10px_0_var(--color-consonant-dark)]'
             } disabled:opacity-60`}
           >
@@ -518,7 +518,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
               '저장 중…'
             ) : (
               <>
-                <span className="block size-10 rounded-full bg-white" />
+                <span className="block size-10 rounded-full bg-card" />
                 <span className="text-[18px]">누르고 있기</span>
               </>
             )}
@@ -526,13 +526,13 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
           {/* Mic level: moves when the mic hears you. */}
           <div className="flex h-6 w-64 items-center gap-3">
-            <div className="h-3 flex-1 overflow-hidden rounded-full bg-paper">
+            <div className="h-3 flex-1 overflow-hidden rounded-full bg-page">
               <div
                 className="h-full rounded-full bg-vowel transition-[width] duration-75"
                 style={{ width: `${phase === 'recording' ? Math.max(4, level * 100) : 0}%` }}
               />
             </div>
-            <span className="w-10 text-right text-[15px] tabular-nums text-[#8a7c6e]">
+            <span className="w-10 text-right text-[15px] tabular-nums text-muted">
               {phase === 'recording' ? `${elapsed.toFixed(1)}s` : ''}
             </span>
           </div>
@@ -541,24 +541,24 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
           <fieldset disabled={phase !== 'idle'} className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
-              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
             <button type="button" disabled={!canListen} onClick={() => listen(item.name)}
-              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
             <button type="button" disabled={!hasTake} onClick={removeTake}
-              className="rounded-full bg-paper px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
             <button type="button" onClick={() => goTo(nextUnrecorded(index))}
-              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white disabled:opacity-40">다음</button>
+              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">다음</button>
           </fieldset>
         </section>
 
         <section>
-          <div className="mb-2 text-[15px] text-[#8a7c6e]">
+          <div className="mb-2 text-[15px] text-muted">
             {group.label}: {doneCount}/{group.items.length} 완료 · 눌러서 이동
           </div>
-          <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#8a7c6e]">
+          <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-muted">
             <span><i className="mr-1 inline-block size-3 rounded bg-vowel align-middle" />이 기기에서 녹음</span>
-            <span><i className="mr-1 inline-block size-3 rounded bg-[#b9c8d8] align-middle" />사이트에 올라가 있음</span>
-            <span><i className="mr-1 inline-block size-3 rounded border border-[#d8c7a8] bg-white align-middle" />아직 없음</span>
+            <span><i className="mr-1 inline-block size-3 rounded bg-vowel-soft align-middle" />사이트에 올라가 있음</span>
+            <span><i className="mr-1 inline-block size-3 rounded border border-card-shadow bg-card align-middle" />아직 없음</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {group.items.map((it, i) => (
@@ -570,10 +570,10 @@ export function Recorder({ onExit }: { onExit: () => void }) {
                   it.shown.length > 1 ? 'text-[18px]' : 'text-[24px]'
                 } ${
                   takes.has(it.name)
-                    ? 'bg-vowel text-white'
+                    ? 'bg-vowel text-on-tile'
                     : onSiteAll.has(it.name)
-                      ? 'bg-[#b9c8d8] text-white'
-                      : 'bg-white text-ink'
+                      ? 'bg-vowel-soft text-on-tile'
+                      : 'bg-card text-ink'
                 } ${i === index ? 'ring-[3px] ring-ink' : ''}`}
               >
                 {it.shown}
@@ -582,7 +582,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           </div>
         </section>
 
-        <p className="pb-6 text-[14px] leading-relaxed text-[#8a7c6e]">
+        <p className="pb-6 text-[14px] leading-relaxed text-muted">
           녹음은 이 기기에 저장되고 게임에서 바로 쓰입니다. 다른 기기나 배포에 넣으려면 zip을 받아서 Claude에게
           보내 주세요. 홈 화면 앱과 Safari는 저장소가 따로라서, 아이가 쓰는 쪽(홈 화면 앱)에서 녹음하세요.
         </p>

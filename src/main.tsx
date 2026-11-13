@@ -6,8 +6,12 @@ import App from './App'
 import { installUnlock, preload, setLocalRecording } from './audio'
 import { allSoundNames } from './jamo'
 import { initNative } from './native'
+import { applyTheme, loadTheme } from './theme'
 import { loadRecordings } from './recordings'
 import { wordSoundNames } from './words'
+
+// Restore the background theme before the first paint.
+applyTheme(loadTheme())
 
 // Block browser gestures a 4-year-old will trigger by accident: pinch, double-tap zoom,
 // rubber-band scroll, long-press menus.

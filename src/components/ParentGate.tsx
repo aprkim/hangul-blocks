@@ -37,16 +37,16 @@ export function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel:
   }
 
   return (
-    <div className="flex h-full items-center justify-center bg-paper p-6 text-ink">
+    <div className="flex h-full items-center justify-center bg-page p-6 text-ink">
       <form
-        className="flex w-full max-w-sm flex-col items-center gap-4 rounded-[28px] bg-white p-8 shadow-[0_16px_40px_-20px_rgba(42,58,74,0.4)]"
+        className="flex w-full max-w-sm flex-col items-center gap-4 rounded-[28px] bg-card p-8 shadow-[0_16px_40px_-20px_var(--color-drop-shadow)]"
         onSubmit={(e) => {
           e.preventDefault()
           check()
         }}
       >
         <div className="text-[17px] font-semibold">어른 확인 · For grown-ups</div>
-        <div className="text-center text-[15px] text-[#8a7c6e]">
+        <div className="text-center text-[15px] text-muted">
           녹음 화면은 부모님용이에요. 답을 입력해 주세요.
           <br />
           This area is for parents. Please answer:
@@ -63,16 +63,16 @@ export function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel:
             setAnswer(e.target.value.replace(/\D/g, '').slice(0, 3))
             setWrong(false)
           }}
-          className="h-14 w-40 rounded-2xl border-2 border-wash text-center text-[28px] font-bold outline-none focus:border-vowel"
+          className="h-14 w-40 rounded-2xl border-2 border-card-shadow text-center text-[28px] font-bold outline-none focus:border-vowel"
           style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
           aria-label="answer"
         />
-        <div className="min-h-5 text-[14px] text-consonant">{wrong ? '다시 해 보세요 · Try again' : ''}</div>
+        <div className="min-h-5 text-[14px] text-muted">{wrong ? '다시 해 보세요 · Try again' : ''}</div>
         <div className="flex gap-3">
-          <button type="button" onClick={onCancel} className="rounded-full bg-paper px-6 py-3 text-[16px] font-semibold">
+          <button type="button" onClick={onCancel} className="rounded-full bg-page px-6 py-3 text-[16px] font-semibold">
             돌아가기
           </button>
-          <button type="submit" disabled={!answer} className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-white disabled:opacity-40">
+          <button type="submit" disabled={!answer} className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">
             확인
           </button>
         </div>

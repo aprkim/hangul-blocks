@@ -14,6 +14,7 @@ import {
 import { successFeedback } from '../native'
 import { cardFor, type Card } from '../words'
 import { ResetIcon } from './Icons'
+import { Syllable } from './JamoStrokes'
 import { Tile } from './Tile'
 
 /** After the syllable glyph appears, wait for the syllable sound before the word pops up. */
@@ -22,24 +23,10 @@ const WORD_DELAY_MS = 650
 /** How long the consonant takes to slide between the side and stack positions. */
 const MOVE_MS = 420
 
-type Box = { left: number; top: number; width: number; height: number; font: number }
-
-// Percent of the frame. font is in cqmin (percent of the frame's shorter side).
-const SLOTS: Record<VowelLayout, { cons: Box; vowel: Box }> = {
-  side: {
-    cons: { left: 6, top: 14, width: 48, height: 72, font: 58 },
-    vowel: { left: 54, top: 8, width: 40, height: 84, font: 66 },
-  },
-  stack: {
-    cons: { left: 16, top: 6, width: 68, height: 48, font: 50 },
-    vowel: { left: 8, top: 54, width: 84, height: 40, font: 60 },
-  },
-}
-
 const POP: Keyframe[] = [
-  { transform: 'scale(0.7)', opacity: 0 },
-  { transform: 'scale(1.12)', opacity: 1, offset: 0.55 },
-  { transform: 'scale(1)', opacity: 1 },
+  { transform: 'scale(1)' },
+  { transform: 'scale(1.1)', offset: 0.45 },
+  { transform: 'scale(1)' },
 ]
 
 const WORD_POP: Keyframe[] = [
@@ -49,30 +36,9 @@ const WORD_POP: Keyframe[] = [
 ]
 
 const GLOW: Keyframe[] = [
-  { boxShadow: '0 0 0 0 rgba(206, 128, 149, 0.85)' },
-  { boxShadow: '0 0 0 28px rgba(206, 128, 149, 0)' },
+  { boxShadow: '0 0 0 0 var(--color-card-shadow)' },
+  { boxShadow: '0 0 0 28px transparent' },
 ]
-
-function Slot({ box, kind, char, hidden }: { box: Box; kind: 'consonant' | 'vowel'; char?: string; hidden: boolean }) {
-  return (
-    <div
-      className={`slot absolute flex items-center justify-center rounded-[6cqmin] ${
-        char ? '' : 'border-[1.4cqmin] border-dashed border-slot'
-      } ${kind === 'consonant' ? 'text-consonant' : 'text-vowel'}`}
-      style={{
-        left: `${box.left}%`,
-        top: `${box.top}%`,
-        width: `${box.width}%`,
-        height: `${box.height}%`,
-        fontSize: `${box.font}cqmin`,
-        opacity: hidden ? 0 : 1,
-        transitionDuration: `${MOVE_MS}ms`,
-      }}
-    >
-      {char}
-    </div>
-  )
-}
 
 /** P1: tap a consonant and a vowel; the frame rearranges and plays the syllable. Every combo is valid. */
 export function AssemblyBoard() {
@@ -86,10 +52,9 @@ export function AssemblyBoard() {
   const [card, setCard] = useState<Card | null>(null)
   const wordRef = useRef<HTMLButtonElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
-  const glyphRef = useRef<HTMLDivElement>(null)
+  const glyphRef = useRef<SVGSVGElement>(null)
 
   const layout: VowelLayout = vowel?.layout ?? 'side'
-  const slots = SLOTS[layout]
 
   function place(nextCons: Consonant | null, nextVowel: Vowel | null) {
     window.clearTimeout(timer.current)
@@ -101,7 +66,7 @@ export function AssemblyBoard() {
 
     if (nextCons && nextVowel) {
       play(syllableSound(nextCons, nextVowel))
-      // Let the consonant finish sliding before the real glyph replaces the parts.
+      // Let the consonant finish sliding before celebrating.
       const moved = (vowel?.layout ?? 'side') !== nextVowel.layout
       timer.current = window.setTimeout(() => {
         setComposed(true)
@@ -144,23 +109,22 @@ export function AssemblyBoard() {
       {/* Frame row: the reset button is attached to the frame's lower-left, the word card to its right. */}
       <div className="flex min-h-0 flex-1 items-stretch justify-center">
         <div className="frame-wrap flex min-w-0 flex-1 items-center justify-center">
-          <div ref={frameRef} className="frame relative rounded-[8cqmin] bg-white">
+          <div ref={frameRef} className="frame relative rounded-[8cqmin] bg-card">
             <div className="frame-reset">
               <Tile kind="control" onTap={() => place(null, null)} label="reset" className="size-(--tile)">
                 <ResetIcon />
               </Tile>
             </div>
-            <Slot box={slots.cons} kind="consonant" char={cons?.char} hidden={composed} />
-            <Slot box={slots.vowel} kind="vowel" char={vowel?.char} hidden={composed} />
-            {cons && vowel && (
-              <div
-                ref={glyphRef}
-                className="absolute inset-0 flex items-center justify-center font-bold text-ink leading-none"
-                style={{ fontSize: '82cqmin', opacity: composed ? 1 : 0 }}
-              >
-                {composeSyllable(cons, vowel)}
-              </div>
-            )}
+            {/* The syllable in two colors: consonant red + vowel blue. */}
+            <svg
+              ref={glyphRef}
+              viewBox="0 0 100 100"
+              className="syllable absolute inset-0 h-full w-full"
+              role="img"
+              aria-label={cons && vowel ? composeSyllable(cons, vowel) : (cons?.char ?? vowel?.char ?? '')}
+            >
+              <Syllable cons={cons?.char ?? null} vowel={vowel?.char ?? null} layout={layout} />
+            </svg>
             {card && (
               <button
                 ref={wordRef}
@@ -175,9 +139,9 @@ export function AssemblyBoard() {
               >
                 <span className="word-emoji">{card.emoji}</span>
                 <span className="word-text">
-                  {/* The syllable just built, in red, wherever it sits in the word. */}
+                  {/* The syllable just built: ink, bold, underlined, wherever it sits in the word. */}
                   {card.before}
-                  <b className="text-consonant">{card.syllable}</b>
+                  <b>{card.syllable}</b>
                   {card.after}
                 </span>
               </button>

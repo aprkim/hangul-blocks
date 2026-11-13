@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { tapFeedback } from '../native'
 import { BuildIcon, PencilIcon, SoundIcon } from './Icons'
+import { ThemePicker } from './ThemePicker'
 
 export type Tab = 'jamo' | 'assemble' | 'write'
 
@@ -13,7 +14,9 @@ const TABS: { id: Tab; icon: ComponentType; label: string }[] = [
 /** Icon-only tabs: the child screen has no text besides jamo and syllables. */
 export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
   return (
-    <nav className="tabbar flex shrink-0 items-stretch justify-center gap-[2vw] px-[2.5vh] pb-[1.5vh]">
+    <div className="tabbar shrink-0 px-[2.5vh] pb-[1.5vh]">
+      <span aria-hidden />
+      <nav className="flex h-full min-h-0 items-stretch justify-center gap-[2vw]">
       {TABS.map(({ id, icon: Icon, label }) => (
         <button
           key={id}
@@ -27,12 +30,14 @@ export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
             onTab(id)
           }}
           className={`tab flex flex-1 items-center justify-center rounded-[22px] ${
-            tab === id ? 'is-active bg-white shadow-[0_6px_0_var(--color-wash)]' : ''
+            tab === id ? 'is-active bg-card shadow-[0_6px_0_var(--color-card-shadow)]' : ''
           }`}
         >
           <Icon />
         </button>
       ))}
-    </nav>
+      </nav>
+      <ThemePicker />
+    </div>
   )
 }

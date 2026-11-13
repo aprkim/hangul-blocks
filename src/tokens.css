@@ -1,0 +1,71 @@
+/*
+ * Color tokens: the only place colors are defined. Components use these variables (or the
+ * Tailwind utilities generated from them: bg-consonant, text-ink, ...), never raw hex values.
+ *
+ * Tile colors never change. A background theme changes exactly two variables:
+ * --color-page (the background) and --color-card-shadow (the shadow under cards and buttons).
+ */
+
+@theme {
+  /* Initial consonant (choseong) */
+  --color-consonant: #d23b2e;
+  --color-consonant-dark: #a32a20;
+  /* Medial vowel (jungseong) */
+  --color-vowel: #2259b8;
+  --color-vowel-dark: #173f86;
+  /* Final consonant (jongseong). Reserved for P2: defined, not used anywhere yet. */
+  --color-final: #c98200;
+
+  /* Text and icons */
+  --color-ink: #2a2520;
+  --color-muted: #6b6252;
+  /* Glyphs on colored tiles */
+  --color-on-tile: #ffffff;
+  /* Cards and buttons */
+  --color-card: #ffffff;
+
+  /* Background theme (default: cream). Overridden per theme below. */
+  --color-page: #f6eedd;
+  --color-card-shadow: #e2d6bd;
+
+  /* Derived tints (computed from the tokens above, so they follow them) */
+  --color-guide: color-mix(in srgb, var(--color-muted) 14%, var(--color-card));
+  --color-guide-strong: color-mix(in srgb, var(--color-muted) 32%, var(--color-card));
+  --color-vowel-soft: color-mix(in srgb, var(--color-vowel) 32%, var(--color-card));
+  --color-drop-shadow: color-mix(in srgb, var(--color-ink) 28%, transparent);
+}
+
+/* Each theme's own colors, also used to paint its swatch in the theme picker. */
+:root {
+  --theme-cream-page: #f6eedd;
+  --theme-cream-shadow: #e2d6bd;
+  --theme-sage-page: #e4efe2;
+  --theme-sage-shadow: #c5d6c2;
+  --theme-paper-page: #faf8f3;
+  --theme-paper-shadow: #e4dfd3;
+  --theme-butter-page: #fff3c4;
+  --theme-butter-shadow: #ebd98f;
+  --theme-blush-page: #fbe6e4;
+  --theme-blush-shadow: #ebc6c2;
+}
+
+:root[data-theme='cream'] {
+  --color-page: var(--theme-cream-page);
+  --color-card-shadow: var(--theme-cream-shadow);
+}
+:root[data-theme='sage'] {
+  --color-page: var(--theme-sage-page);
+  --color-card-shadow: var(--theme-sage-shadow);
+}
+:root[data-theme='paper'] {
+  --color-page: var(--theme-paper-page);
+  --color-card-shadow: var(--theme-paper-shadow);
+}
+:root[data-theme='butter'] {
+  --color-page: var(--theme-butter-page);
+  --color-card-shadow: var(--theme-butter-shadow);
+}
+:root[data-theme='blush'] {
+  --color-page: var(--theme-blush-page);
+  --color-card-shadow: var(--theme-blush-shadow);
+}

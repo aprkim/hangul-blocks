@@ -4,9 +4,9 @@ import { tapFeedback } from '../native'
 export type TileKind = 'consonant' | 'vowel' | 'control'
 
 const KIND_CLASS: Record<TileKind, string> = {
-  consonant: 'bg-consonant text-white shadow-[0_8px_0_var(--color-consonant-dark)]',
-  vowel: 'bg-vowel text-white shadow-[0_8px_0_var(--color-vowel-dark)]',
-  control: 'bg-white text-ink shadow-[0_8px_0_var(--color-wash)]',
+  consonant: 'bg-consonant text-on-tile shadow-[0_8px_0_var(--color-consonant-dark)]',
+  vowel: 'bg-vowel text-on-tile shadow-[0_8px_0_var(--color-vowel-dark)]',
+  control: 'bg-card text-ink shadow-[0_8px_0_var(--color-card-shadow)]',
 }
 
 const BOUNCE: Keyframe[] = [
@@ -39,7 +39,7 @@ export function Tile({ kind, onTap, children, selected, className = '', label }:
         tapFeedback()
         onTap()
       }}
-      className={`tile ${KIND_CLASS[kind]} ${selected ? 'ring-[5px] ring-ink ring-offset-4 ring-offset-paper' : ''} ${className}`}
+      className={`tile ${KIND_CLASS[kind]} ${selected ? 'is-selected' : ''} ${className}`}
     >
       <span className="tile-glyph">{children}</span>
     </button>
