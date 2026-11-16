@@ -11,7 +11,7 @@ export function JamoBoard({ onRecord }: { onRecord: () => void }) {
   const hold = useRef<number | undefined>(undefined)
   const release = () => window.clearTimeout(hold.current)
   return (
-    <div className="flex h-full flex-col justify-center gap-[3vh] p-[2.5vh]">
+    <div className="jamo-board flex h-full flex-col justify-center gap-[3vh] p-[2.5vh]">
       <section className="board-grid grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
         {CONSONANTS.map((c) => (
           <Tile key={c.char} kind="consonant" onTap={() => play(consonantSound(c))}>

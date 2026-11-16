@@ -112,7 +112,7 @@ body {
 @media (orientation: portrait) and (max-width: 900px) {
   .board-grid {
     flex: none;
-    gap: 2vw;
+    column-gap: 2vw;
   }
   .board-grid > .tile {
     aspect-ratio: 1;
@@ -280,6 +280,8 @@ body {
 }
 .tab {
   max-width: 220px;
+  /* Let tabs shrink on narrow phones instead of pushing into the theme button. */
+  min-width: 0;
   touch-action: none;
 }
 /* Inactive tabs go grey, so the current one is the only one in color. */
@@ -291,6 +293,7 @@ body {
 .tabbar .tab svg {
   width: auto !important;
   height: 84% !important;
+  max-width: 90%;
 }
 
 /* Reset sits against the frame's lower-left edge: it clearly belongs to the frame. */
@@ -377,4 +380,21 @@ body {
 }
 .syllable {
   transform-origin: 50% 50%;
+}
+
+/* Sound board: each tile has an 8px bottom shadow, so rows need more than 8px between them or
+   they read as stuck together on phones. At least 16px between rows on every screen. */
+.board-grid {
+  row-gap: max(2vh, 20px) !important;
+}
+/* ...and the consonant block and the vowel block need a clearer gap than the rows inside them. */
+.jamo-board {
+  gap: max(3vh, 28px) !important;
+}
+/* Narrow phones: no empty left column; tabs take the width, theme button at the end. */
+@media (max-width: 600px) {
+  .tabbar {
+    grid-template-columns: 0 minmax(0, 1fr) var(--theme-btn);
+    column-gap: 10px;
+  }
 }
