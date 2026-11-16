@@ -136,7 +136,7 @@ Tap ㄱ to hear "g", tap ㅏ to hear "a", put them together and hear "ga"! Kids 
 
 **Description**
 ```
-Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound. Made for families raising kids with Korean at home, anywhere in the world.
+Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound. Made for families raising kids with Korean at home, anywhere in the world. A gentle first step to learn Korean: the Hangul alphabet, phonics and handwriting for toddlers and preschoolers.
 
 - Sounds, not letter names
 ㄱ says "g", not its name "giyeok", because sounds are what combine into syllables: g + a = ga.
@@ -187,6 +187,35 @@ Writing just got more fun
 ```
 korean,hangul,kids,toddler,phonics,alphabet,tracing,learn korean,preschool,heritage,bilingual,abc
 ```
+
+---
+
+## Google Play 전용
+
+Play에는 키워드 칸이 없다. 앱 이름, 간단한 설명, 자세한 설명의 단어가 검색에 쓰이므로, 검색될 단어는 설명 문장 안에 자연스럽게 한 번씩 넣는다 (반복 나열은 정책 위반).
+기본 스토어 등록정보는 영어(en-US), 한국어(ko-KR)는 번역으로 추가한다. 자세한 설명은 위의 한국어 **설명**, 영어 **Description** 그대로.
+
+**간단한 설명 (80자 이내)**
+```
+자음과 모음을 눌러 소리를 듣고, 조립하고, 따라 쓰는 유아 한글 앱
+```
+```
+Hear, build and trace Korean letters. A sound-first Hangul app for young kids.
+```
+
+**출시 노트 (첫 출시)**
+```
+<en-US>
+First release of Sori Blocks!
+Tap consonants and vowels to hear their sounds, snap them together into syllables, and trace them with a finger. Every letter written earns a star, and stars bring stickers.
+</en-US>
+<ko-KR>
+소리블록 첫 출시!
+자음과 모음을 눌러 소리를 듣고, 합쳐서 글자를 만들고, 손가락으로 따라 써요. 글자를 쓸 때마다 별이 모이고, 스티커를 받아요.
+</ko-KR>
+```
+
+태그: Education, Early childhood education (+ Language learning 이 있으면). 그림은 `store/android/`.
 
 ---
 
