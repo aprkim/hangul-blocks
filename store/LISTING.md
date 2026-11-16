@@ -193,11 +193,11 @@ korean,hangul,kids,toddler,phonics,alphabet,tracing,learn korean,preschool,herit
 ## 심사 정보 (App Review Information → Notes)
 
 ```
-This is a Korean letter-sound app for young children. Tap consonant and vowel tiles to hear each sound, and build syllables on the second screen (top-right/bottom-right button on the first screen).
+This is a Korean letter-sound app for young children. Three tabs at the bottom: Sound (tap a consonant or vowel tile to hear its sound), Build (tap a consonant and a vowel to build a syllable and hear it), Write (trace letters with a finger).
 
-A parents-only recording screen lets a parent record the sounds in their own voice. To open it: tap the settings button (top right), tap the microphone button, then answer the multiplication question (parental gate). The same parents' screen shows the child's writing record.
+Parents-only screen: tap the settings button (top right), tap the microphone button, then answer the multiplication question (parental gate). There a parent can record the sounds in their own voice and see the child's writing record. The microphone is used only on that screen, and recordings stay on the device.
 
-Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. To see syllable writing right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). That also shows all 14 consonants on the Build screen (arrows at the ends of the consonant row switch sets). The microphone is used only there, and recordings stay on the device.
+Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). That also shows all 14 consonants on the Build screen (arrows at the ends of the consonant row switch sets).
 
 The app collects no data, has no ads or purchases, and works fully offline.
 ```
