@@ -1,7 +1,7 @@
 # 구글 플레이 출시 가이드 (소리블록 · Sori Blocks)
 
 iOS와 같은 웹앱을 Capacitor로 감싼 안드로이드 앱이다. 코드는 `android/` 폴더.
-**빌드는 Mac의 Android Studio에서** 한다. 등록 문구와 그림은 `store/android/` 와 아래 표에 있다.
+**빌드는 Mac 터미널에서** 한다 (Android Studio는 설치만 되어 있으면 되고, 열 필요는 없다: 그 안의 Java와 SDK를 쓴다). 등록 문구와 그림은 `store/android/` 와 아래 표에 있다.
 
 ---
 
@@ -33,6 +33,19 @@ cd ~/hangul-blocks && git pull && npm install && npm run android
 - [ ] 모음 왼쪽 빈칸 3초 → 어른 확인 문제 → 녹음 → 마이크 권한 허용 → 녹음됨
 
 ## 3. 서명된 앱 번들(AAB) 만들기
+
+**터미널로 (추천):**
+
+```bash
+npm run android:setup   # 처음 한 번만: 업로드 키스토어를 ~/keys 에 만들고 비밀번호를 그 Mac에만 저장
+npm run android:aab     # 출시할 때마다: 웹앱 빌드 → 안드로이드에 복사 → 서명된 AAB
+```
+
+결과 파일: `android/app/build/outputs/bundle/release/app-release.aab`.
+`~/keys/soriblocks-upload.jks`, `~/keys/soriblocks-upload.properties`, 비밀번호는 따로 백업한다 (저장소에는 절대 넣지 않는다).
+업데이트를 올릴 때는 `android/app/build.gradle`의 `versionCode`를 1씩 올린다.
+
+**Android Studio로 (같은 결과):**
 
 1. Android Studio 메뉴 **Build → Generate Signed App Bundle or APK…** → **Android App Bundle** → Next
 2. **Key store path → Create new…**

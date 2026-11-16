@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+// Upload-key signing for release builds from the command line (npm run android:aab).
+// The keystore and its passwords live outside the repository, described by this file:
+//   ~/keys/soriblocks-upload.properties   (storeFile, storePassword, keyAlias, keyPassword)
+// Created by `npm run android:setup`. Without it, release builds are simply left unsigned
+// (Android Studio's "Generate Signed App Bundle" still works as before).
+def uploadKeyFile = new File(System.getProperty('user.home'), 'keys/soriblocks-upload.properties')
+def uploadKey = new Properties()
+if (uploadKeyFile.exists()) {
+    uploadKeyFile.withInputStream { uploadKey.load(it) }
+}
+
 android {
     namespace = "com.lihallc.soriblocks"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +27,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (uploadKeyFile.exists()) {
+            release {
+                storeFile file(uploadKey['storeFile'])
+                storePassword uploadKey['storePassword']
+                keyAlias uploadKey['keyAlias']
+                keyPassword uploadKey['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            if (uploadKeyFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
