@@ -113,7 +113,7 @@ https://soriblocks.lihallc.com
 
 ---
 
-## English (영어 현지화 추가 시)
+## English (U.S.) 현지화
 
 **Name**
 ```
@@ -132,32 +132,50 @@ Tap ㄱ to hear "g", tap ㅏ to hear "a", put them together and hear "ga"! Kids 
 
 **Description**
 ```
-Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound.
+Sori Blocks helps young children who can't read Korean yet discover that each shape makes a sound. Made for families raising kids with Korean at home, anywhere in the world.
 
 - Sounds, not letter names
 ㄱ says "g", not its name "giyeok", because sounds are what combine into syllables: g + a = ga.
 
-- Letter board
+- Sound
 14 consonants and 10 vowels. Tap any of them to hear its sound right away. No order, no score.
 
-- Building board
-Tap a consonant and a vowel to build a syllable and hear it. Switch ㅏ to ㅗ and watch the consonant move from the side to the top, so kids see why syllables are shaped differently.
+- Build
+Tap a consonant and a vowel to build a syllable and hear it. Consonants are red and vowels are blue, so kids see which pieces came together. Switch ㅏ to ㅗ and watch the consonant move from the side to the top.
+
+- Write
+Trace all 24 letters with a finger, guided by a start dot and the stroke direction. Once every letter has been written, a gift box opens 40 syllables to write, like 가, 고, 나 and 무.
+
+- Star jar and sticker book
+Every letter written drops a star into the jar. Ten stars bring a treasure sticker. Each syllable written adds its picture word to the sticker book: 가 for 가방 (bag), 고 for 고양이 (cat). Stars never go down and there are no timers.
 
 - Picture words and animal friends
-Syllables that start a word pop up with a picture (가 makes 가방, bag; 고 makes 고양이, cat). Others are said back by an animal friend. There are no wrong answers, so kids explore freely.
+Syllables that start a word pop up with a picture. Others are said back by an animal friend. There are no wrong answers, so kids explore freely.
 
 - Your family's voice
-In a parents-only recording screen you can record every sound in your own voice, or a grandparent's. Recordings stay on the device.
+In a parents-only screen you can record every sound in your own voice, or a grandparent's. Recordings stay on the device. The parents' screen also shows what your child has written.
 
 - Safe for kids
 No ads, no in-app purchases, no accounts, no data collection. Works offline.
 
-For children ages 3–6 and families starting Korean together.
+The letter sounds are in Korean, and the child's screens have no text to read. For children ages 3 to 6.
+```
+
+**What's New (1.2)**
+```
+Writing just got more fun
+
+- Star jar: every letter your child writes adds a star. Ten stars bring a treasure sticker.
+- Letter road: written letters get a star. Write all 24 consonants and vowels to open a gift box.
+- Syllable writing: write 40 syllables like 가, 고, 나 and 무 in stroke order, and see their picture words.
+- Sticker book: collect picture-word stickers and treasures.
+- Parents can see their child's writing record.
+- Background colors and the parents' recording screen now live under the settings button (top right).
 ```
 
 **Keywords**
 ```
-korean,hangul,kids,toddler,phonics,alphabet,letters,learn korean,preschool,heritage,bilingual
+korean,hangul,kids,toddler,phonics,alphabet,tracing,learn korean,preschool,heritage,bilingual,abc
 ```
 
 ---
