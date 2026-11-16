@@ -117,77 +117,97 @@ export const STROKES: Record<string, Stroke[]> = {
   ㅣ: [[[50, 10], [50, 90]]],
 }
 
-// Where each part sits in the 100 x 100 frame.
-// 가로모임 (side): consonant left, vowel right, fixed places.
-// 세로모임 (stack): the consonant is drawn wider and flatter (as in 고, 구, 그) and the pair is
-// centered as a block, with the same small gap under the consonant for every vowel.
-export const CONS_SCALE = 0.5
-export const VOWEL_SCALE = 0.88
-const STACK_CONS_SCALE = 0.56
-/** Gap between the consonant's lowest stroke and the vowel's highest, centerline to centerline. */
-const STACK_GAP = 15
-/** Height of a consonant in the stack, for placing a vowel before a consonant is chosen. */
-const STACK_NOMINAL_CONS = 24
+// ---------- syllables ----------
+// A syllable is drawn the way Korean type is: each part is refit to the space it gets, so the
+// same jamo changes shape with its partner (ㄱ sweeps down-left in 가 but is wide and flat in 고).
+// Boxes below are [x, y, w, h] on the 100 x 100 frame, tuned against a reference font.
 
-export const PLACE: Record<VowelLayout, { cons: [number, number]; vowel: [number, number] }> = {
-  side: { cons: [3, 25], vowel: [29, 6] },
-  stack: { cons: [25, 3], vowel: [6, 29] },
+type Box = [number, number, number, number]
+
+/** 가로모임 (side): vowel to the right; 세로모임 (stack): vowel below. Per vowel, where each part goes. */
+const BOXES: Record<string, { cons: Box; vowel: Box }> = {
+  // side: the vowel's long vertical runs almost the full height; the consonant sits left, a bit above center
+  ㅏ: { cons: [10, 24, 36, 50], vowel: [64, 8, 24, 84] },
+  ㅑ: { cons: [10, 24, 36, 50], vowel: [64, 8, 24, 84] },
+  ㅓ: { cons: [12, 24, 30, 50], vowel: [58, 8, 26, 84] },
+  ㅕ: { cons: [12, 24, 30, 50], vowel: [58, 8, 26, 84] },
+  ㅣ: { cons: [16, 22, 38, 54], vowel: [72, 8, 0, 84] },
+  // stack: the consonant is wide and flat on top; the vowel's stub is short
+  ㅗ: { cons: [22, 12, 56, 36], vowel: [10, 62, 80, 24] },
+  ㅛ: { cons: [22, 12, 56, 36], vowel: [10, 62, 80, 24] },
+  ㅜ: { cons: [22, 8, 56, 30], vowel: [10, 56, 80, 32] },
+  ㅠ: { cons: [22, 8, 56, 30], vowel: [10, 56, 80, 32] },
+  ㅡ: { cons: [22, 16, 56, 38], vowel: [10, 70, 80, 0] },
 }
+/** Before a vowel is chosen. */
+const NO_VOWEL: Record<VowelLayout, { cons: Box; vowel: Box }> = { side: BOXES['ㅏ'], stack: BOXES['ㅗ'] }
+
 // Dashed placeholders for an empty slot, per layout (x, y, w, h).
 export const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
-  side: { cons: [6, 20, 44, 60], vowel: [56, 8, 36, 84] },
-  stack: { cons: [20, 4, 60, 46], vowel: [8, 54, 84, 40] },
+  side: { cons: [6, 16, 52, 68], vowel: [60, 6, 32, 88] },
+  stack: { cons: [14, 4, 72, 44], vowel: [6, 58, 88, 36] },
 }
 
-/** A consonant's strokes for a layout: as written alone, or wider and flatter on top of a vowel. */
-export function consonantShape(char: string, layout: VowelLayout): Stroke[] {
-  const strokes = STROKES[char] ?? []
-  if (layout === 'side') return strokes
-  return strokes.map((s) => s.map(([x, y]) => [50 + (x - 50) * 1.35, 50 + (y - 50) * 0.72] as Pt))
+/**
+ * Consonants whose shape changes by position, in a unit box (0..1). Each variant has the same
+ * number of points so one can morph into the other when the vowel changes.
+ */
+const SHAPES: Record<string, { side: Stroke[]; stack: Stroke[] }> = {
+  // Kept straight in every position, like the ㄱ the child traced alone (a curved 가 stem was
+  // harder for 4-year-olds). Side: a tall stem; stack (고): wide with a short stem.
+  ㄱ: {
+    side: [[[0, 0], ...curve([1, 0], [1, 0.5], [1, 1])]],
+    stack: [[[0, 0], ...curve([1, 0], [1, 0.5], [1, 1])]],
+  },
 }
 
-function yRange(strokes: Stroke[]): [number, number] {
+/** A quadratic curve as 13 points (same count for every shape, so shapes can morph). */
+function curve(a: Pt, c: Pt, b: Pt): Pt[] {
+  return Array.from({ length: 13 }, (_, i) => {
+    const t = i / 12
+    const u = 1 - t
+    return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]] as Pt
+  })
+}
+
+function bbox(strokes: Stroke[]): Box {
+  const xs = strokes.flat().map((p) => p[0])
   const ys = strokes.flat().map((p) => p[1])
-  return ys.length ? [Math.min(...ys), Math.max(...ys)] : [0, 0]
+  const x = Math.min(...xs)
+  const y = Math.min(...ys)
+  return [x, y, Math.max(...xs) - x, Math.max(...ys) - y]
 }
 
-export type Placed = { strokes: Stroke[]; x: number; y: number; k: number }
+/** Stretch strokes so their bounding box fills `to` (a zero-size side stays centered). */
+function fit(strokes: Stroke[], to: Box, from: Box = bbox(strokes)): Stroke[] {
+  const [fx, fy, fw, fh] = from
+  const [tx, ty, tw, th] = to
+  const mx = (x: number) => (fw ? tx + ((x - fx) / fw) * tw : tx + tw / 2)
+  const my = (y: number) => (fh ? ty + ((y - fy) / fh) * th : ty + th / 2)
+  return strokes.map((s) => s.map(([x, y]) => [mx(x), my(y)] as Pt))
+}
 
-/** Where the consonant and vowel go (translate x, y then scale k, in frame units). */
-export function placeSyllable(
+/** The consonant and vowel strokes of a syllable on the 100 x 100 frame (either may be missing). */
+export function layoutSyllable(
   cons: string | null,
   vowel: string | null,
   layout: VowelLayout,
-): { cons: Placed | null; vowel: Placed | null } {
-  if (layout === 'side') {
-    return {
-      cons: cons ? { strokes: STROKES[cons] ?? [], x: PLACE.side.cons[0], y: PLACE.side.cons[1], k: CONS_SCALE } : null,
-      vowel: vowel ? { strokes: STROKES[vowel] ?? [], x: PLACE.side.vowel[0], y: PLACE.side.vowel[1], k: VOWEL_SCALE } : null,
-    }
+): { cons: Stroke[] | null; vowel: Stroke[] | null } {
+  const box = (vowel && BOXES[vowel]) || NO_VOWEL[layout]
+  let c: Stroke[] | null = null
+  if (cons) {
+    const shape = SHAPES[cons]?.[layout]
+    c = shape ? fit(shape, box.cons, [0, 0, 1, 1]) : fit(STROKES[cons] ?? [], box.cons)
   }
-  const cs = cons ? consonantShape(cons, 'stack') : []
-  const [c0, c1] = yRange(cs)
-  const consH = cons ? (c1 - c0) * STACK_CONS_SCALE : STACK_NOMINAL_CONS
-  const vs = vowel ? (STROKES[vowel] ?? []) : []
-  const [v0, v1] = vowel ? yRange(vs) : [30, 62]
-  const vowelH = (v1 - v0) * VOWEL_SCALE
-  const top = 50 - (consH + STACK_GAP + vowelH) / 2
-  const k = STACK_CONS_SCALE
-  return {
-    cons: cons ? { strokes: cs, x: 50 - 50 * k, y: top - c0 * k, k } : null,
-    vowel: vowel ? { strokes: vs, x: 50 - 50 * VOWEL_SCALE, y: top + consH + STACK_GAP - v0 * VOWEL_SCALE, k: VOWEL_SCALE } : null,
-  }
+  return { cons: c, vowel: vowel ? fit(STROKES[vowel] ?? [], box.vowel) : null }
 }
 
 /** Strokes of a syllable on the 100 x 100 frame: consonant strokes, then vowel strokes (Korean stroke order). */
 export function syllableStrokes(cons: string, vowel: string, layout: VowelLayout): { stroke: Stroke; part: 'consonant' | 'vowel' }[] {
-  const placed = placeSyllable(cons, vowel, layout)
-  const move = (s: Stroke, p: Placed): Stroke => s.map(([x, y]) => [p.x + x * p.k, p.y + y * p.k] as Pt)
-  const c = placed.cons!
-  const v = placed.vowel!
+  const { cons: c, vowel: v } = layoutSyllable(cons, vowel, layout)
   return [
-    ...c.strokes.map((s) => ({ stroke: move(s, c), part: 'consonant' as const })),
-    ...v.strokes.map((s) => ({ stroke: move(s, v), part: 'vowel' as const })),
+    ...(c ?? []).map((stroke) => ({ stroke, part: 'consonant' as const })),
+    ...(v ?? []).map((stroke) => ({ stroke, part: 'vowel' as const })),
   ]
 }
 
