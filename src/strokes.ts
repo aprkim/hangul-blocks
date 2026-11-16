@@ -1,6 +1,8 @@
 // Stroke order for tracing the 24 basic jamo, on a 100 x 100 grid.
 // Each stroke is the path a finger follows, in writing order and direction.
 
+import type { VowelLayout } from './jamo'
+
 export type Pt = readonly [number, number]
 export type Stroke = Pt[]
 
@@ -113,6 +115,31 @@ export const STROKES: Record<string, Stroke[]> = {
   ],
   ㅡ: [[[10, 50], [90, 50]]],
   ㅣ: [[[50, 10], [50, 90]]],
+}
+
+// Where each part sits in the 100 x 100 frame. Each part keeps its own uniform scale in both
+// layouts, so the consonant only translates when it slides (and its strokes keep their weight).
+export const CONS_SCALE = 0.5
+export const VOWEL_SCALE = 0.88
+export const PLACE: Record<VowelLayout, { cons: [number, number]; vowel: [number, number] }> = {
+  // 가로모임: consonant left, vowel right
+  side: { cons: [3, 25], vowel: [29, 6] },
+  // 세로모임: consonant top, vowel below
+  stack: { cons: [25, 3], vowel: [6, 29] },
+}
+// Dashed placeholders for an empty slot, per layout (x, y, w, h).
+export const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
+  side: { cons: [6, 20, 44, 60], vowel: [56, 8, 36, 84] },
+  stack: { cons: [20, 4, 60, 46], vowel: [8, 54, 84, 40] },
+}
+
+/** Strokes of a syllable on the 100 x 100 frame: consonant strokes, then vowel strokes (Korean stroke order). */
+export function syllableStrokes(cons: string, vowel: string, layout: VowelLayout): { stroke: Stroke; part: 'consonant' | 'vowel' }[] {
+  const move = (s: Stroke, [dx, dy]: [number, number], k: number): Stroke => s.map(([x, y]) => [dx + x * k, dy + y * k] as Pt)
+  return [
+    ...(STROKES[cons] ?? []).map((s) => ({ stroke: move(s, PLACE[layout].cons, CONS_SCALE), part: 'consonant' as const })),
+    ...(STROKES[vowel] ?? []).map((s) => ({ stroke: move(s, PLACE[layout].vowel, VOWEL_SCALE), part: 'vowel' as const })),
+  ]
 }
 
 export function strokePath(s: Stroke): string {

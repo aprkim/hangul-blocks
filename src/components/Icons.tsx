@@ -100,3 +100,52 @@ export function ParentIcon() {
     </svg>
   )
 }
+
+const STAR = 'var(--color-star)'
+const STAR_DARK = 'var(--color-star-dark)'
+export const STAR_PATH = 'M24 4.5L29.6 17.8L44 19L33 28.4L36.3 42.5L24 35L11.7 42.5L15 28.4L4 19L18.4 17.8Z'
+
+/** A reward star: gold with a darker rim, round corners. */
+export function StarShape({ className = 'h-full w-full' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden>
+      <path d={STAR_PATH} fill={STAR} stroke={STAR_DARK} strokeWidth={3} strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/** Back to the writing road: three letter stops (red, blue, gold) joined by a winding path. */
+export function MapIcon() {
+  return (
+    <svg {...box}>
+      <path d="M11 37c8 0 8-13 13-13s5-13 13-13" stroke={GUIDE} strokeWidth={5} />
+      <circle cx="11" cy="37" r="7" fill={RED} />
+      <circle cx="24" cy="24" r="7" fill={BLUE} />
+      <path d="M37 4.5l2.6 5.6 6 .7-4.4 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.4-4.2 6-.7z" fill={STAR} stroke={STAR_DARK} strokeWidth={1.5} />
+    </svg>
+  )
+}
+
+/** Close an overlay. */
+export function CloseIcon() {
+  return (
+    <svg {...box}>
+      <path d="M13 13l22 22M35 13 13 35" stroke={INK} strokeWidth={6} />
+    </svg>
+  )
+}
+
+/** The gift box that holds the syllable road (and full-jar treasures). `open` lifts the lid. */
+export function GiftIcon({ open = false }: { open?: boolean }) {
+  return (
+    <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden>
+      <rect x="14" y="44" width="72" height="48" rx="8" fill={RED} />
+      <rect x="44" y="44" width="12" height="48" fill={STAR} />
+      <g className="gift-lid" style={{ transform: open ? 'translate(-6px,-26px) rotate(-18deg)' : undefined }}>
+        <rect x="8" y="30" width="84" height="18" rx="6" fill="var(--color-consonant-dark)" />
+        <rect x="44" y="30" width="12" height="18" fill={STAR_DARK} />
+        <path d="M50 30c-6-14-26-18-24-6 1 6 14 6 24 6zM50 30c6-14 26-18 24-6-1 6-14 6-24 6z" fill={BLUE} />
+      </g>
+    </svg>
+  )
+}

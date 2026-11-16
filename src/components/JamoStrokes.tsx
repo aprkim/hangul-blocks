@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { VowelLayout } from '../jamo'
-import { STROKES, strokePath } from '../strokes'
+import { CONS_SCALE, PLACE, SLOT, STROKES, VOWEL_SCALE, strokePath } from '../strokes'
 
 // One way of drawing jamo, shared by the Build frame and the Write screen: each jamo is its
 // strokes (src/strokes.ts, 100 x 100 grid) as round-capped SVG paths. Because the consonant and
@@ -33,22 +33,6 @@ export function JamoStrokes({
 
 /** Visual stroke thickness inside the syllable, in frame units (out of 100). */
 const WEIGHT = 8
-
-// Where each part sits in the 100 x 100 frame. Each part keeps its own uniform scale in both
-// layouts, so the consonant only translates when it slides (and its strokes keep their weight).
-const CONS_SCALE = 0.5
-const VOWEL_SCALE = 0.88
-const PLACE: Record<VowelLayout, { cons: [number, number]; vowel: [number, number] }> = {
-  // 가로모임: consonant left, vowel right
-  side: { cons: [3, 25], vowel: [29, 6] },
-  // 세로모임: consonant top, vowel below
-  stack: { cons: [25, 3], vowel: [6, 29] },
-}
-// Dashed placeholders for an empty slot, per layout (x, y, w, h).
-const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
-  side: { cons: [6, 20, 44, 60], vowel: [56, 8, 36, 84] },
-  stack: { cons: [20, 4, 60, 46], vowel: [8, 54, 84, 40] },
-}
 
 /**
  * A syllable in two colors: initial consonant in consonant red, vowel in vowel blue.

@@ -226,3 +226,38 @@ export function installUnlock() {
   window.addEventListener('pointerdown', unlock, true)
   window.addEventListener('touchend', unlock, true)
 }
+
+/**
+ * Small synthesized sounds for rewards (no files): 'star' is a bright two-note "ding" when a star
+ * lands in the jar, 'fanfare' a rising arpeggio for a full jar or an opened gift. They mix over
+ * whatever is playing (a letter's sound keeps going).
+ */
+export function chime(kind: 'star' | 'fanfare' | 'soft') {
+  const ac = audioContext()
+  if (ac.state !== 'running') void ac.resume()
+  const notes: [number, number][] =
+    kind === 'star'
+      ? [[1318.5, 0], [1975.5, 0.09]]
+      : kind === 'fanfare'
+        ? [[1046.5, 0], [1318.5, 0.11], [1568, 0.22], [2093, 0.33]]
+        : [[880, 0]]
+  const out = ac.createGain()
+  out.gain.value = kind === 'soft' ? 0.1 : 0.16
+  out.connect(ac.destination)
+  const t0 = ac.currentTime + 0.01
+  for (const [freq, at] of notes) {
+    const tail = kind === 'fanfare' && at === notes[notes.length - 1][1] ? 0.9 : 0.45
+    for (const [mult, level, type] of [[1, 1, 'sine'], [2, 0.25, 'triangle']] as const) {
+      const osc = ac.createOscillator()
+      const g = ac.createGain()
+      osc.type = type
+      osc.frequency.value = freq * mult
+      g.gain.setValueAtTime(0.0001, t0 + at)
+      g.gain.exponentialRampToValueAtTime(level, t0 + at + 0.008)
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + tail)
+      osc.connect(g).connect(out)
+      osc.start(t0 + at)
+      osc.stop(t0 + at + tail + 0.05)
+    }
+  }
+}

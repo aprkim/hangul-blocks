@@ -3,6 +3,7 @@ import { setLocalRecording, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { WORD_RECORD_GROUP } from '../words'
 import { isNativeApp, shareFileNative } from '../native'
+import { ParentProgress } from './ParentProgress'
 import {
   deleteRecording,
   encodeMp3,
@@ -581,6 +582,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             ))}
           </div>
         </section>
+
+        <ParentProgress />
 
         <p className="pb-6 text-[14px] leading-relaxed text-muted">
           녹음은 이 기기에 저장되고 게임에서 바로 쓰입니다. 다른 기기나 배포에 넣으려면 zip을 받아서 Claude에게

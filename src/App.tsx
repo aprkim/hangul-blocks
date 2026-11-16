@@ -16,7 +16,13 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(initial)
   const [lastTab, setLastTab] = useState<Tab>('jamo')
   const [unlocked, setUnlocked] = useState(gatePassed)
+  // Tapping the Write tab again goes back to the road.
+  const [writeKey, setWriteKey] = useState(0)
   const go = (next: Screen) => {
+    if (next === screen) {
+      if (next === 'write') setWriteKey((k) => k + 1)
+      return
+    }
     stop()
     if (screen === 'record') history.replaceState(null, '', location.pathname)
     if (next !== 'record') setLastTab(next)
@@ -33,7 +39,7 @@ export default function App() {
       <main className="min-h-0 flex-1">
         {screen === 'jamo' && <JamoBoard onRecord={() => go('record')} />}
         {screen === 'assemble' && <AssemblyBoard />}
-        {screen === 'write' && <WriteBoard />}
+        {screen === 'write' && <WriteBoard key={writeKey} />}
       </main>
       <TabBar tab={screen} onTab={go} />
       <Settings onParent={() => go('record')} />

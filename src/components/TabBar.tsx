@@ -23,7 +23,6 @@ export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
           aria-current={tab === id ? 'page' : undefined}
           onPointerDown={(e) => {
             e.preventDefault()
-            if (tab === id) return
             tapFeedback()
             onTab(id)
           }}
