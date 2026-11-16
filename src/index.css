@@ -846,3 +846,27 @@ body {
   stroke-dasharray: 2 2.5;
   pointer-events: none;
 }
+
+/* Sound board on wide, short screens (a phone held sideways): tiles would stretch into flat
+   bars. Cap each tile at 1.35 times as wide as it is tall and center the board. The tile height
+   follows from the board's height: 4 rows, the gap between the two blocks, a row gap in each. */
+@media (orientation: landscape) {
+  .jamo-board {
+    container-type: size;
+  }
+  .board-grid {
+    --tile-h: calc(25cqh - max(3vh, 28px) / 4 - max(2vh, 20px) / 2);
+    width: min(100%, calc(7 * 1.35 * var(--tile-h) + 6 * 2vh));
+    align-self: center;
+  }
+}
+/* ...and on those short screens the board is narrow enough to sit beside the settings button
+   instead of under it, so it takes the full height (bigger tiles) and stays clear of the corner. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .jamo-board {
+    padding-top: 2.5vh !important;
+  }
+  .board-grid {
+    width: min(100% - 2 * (var(--settings) + 2 * var(--settings-gap)), calc(7 * 1.35 * var(--tile-h) + 6 * 2vh));
+  }
+}
