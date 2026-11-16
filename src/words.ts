@@ -14,6 +14,7 @@ import {
   type Vowel,
   syllableSound,
 } from './jamo'
+import { t } from './i18n'
 
 export type Word = { word: string; emoji: string }
 
@@ -64,7 +65,7 @@ export function wordSoundNames(): string[] {
 /** Recording script for the words (4th set on the recording page). */
 export const WORD_RECORD_GROUP: RecordGroup = {
   id: 'words',
-  label: '4차 · 그림 단어',
+  label: t('4차 · 그림 단어', '4 · Picture words'),
   items: CONSONANTS.flatMap((c) =>
     VOWELS.flatMap((v) => {
       const w = wordFor(c, v)

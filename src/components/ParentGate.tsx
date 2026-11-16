@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { t } from '../i18n'
 
 // Parental gate (App Store Kids category): the adult area (recorder) opens only after a
 // question a young child can't answer. Asked once per app session.
@@ -45,11 +46,9 @@ export function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel:
           check()
         }}
       >
-        <div className="text-[17px] font-semibold">어른 확인 · For grown-ups</div>
+        <div className="text-[17px] font-semibold">{t('어른 확인', 'For grown-ups')}</div>
         <div className="text-center text-[15px] text-muted">
-          녹음 화면은 부모님용이에요. 답을 입력해 주세요.
-          <br />
-          This area is for parents. Please answer:
+          {t('부모님 화면이에요. 답을 입력해 주세요.', 'This area is for parents. Please answer:')}
         </div>
         <div className="text-[44px] font-bold tabular-nums">
           {a} × {b} = ?
@@ -67,13 +66,13 @@ export function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel:
           style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
           aria-label="answer"
         />
-        <div className="min-h-5 text-[14px] text-muted">{wrong ? '다시 해 보세요 · Try again' : ''}</div>
+        <div className="min-h-5 text-[14px] text-muted">{wrong ? t('다시 해 보세요', 'Try again') : ''}</div>
         <div className="flex gap-3">
           <button type="button" onClick={onCancel} className="rounded-full bg-page px-6 py-3 text-[16px] font-semibold">
-            돌아가기
+            {t('돌아가기', 'Back')}
           </button>
           <button type="submit" disabled={!answer} className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">
-            확인
+            {t('확인', 'OK')}
           </button>
         </div>
       </form>

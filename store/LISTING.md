@@ -97,6 +97,7 @@ https://soriblocks.lihallc.com
 - 스티커북: 쓴 글자의 그림 단어와 보물 스티커를 모아요.
 - 부모님 화면에서 아이가 쓴 기록을 볼 수 있어요.
 - 오른쪽 위 설정 버튼에서 바탕색과 부모님 녹음 화면을 열어요.
+- 부모님 화면이 영어도 지원해요.
 ```
 
 ## 1.1 새 기능 (What's New)
@@ -152,6 +153,9 @@ Every letter written drops a star into the jar. Ten stars bring a treasure stick
 - Picture words and animal friends
 Syllables that start a word pop up with a picture. Others are said back by an animal friend. There are no wrong answers, so kids explore freely.
 
+- Background colors
+Kids pick their own background from five soft colors.
+
 - Your family's voice
 In a parents-only screen you can record every sound in your own voice, or a grandparent's. Recordings stay on the device. The parents' screen also shows what your child has written.
 
@@ -171,6 +175,7 @@ Writing just got more fun
 - Sticker book: collect picture-word stickers and treasures.
 - Parents can see their child's writing record.
 - Background colors and the parents' recording screen now live under the settings button (top right).
+- The parents' screens are now in English on English devices.
 ```
 
 **Keywords**
@@ -187,7 +192,7 @@ This is a Korean letter-sound app for young children. Tap consonant and vowel ti
 
 A parents-only recording screen lets a parent record the sounds in their own voice. To open it: tap the settings button (top right), tap the microphone button, then answer the multiplication question (parental gate). The same parents' screen shows the child's writing record.
 
-Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. To see syllable writing right away, open the parents' screen and tap "음절 쓰기 바로 열기". The microphone is used only there, and recordings stay on the device.
+Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. To see syllable writing right away, open the parents' screen and tap "Open syllable writing now" (Korean: "음절 쓰기 바로 열기"). The microphone is used only there, and recordings stay on the device.
 
 The app collects no data, has no ads or purchases, and works fully offline.
 ```

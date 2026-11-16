@@ -3,6 +3,8 @@
 // To enable a consonant on the assembly board once its 10 syllable files
 // (syl-{roman}{vowel}.mp3) are in public/audio/, flip `assemble` to true.
 
+import { t } from './i18n'
+
 export type Consonant = {
   char: string
   /** Romanization used in file names (c-{roman}.mp3, syl-{roman}{v}.mp3). */
@@ -107,7 +109,7 @@ function syllableItems(cs: Consonant[]): RecordItem[] {
 export const RECORD_GROUPS: RecordGroup[] = [
   {
     id: 'jamo',
-    label: '1차 · 자모 소리',
+    label: t('1차 · 자모 소리', '1 · Letter sounds'),
     items: [
       ...CONSONANTS.map((c) => ({ name: consonantSound(c), shown: c.char, say: composeSyllable(c, EU) })),
       ...VOWELS.map((v) => ({ name: vowelSound(v), shown: v.char, say: composeSyllable(IEUNG, v) })),
@@ -115,12 +117,12 @@ export const RECORD_GROUPS: RecordGroup[] = [
   },
   {
     id: 'syl-p1',
-    label: '2차 · 음절',
+    label: t('2차 · 음절', '2 · Syllables'),
     items: syllableItems(ASSEMBLE_CONSONANTS.filter((c) => c.roman !== 'ng')),
   },
   {
     id: 'syl-rest',
-    label: '3차 · 나머지 음절',
+    label: t('3차 · 나머지 음절', '3 · More syllables'),
     // ㅇ row is skipped: it reuses the vowel files.
     items: syllableItems(CONSONANTS.filter((c) => !c.assemble && c.roman !== 'ng')),
   },

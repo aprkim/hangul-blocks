@@ -13,6 +13,7 @@ import {
   saveRecording,
   trimAndNormalize,
 } from '../recordings'
+import { t } from '../i18n'
 
 // Adult-only recording page. Open with ?record, or hold the empty corner of the jamo
 // board for 3 seconds. One sound per take: hold the button, say it, let go.
@@ -247,7 +248,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       }
     }
     if (!rec || !source) {
-      setNote('마이크를 쓸 수 없어요. 설정 → Safari(또는 앱) → 마이크를 허용하고, 이 페이지를 다시 열어 주세요.')
+      setNote(t('마이크를 쓸 수 없어요. 설정 → 소리블록(또는 Safari) → 마이크를 허용하고 다시 열어 주세요.', 'The microphone is not available. Allow it in Settings → Sori Blocks (or Safari) → Microphone, then open this screen again.'))
       return
     }
     chunks.current = []
@@ -285,56 +286,56 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     setPhase('processing')
     try {
       if (discard.current) {
-        setNote('너무 짧게 눌렀어요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
+        setNote(t('너무 짧게 눌렀어요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)', 'That was too short. Hold the button while you speak. (The previous take is kept.)'))
         return
       }
       if (!chunks.current.length) {
         // The mic delivered nothing: usually a dead stream after a device change.
         dropStream()
-        setNote('녹음이 비어 있어요. 한 번 더 눌러 주세요.')
+        setNote(t('녹음이 비어 있어요. 한 번 더 눌러 주세요.', 'Nothing was recorded. Please try again.'))
         return
       }
-      let stage = '디코딩'
+      let stage = t('디코딩', 'decode')
       try {
         const raw = new Blob(chunks.current, { type: mimeType })
         const decoded = await decodeTake(await raw.arrayBuffer())
-        stage = '다듬기'
+        stage = t('다듬기', 'trim')
         const samples = trimAndNormalize(decoded, PRESS_NOISE_S)
         if (!samples) {
           const db = loudestDb(decoded)
           setNote(
             db < -80
-              ? `마이크에서 아무 소리도 안 들어와요 (${db}dB). 마이크 권한과, 어떤 마이크가 선택돼 있는지 확인해 주세요.`
-              : `소리가 너무 작아요 (${db}dB). 마이크에 더 가까이 대고 조금 크게 말해 주세요.`,
+              ? t(`마이크에서 아무 소리도 안 들어와요 (${db}dB). 마이크 권한과, 어떤 마이크가 선택돼 있는지 확인해 주세요.`, `No sound from the microphone (${db}dB). Check the microphone permission and which microphone is selected.`)
+              : t(`소리가 너무 작아요 (${db}dB). 마이크에 더 가까이 대고 조금 크게 말해 주세요.`, `Too quiet (${db}dB). Move closer to the microphone and speak a little louder.`),
           )
           return
         }
         if (samples.length / decoded.sampleRate < MIN_TAKE_S) {
           // An accidental tap must never overwrite a good take.
-          setNote('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)')
+          setNote(t('너무 짧아요. 버튼을 누른 채로 말해 주세요. (이전 녹음은 그대로 있어요)', 'Too short. Hold the button while you speak. (The previous take is kept.)'))
           return
         }
-        stage = 'mp3 변환'
+        stage = t('mp3 변환', 'mp3')
         const mp3 = encodeMp3(samples, decoded.sampleRate)
         // Use the take even if on-device storage fails (e.g. Safari private browsing).
         setLocalRecording(target.name, mp3)
         setTakes((prev) => new Map(prev).set(target.name, mp3))
         playBlob(mp3)
         const secs = (samples.length / decoded.sampleRate).toFixed(2)
-        stage = '기기에 저장'
+        stage = t('기기에 저장', 'save')
         try {
           await saveRecording(target.name, mp3)
-          setNote(`저장됨 · ${secs}초 · 마음에 안 들면 다시 녹음하세요`)
+          setNote(t(`저장됨 · ${secs}초 · 마음에 안 들면 다시 녹음하세요`, `Saved · ${secs}s · Record again if you don't like it`))
         } catch (err) {
           console.warn('[recorder] storage failed', err)
           setNote(
-            `녹음됨 · ${secs}초 · 단, 이 브라우저에 저장이 안 돼요 (개인정보 보호 모드?). 끝나면 꼭 zip 받기를 누르세요. [${errText(err)}]`,
+            t(`녹음됨 · ${secs}초 · 단, 이 브라우저에 저장이 안 돼요 (개인정보 보호 모드?). 끝나면 꼭 zip 받기를 누르세요. [${errText(err)}]`, `Recorded · ${secs}s · but this browser can't save it (private mode?). Download the zip when you're done. [${errText(err)}]`),
           )
         }
       } catch (err) {
         console.warn('[recorder] take failed at', stage, err)
         dropStream()
-        setNote(`녹음을 처리하지 못했어요 (${stage} 단계: ${errText(err)}). 다시 해 주세요. 계속 나오면 이 문구를 Claude에게 보내 주세요.`)
+        setNote(t(`녹음을 처리하지 못했어요 (${stage}: ${errText(err)}). 다시 해 주세요. 계속되면 이 문구를 hello@lihallc.com 으로 보내 주세요.`, `Couldn't process the recording (${stage}: ${errText(err)}). Please try again. If it keeps happening, send this message to hello@lihallc.com.`))
       }
     } finally {
       setPhase('idle')
@@ -361,7 +362,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     const next = new Map(takes)
     next.delete(item.name)
     setTakes(next)
-    setNote('지웠어요')
+    setNote(t('지웠어요', 'Deleted'))
   }
 
   // The zip is built ahead of time: iOS only allows a download or share sheet that starts
@@ -407,7 +408,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     if (isNativeApp) {
       shareFileNative(zipFile).catch((err) => {
         console.warn('[recorder] native share failed', err)
-        setNote(`zip을 공유하지 못했어요 (${errText(err)})`)
+        setNote(t(`zip을 공유하지 못했어요 (${errText(err)})`, `Couldn't share the zip (${errText(err)})`))
       })
       return
     }
@@ -435,11 +436,13 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   }
 
   function zipLabel() {
-    if (!takes.size) return 'zip 받기 (0)'
-    if (!zipAll && !unsent) return '확인 중…'
+    if (!takes.size) return t('zip 받기 (0)', 'Download zip (0)')
+    if (!zipAll && !unsent) return t('확인 중…', 'Checking…')
     const n = zipAll ? takes.size : unsent!.size
-    if (n === 0) return '모두 올라가 있어요 ✓'
-    return zipFile ? `${zipAll ? '전체' : '새 녹음'} zip 받기 (${n})` : 'zip 준비 중…'
+    if (n === 0) return t('새 녹음 없음 ✓', 'Nothing new ✓')
+    return zipFile
+      ? t(`${zipAll ? '전체' : '새 녹음'} zip 받기 (${n})`, `Download ${zipAll ? 'all' : 'new'} as zip (${n})`)
+      : t('zip 준비 중…', 'Preparing zip…')
   }
 
   const hasTake = takes.has(item.name)
@@ -476,11 +479,11 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           {takes.size > 0 && (
             <label className="flex items-center gap-1 text-[13px] text-muted">
               <input type="checkbox" checked={zipAll} onChange={(e) => setZipAll(e.target.checked)} />
-              전체
+              {t('전체', 'All')}
             </label>
           )}
           <button type="button" onClick={onExit} className="rounded-full bg-card px-4 py-2 text-[15px] font-semibold">
-            게임으로
+            {t('게임으로', 'Back to game')}
           </button>
         </header>
 
@@ -490,9 +493,9 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           </div>
           <div className="text-[120px] font-bold leading-none">{item.shown}</div>
           <div className="text-[22px]">
-            「<b className="text-ink">{item.say}</b>」 라고 말하기
+            {t('「', 'Say “')}<b className="text-ink">{item.say}</b>{t('」 라고 말하기', '”')}
           </div>
-          <div className="text-[14px] text-muted">버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.</div>
+          <div className="text-[14px] text-muted">{t('버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.', 'Hold the button, wait a beat, say it, then let go. Keep a flat tone; stretch single letters slightly.')}</div>
 
           <button
             type="button"
@@ -513,14 +516,14 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             {phase === 'recording' ? (
               <>
                 <span className="block size-10 animate-pulse rounded-full bg-consonant" />
-                <span className="text-[18px]">말하세요</span>
+                <span className="text-[18px]">{t('말하세요', 'Speak')}</span>
               </>
             ) : phase === 'processing' ? (
-              '저장 중…'
+              t('저장 중…', 'Saving…')
             ) : (
               <>
                 <span className="block size-10 rounded-full bg-card" />
-                <span className="text-[18px]">누르고 있기</span>
+                <span className="text-[18px]">{t('누르고 있기', 'Hold')}</span>
               </>
             )}
           </button>
@@ -542,24 +545,24 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
           <fieldset disabled={phase !== 'idle'} className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">이전</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('이전', 'Back')}</button>
             <button type="button" disabled={!canListen} onClick={() => listen(item.name)}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">들어보기</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('들어보기', 'Listen')}</button>
             <button type="button" disabled={!hasTake} onClick={removeTake}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">지우기</button>
+              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('지우기', 'Delete')}</button>
             <button type="button" onClick={() => goTo(nextUnrecorded(index))}
-              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">다음</button>
+              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">{t('다음', 'Next')}</button>
           </fieldset>
         </section>
 
         <section>
           <div className="mb-2 text-[15px] text-muted">
-            {group.label}: {doneCount}/{group.items.length} 완료 · 눌러서 이동
+            {group.label}: {doneCount}/{group.items.length} {t('완료 · 눌러서 이동', 'done · tap to jump')}
           </div>
           <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-muted">
-            <span><i className="mr-1 inline-block size-3 rounded bg-vowel align-middle" />이 기기에서 녹음</span>
-            <span><i className="mr-1 inline-block size-3 rounded bg-vowel-soft align-middle" />사이트에 올라가 있음</span>
-            <span><i className="mr-1 inline-block size-3 rounded border border-card-shadow bg-card align-middle" />아직 없음</span>
+            <span><i className="mr-1 inline-block size-3 rounded bg-vowel align-middle" />{t('이 기기에서 녹음', 'Recorded on this device')}</span>
+            <span><i className="mr-1 inline-block size-3 rounded bg-vowel-soft align-middle" />{t('기본 소리', 'Built-in sound')}</span>
+            <span><i className="mr-1 inline-block size-3 rounded border border-card-shadow bg-card align-middle" />{t('아직 없음', 'None yet')}</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {group.items.map((it, i) => (
@@ -586,8 +589,10 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         <ParentProgress />
 
         <p className="pb-6 text-[14px] leading-relaxed text-muted">
-          녹음은 이 기기에 저장되고 게임에서 바로 쓰입니다. 다른 기기나 배포에 넣으려면 zip을 받아서 Claude에게
-          보내 주세요. 홈 화면 앱과 Safari는 저장소가 따로라서, 아이가 쓰는 쪽(홈 화면 앱)에서 녹음하세요.
+          {t(
+            '녹음은 이 기기에 저장되고 게임에서 바로 쓰여요. 녹음한 소리가 기본 소리 대신 나와요. 백업하거나 다른 기기로 옮기려면 zip을 받아 두세요.',
+            'Recordings are saved on this device and used in the game right away, in place of the built-in sounds. Download the zip to back them up or move them to another device.',
+          )}
         </p>
       </div>
     </div>

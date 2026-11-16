@@ -9,6 +9,7 @@ import {
   timesWritten,
   useProgress,
 } from '../progress'
+import { t } from '../i18n'
 
 /** Parents' view of the Write tab (behind the grown-up question): numbers live here, not on the child's screens. */
 export function ParentProgress() {
@@ -19,7 +20,7 @@ export function ParentProgress() {
     return (
       <span
         key={c}
-        title={`${n}번`}
+        title={t(`${n}번`, `${n}×`)}
         className={`inline-flex h-10 min-w-10 items-center justify-center rounded-lg px-1 text-[18px] font-bold ${
           n > 0 ? 'bg-vowel text-on-tile' : 'bg-page text-muted'
         }`}
@@ -31,33 +32,35 @@ export function ParentProgress() {
   }
   return (
     <section className="flex flex-col gap-3 rounded-[28px] bg-card px-6 py-5">
-      <div className="text-[18px] font-bold">아이의 쓰기 기록</div>
+      <div className="text-[18px] font-bold">{t('아이의 쓰기 기록', "Your child's writing")}</div>
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-[15px]">
-        <span>⭐ 별 {p.stars}개</span>
-        <span>자모 {jamoWrittenCount(p)}/{JAMO_CHARS.length}</span>
-        <span>음절 {sylDone}/{SYLLABLE_CHARS.length}</span>
-        <span>보물 스티커 {p.treasures.length}/{TREASURES.length}</span>
+        <span>⭐ {t(`별 ${p.stars}개`, `${p.stars} stars`)}</span>
+        <span>{t('자모', 'Letters')} {jamoWrittenCount(p)}/{JAMO_CHARS.length}</span>
+        <span>{t('음절', 'Syllables')} {sylDone}/{SYLLABLE_CHARS.length}</span>
+        <span>{t('보물 스티커', 'Treasure stickers')} {p.treasures.length}/{TREASURES.length}</span>
       </div>
       <div className="flex flex-wrap gap-1.5">{JAMO_CHARS.map(chip)}</div>
       {p.syllablesOpen && <div className="flex flex-wrap gap-1.5">{SYLLABLE_CHARS.map(chip)}</div>}
       <p className="text-[13px] leading-relaxed text-muted">
-        글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기가 열려요.
-        기록은 이 기기에만 저장돼요.
+        {t(
+          '글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기가 열려요. 기록은 이 기기에만 저장돼요.',
+          'One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing. This record stays on this device.',
+        )}
       </p>
       <div className="flex flex-wrap gap-2">
         {!p.syllablesOpen && (
           <button type="button" onClick={openSyllables} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
-            음절 쓰기 바로 열기
+            {t('음절 쓰기 바로 열기', 'Open syllable writing now')}
           </button>
         )}
         <button
           type="button"
           onClick={() => {
-            if (confirm('쓰기 기록(별, 스티커)을 모두 지울까요?')) resetProgress()
+            if (confirm(t('쓰기 기록(별, 스티커)을 모두 지울까요?', 'Erase all writing progress (stars and stickers)?'))) resetProgress()
           }}
           className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold"
         >
-          기록 지우기
+          {t('기록 지우기', 'Reset progress')}
         </button>
       </div>
     </section>
