@@ -4,6 +4,7 @@ import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
 import { ParentGate, gatePassed } from './components/ParentGate'
 import { Recorder } from './components/Recorder'
+import { Settings } from './components/Settings'
 import { TabBar, type Tab } from './components/TabBar'
 import { WriteBoard } from './components/WriteBoard'
 
@@ -35,6 +36,7 @@ export default function App() {
         {screen === 'write' && <WriteBoard />}
       </main>
       <TabBar tab={screen} onTab={go} />
+      <Settings onParent={() => go('record')} />
     </div>
   )
 }

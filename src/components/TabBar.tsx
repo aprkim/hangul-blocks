@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react'
 import { tapFeedback } from '../native'
 import { BuildIcon, PencilIcon, SoundIcon } from './Icons'
-import { ThemePicker } from './ThemePicker'
 
 export type Tab = 'jamo' | 'assemble' | 'write'
 
@@ -15,7 +14,6 @@ const TABS: { id: Tab; icon: ComponentType; label: string }[] = [
 export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
   return (
     <div className="tabbar shrink-0 px-[2.5vh] pb-[1.5vh]">
-      <span aria-hidden />
       <nav className="flex h-full min-h-0 items-stretch justify-center gap-[2vw]">
       {TABS.map(({ id, icon: Icon, label }) => (
         <button
@@ -37,7 +35,6 @@ export function TabBar({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
         </button>
       ))}
       </nav>
-      <ThemePicker />
     </div>
   )
 }

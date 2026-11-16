@@ -315,20 +315,19 @@ body {
   transition: translate 120ms ease-out;
 }
 
-/* ---------- Background theme picker ---------- */
-.tabbar {
-  display: grid;
-  grid-template-columns: minmax(var(--theme-btn), 1fr) minmax(0, 720px) minmax(var(--theme-btn), 1fr);
-  /* One row exactly as tall as the bar (minus padding), whatever the icons' intrinsic size. */
-  grid-template-rows: minmax(0, 1fr);
-  --theme-btn: clamp(56px, 8dvh, 84px);
+/* ---------- Settings (top right, every child screen) ---------- */
+:root {
+  --settings: clamp(52px, 7.5dvh, 72px);
+  --settings-gap: max(1.5vh, 10px);
 }
-.theme-btn {
-  justify-self: end;
-  align-self: center;
-  width: var(--theme-btn);
-  height: var(--theme-btn);
-  border-radius: 24px;
+.settings-btn {
+  position: fixed;
+  z-index: 30;
+  top: calc(env(safe-area-inset-top) + var(--settings-gap));
+  right: calc(env(safe-area-inset-right) + var(--settings-gap));
+  width: var(--settings);
+  height: var(--settings);
+  border-radius: 22px;
   background: var(--color-card);
   box-shadow: 0 6px 0 var(--color-card-shadow);
   display: flex;
@@ -336,30 +335,61 @@ body {
   justify-content: center;
   touch-action: none;
 }
-.theme-btn svg {
-  width: 70%;
-  height: 70%;
+.settings-btn svg {
+  width: 66%;
+  height: 66%;
 }
-.theme-backdrop {
+.settings-backdrop {
   position: fixed;
   inset: 0;
   z-index: 40;
   background: color-mix(in srgb, var(--color-ink) 12%, transparent);
 }
-.theme-pop {
+.settings-panel {
   position: fixed;
   z-index: 41;
-  right: max(2.5vh, 16px);
-  bottom: calc(clamp(72px, 11dvh, 104px) + 12px);
-  max-width: calc(100vw - 32px);
+  top: calc(env(safe-area-inset-top) + var(--settings-gap) + var(--settings) + 12px);
+  right: calc(env(safe-area-inset-right) + var(--settings-gap));
+  max-width: calc(100vw - 2 * var(--settings-gap));
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: 16px;
   padding: 18px;
   border-radius: 32px;
   background: var(--color-card);
   box-shadow: 0 8px 0 var(--color-card-shadow), 0 22px 40px -18px var(--color-drop-shadow);
+}
+.settings-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 16px;
+}
+.settings-divider {
+  width: 2px;
+  align-self: stretch;
+  background: var(--color-card-shadow);
+}
+.settings-parent {
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  background: var(--color-page);
+  box-shadow: 0 6px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.settings-parent svg {
+  width: 62%;
+  height: 62%;
+}
+/* The Sound board fills the screen edge to edge, so it keeps a band at the top for settings. */
+.jamo-board {
+  padding-top: calc(var(--settings) + 2 * var(--settings-gap)) !important;
 }
 .theme-swatch {
   width: 96px;
@@ -391,10 +421,20 @@ body {
 .jamo-board {
   gap: max(3vh, 28px) !important;
 }
-/* Narrow phones: no empty left column; tabs take the width, theme button at the end. */
+/* Narrow screens: colors in centered rows, then a horizontal divider, then the parent button. */
 @media (max-width: 600px) {
-  .tabbar {
-    grid-template-columns: 0 minmax(0, 1fr) var(--theme-btn);
-    column-gap: 10px;
+  .settings-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .settings-swatches {
+    justify-content: center;
+  }
+  .settings-divider {
+    width: auto;
+    height: 2px;
+  }
+  .settings-parent {
+    align-self: center;
   }
 }

@@ -77,14 +77,26 @@ export function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {
   )
 }
 
-/** Background theme button: a card holding three background swatches. */
-export function PaletteIcon() {
+/** Settings: three sliders whose knobs are the app's colors (consonant, vowel, ink). */
+export function SettingsIcon() {
   return (
     <svg {...box}>
-      <rect x="4" y="4" width="40" height="40" rx="11" fill="var(--color-card)" stroke={INK} strokeWidth={3} />
-      <circle cx="17" cy="18" r="7" fill="var(--theme-sage-page)" stroke={INK} strokeWidth={2.5} />
-      <circle cx="31" cy="18" r="7" fill="var(--theme-butter-page)" stroke={INK} strokeWidth={2.5} />
-      <circle cx="24" cy="31" r="7" fill="var(--theme-blush-page)" stroke={INK} strokeWidth={2.5} />
+      <path d="M8 13h32M8 24h32M8 35h32" stroke="var(--color-guide-strong)" strokeWidth={4} />
+      <circle cx="30" cy="13" r="5.5" fill={RED} />
+      <circle cx="16" cy="24" r="5.5" fill={BLUE} />
+      <circle cx="27" cy="35" r="5.5" fill={INK} />
+    </svg>
+  )
+}
+
+/** Parents' recording: a microphone with a small lock (the grown-up question follows). */
+export function ParentIcon() {
+  return (
+    <svg {...box}>
+      <rect x="11" y="5" width="14" height="22" rx="7" fill={INK} />
+      <path d="M6 20a12 12 0 0 0 24 0M18 32v8M12 40h12" stroke={INK} strokeWidth={4} />
+      <rect x="29" y="27" width="15" height="13" rx="3" fill={RED} />
+      <path d="M32.5 27v-3a4 4 0 0 1 8 0v3" stroke={RED} strokeWidth={3} />
     </svg>
   )
 }
