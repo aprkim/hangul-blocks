@@ -834,3 +834,12 @@ body {
     --stop: clamp(44px, calc((100vw - 60px) / 7.6), 80px);
   }
 }
+
+/* The writing square's cross guide (사방 보조선), as in Korean handwriting workbooks. */
+.write-cross {
+  fill: none;
+  stroke: var(--color-card-shadow);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 2.5;
+  pointer-events: none;
+}

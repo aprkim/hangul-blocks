@@ -377,6 +377,8 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
             onPointerCancel={onUp}
             aria-label={target.char}
           >
+            {/* 십자 보조선: the cross every Korean writing workbook prints in the square, for judging place and size */}
+            <path d="M50 3V97M3 50H97" className="write-cross" />
             {/* Pale guide of the whole letter */}
             {strokes.map((s, i) => (
               <path key={`g${i}`} d={strokePath(s.stroke)} className="stroke-guide" />

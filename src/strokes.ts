@@ -2,6 +2,7 @@
 // Each stroke is the path a finger follows, in writing order and direction.
 
 import type { VowelLayout } from './jamo'
+import { SYLLABLE_BOXES, VOWEL_BOXES, type Box } from './syllableBoxes'
 
 export type Pt = readonly [number, number]
 export type Stroke = Pt[]
@@ -119,33 +120,19 @@ export const STROKES: Record<string, Stroke[]> = {
 
 // ---------- syllables ----------
 // A syllable is drawn the way Korean type is: each part is refit to the space it gets, so the
-// same jamo changes shape with its partner (ㄱ sweeps down-left in 가 but is wide and flat in 고).
-// Boxes below are [x, y, w, h] on the 100 x 100 frame, tuned against a reference font.
+// same jamo changes proportion with its partner (ㄱ is tall in 가, wide in 고). The spaces come
+// from measurements of real fonts (src/syllableBoxes.ts).
 
-type Box = [number, number, number, number]
-
-/** 가로모임 (side): vowel to the right; 세로모임 (stack): vowel below. Per vowel, where each part goes. */
-const BOXES: Record<string, { cons: Box; vowel: Box }> = {
-  // side: the vowel's long vertical runs almost the full height; the consonant sits left, a bit above center
-  ㅏ: { cons: [10, 24, 36, 50], vowel: [64, 8, 24, 84] },
-  ㅑ: { cons: [10, 24, 36, 50], vowel: [64, 8, 24, 84] },
-  ㅓ: { cons: [12, 24, 30, 50], vowel: [58, 8, 26, 84] },
-  ㅕ: { cons: [12, 24, 30, 50], vowel: [58, 8, 26, 84] },
-  ㅣ: { cons: [16, 22, 38, 54], vowel: [72, 8, 0, 84] },
-  // stack: the consonant is wide and flat on top; the vowel's stub is short
-  ㅗ: { cons: [22, 12, 56, 36], vowel: [10, 62, 80, 24] },
-  ㅛ: { cons: [22, 12, 56, 36], vowel: [10, 62, 80, 24] },
-  ㅜ: { cons: [22, 8, 56, 30], vowel: [10, 56, 80, 32] },
-  ㅠ: { cons: [22, 8, 56, 30], vowel: [10, 56, 80, 32] },
-  ㅡ: { cons: [22, 16, 56, 38], vowel: [10, 70, 80, 0] },
+/** Where each part goes: measured per syllable, else the per-vowel median. */
+function boxesFor(cons: string | null, vowel: string | null, layout: VowelLayout): { cons: Box; vowel: Box } {
+  const v = vowel ?? (layout === 'side' ? 'ㅏ' : 'ㅗ')
+  return (cons && SYLLABLE_BOXES[cons + v]) || VOWEL_BOXES[v]
 }
-/** Before a vowel is chosen. */
-const NO_VOWEL: Record<VowelLayout, { cons: Box; vowel: Box }> = { side: BOXES['ㅏ'], stack: BOXES['ㅗ'] }
 
 // Dashed placeholders for an empty slot, per layout (x, y, w, h).
 export const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
-  side: { cons: [6, 16, 52, 68], vowel: [60, 6, 32, 88] },
-  stack: { cons: [14, 4, 72, 44], vowel: [6, 58, 88, 36] },
+  side: { cons: [10, 14, 46, 60], vowel: [64, 6, 28, 88] },
+  stack: { cons: [17, 8, 66, 40], vowel: [7, 54, 86, 38] },
 }
 
 /**
@@ -193,7 +180,7 @@ export function layoutSyllable(
   vowel: string | null,
   layout: VowelLayout,
 ): { cons: Stroke[] | null; vowel: Stroke[] | null } {
-  const box = (vowel && BOXES[vowel]) || NO_VOWEL[layout]
+  const box = boxesFor(cons, vowel, layout)
   let c: Stroke[] | null = null
   if (cons) {
     const shape = SHAPES[cons]?.[layout]
