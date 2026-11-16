@@ -96,8 +96,9 @@ play.google.com/console → **앱 만들기**
 | 자세한 설명 | `store/LISTING.md` 의 한국어 **설명** 그대로 |
 | 앱 아이콘 (512×512) | `store/android/play-icon-512.png` |
 | 그래픽 이미지 (1024×500) | `store/android/feature-1024x500.png` |
-| 휴대전화 스크린샷 | `store/android/phone-1920x1080-1…4.png` |
-| 태블릿 스크린샷 (7인치, 10인치) | `store/screenshots/ipad-13-1…6-*.png` |
+| 휴대전화 스크린샷 | `store/android/phone-1920x1080-1…6-*.png` |
+| 7인치 태블릿 스크린샷 | `store/android/tablet7-1920x1080-1…6-*.png` (16:9) |
+| 10인치 태블릿 스크린샷 | `store/android/tablet10-2560x1440-1…6-*.png` (16:9) |
 | 카테고리 | 교육 |
 | 이메일 | hello@lihallc.com |
 | 웹사이트 | https://soriblocks.lihallc.com |
