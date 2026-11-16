@@ -1,6 +1,8 @@
 # 소리블록 · Sori Blocks (hangul-blocks)
 
-Live: https://soriblocks.lihallc.com · Privacy: /privacy.html · Terms: /terms.html
+Website: https://soriblocks.lihallc.com (landing page) · Game on the web: /play/ · Privacy: /privacy.html · Terms: /terms.html
+
+The iOS/Android apps ship the game only: `npm run build:app` builds `dist-app` (game as start page), which Capacitor syncs.
 
 A Hangul sound-to-letter game for a 4-year-old. iPad Safari, landscape. Specs: `docs/SPEC.md`, `docs/AUDIO.md`.
 
