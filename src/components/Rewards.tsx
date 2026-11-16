@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { confetti } from '../effects'
 import { successFeedback, tapFeedback } from '../native'
-import { JAR_SIZE, SYLLABLES, TREASURES, openGift, timesWritten, useProgress } from '../progress'
+import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
 import { CloseIcon, GiftIcon, STAR_PATH, StarShape } from './Icons'
 
@@ -155,7 +155,7 @@ export function StickerBook({ onClose }: { onClose: () => void }) {
       <div className="book-scroll" data-scroll>
         <div className="book-page">
           <div className="book-grid letters">
-            {SYLLABLES.map(({ char, cons, vowel }) => {
+            {reachableSyllables(p).map(({ char, cons, vowel }) => {
               const card = cardFor(cons, vowel)
               const have = timesWritten(p, char) > 0
               return (

@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { confetti, flyStar } from '../effects'
-import { CONSONANTS, VOWELS, consonantSound, syllableSound, vowelSound } from '../jamo'
+import { CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
 import {
   JAMO_CHARS,
+  SET_GOAL,
   SYLLABLES,
   addStar,
   allJamoWritten,
+  nextSetReady,
+  openNextSet,
   openSyllables,
+  reachableSyllables,
   timesWritten,
   useProgress,
-  type Progress,
+  writtenInSet,
 } from '../progress'
 import { STROKES, strokePath, syllableStrokes, traceMatches, type Pt, type Stroke } from '../strokes'
 import { cardFor, type Card } from '../words'
@@ -32,8 +36,8 @@ type Target = {
   group: 'jamo' | 'syllable'
   strokes: { stroke: Stroke; part: Part }[]
   sound: string
-  /** Syllables only: the picture word (or animal friend) that becomes its sticker. */
-  card?: Card
+  /** Syllables only: its parts. Its sticker is the picture word (or animal friend) they make. */
+  syl?: { cons: Consonant; vowel: Vowel }
 }
 
 const JAMO: Target[] = [
@@ -51,12 +55,13 @@ const JAMO: Target[] = [
   })),
 ]
 
+/** All syllables, set by set (SYLLABLES is sorted that way), so the open ones are a prefix. */
 const SYLS: Target[] = SYLLABLES.map(({ char, cons, vowel }) => ({
   char,
   group: 'syllable',
   strokes: syllableStrokes(cons.char, vowel.char, vowel.layout),
   sound: syllableSound(cons, vowel),
-  card: cardFor(cons, vowel),
+  syl: { cons, vowel },
 }))
 
 const COLOR: Record<Part, string> = { consonant: 'var(--color-consonant)', vowel: 'var(--color-vowel)' }
@@ -85,7 +90,9 @@ export function WriteBoard() {
   const [lastChar, setLastChar] = useState<string | null>(null)
   const [book, setBook] = useState(false)
 
-  const list = view?.group === 'syllable' ? SYLS : JAMO
+  const p = useProgress()
+  // Arrows move within what is open: the jamo, or the syllables of the open sets.
+  const list = view?.group === 'syllable' ? SYLS.slice(0, reachableSyllables(p).length) : JAMO
   const target = view ? list[view.index] : null
 
   return (
@@ -164,9 +171,34 @@ function Road({ focus, onPick }: { focus: string | null; onPick: (g: View['group
         {chunk(consonants, narrow ? 5 : 7).map((ts, r, a) => row(ts, 'jamo', r * a[0].length, `c${r}`))}
         {chunk(vowels, narrow ? 5 : VOWELS.length).map((ts, r, a) => row(ts, 'jamo', CONSONANTS.length + r * a[0].length, `v${r}`))}
         {p.syllablesOpen ? (
-          chunk(SYLS, narrow ? 5 : VOWELS.length).map((ts, r, a) => row(ts, 'syllable', r * a[0].length, `s${r}`))
+          <>
+            {chunk(SYLS.slice(0, reachableSyllables(p).length), narrow ? 5 : VOWELS.length).map((ts, r, a) =>
+              row(ts, 'syllable', r * a[0].length, `s${r}`),
+            )}
+            {/* The next set of consonants waits in its own gift box: one dot per syllable written, 20 to open. */}
+            {p.setsOpen < SET_COUNT && (
+              <GiftGate
+                key={p.setsOpen}
+                ready={nextSetReady(p)}
+                dots={Array.from({ length: SET_GOAL }, (_, i) => (i < writtenInSet(p, p.setsOpen) ? 'is-star' : ''))}
+                onOpen={() => {
+                  const first = SYLS[reachableSyllables(p).length]?.char
+                  openNextSet()
+                  return first
+                }}
+              />
+            )}
+          </>
         ) : (
-          <SyllableGift p={p} />
+          /* The syllables wait in a gift box: one dot per jamo written, all 24 to open. */
+          <GiftGate
+            ready={allJamoWritten(p)}
+            dots={JAMO_CHARS.map((c, i) => (timesWritten(p, c) > 0 ? (i < CONSONANTS.length ? 'is-consonant' : 'is-vowel') : ''))}
+            onOpen={() => {
+              openSyllables()
+              return SYLS[0].char
+            }}
+          />
         )}
       </div>
     </div>
@@ -200,16 +232,18 @@ function RoadStop({ target, done, onPick }: { target: Target; done: boolean; onP
   )
 }
 
-/** The syllables wait in a gift box. Dots below fill in as jamo are written; when all 24 are, the box wiggles. */
-function SyllableGift({ p }: { p: Progress }) {
-  const ready = allJamoWritten(p)
+/**
+ * A gift box on the road. Dots below fill in as the child writes; when all are filled the box
+ * wiggles, and a tap opens it. `onOpen` returns the first letter of what it opened, to scroll to.
+ */
+function GiftGate({ ready, dots, onOpen }: { ready: boolean; dots: string[]; onOpen: () => string | undefined }) {
   const ref = useRef<HTMLButtonElement>(null)
   return (
     <div className="road-gift">
       <button
         ref={ref}
         type="button"
-        aria-label="syllables"
+        aria-label="gift"
         className={`road-gift-box ${ready ? 'is-ready' : ''}`}
         onClick={() => {
           if (!ready) {
@@ -220,20 +254,17 @@ function SyllableGift({ p }: { p: Progress }) {
           successFeedback()
           chime('fanfare')
           confetti(ref.current?.getBoundingClientRect())
-          openSyllables()
+          const first = onOpen()
           window.setTimeout(() => {
-            document.querySelector(`[data-char="${SYLS[0].char}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            if (first) document.querySelector(`[data-char="${first}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
           }, 120)
         }}
       >
         <GiftIcon />
       </button>
       <div className="road-dots" aria-hidden>
-        {JAMO_CHARS.map((c, i) => (
-          <i
-            key={c}
-            className={timesWritten(p, c) > 0 ? (i < CONSONANTS.length ? 'is-consonant' : 'is-vowel') : ''}
-          />
+        {dots.map((cls, i) => (
+          <i key={i} className={cls} />
         ))}
       </div>
     </div>
@@ -314,7 +345,8 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
     const char = target.char
     if (rect) flyStar(rect, () => addStar(char))
     else addStar(char)
-    const sticker = target.card
+    // Worked out now, not at startup: a word shows only once it has a sound (see words.ts).
+    const sticker = target.syl ? cardFor(target.syl.cons, target.syl.vowel) : null
     if (sticker) {
       // The syllable's picture word pops out and goes in the sticker book.
       timers.current.push(

@@ -1,39 +1,96 @@
+"""Turn measure.json (ink components per font and syllable) into src/syllableBoxes.ts.
+
+usage: python3 derive.py <dir with measure.json> <path to src/syllableBoxes.ts>
+"""
 import json, statistics as st, sys
-S=sys.argv[1]
-d=json.load(open(f'{S}/measure.json'))
-SYL=d['SYL']; out=d['out']
-EDU=['bareondotum','wooju','santteut','nanumgothic','gowundodum','notosans','pretendard']
-res={}
-perfont={}
+
+S, OUT = sys.argv[1], sys.argv[2]
+d = json.load(open(f'{S}/measure.json'))
+SYL, out = d['SYL'], d['out']
+# Sans fonts used in schools and on screens. Handwriting and display faces are left out.
+EDU = ['bareondotum', 'wooju', 'santteut', 'nanumgothic', 'gowundodum', 'notosans', 'pretendard']
+BODY = 76  # the letter body spans this much of the 100 frame (centerlines)
+
+def union(bs):
+    return {'x0': min(b['x0'] for b in bs), 'y0': min(b['y0'] for b in bs), 'x1': max(b['x1'] for b in bs), 'y1': max(b['y1'] for b in bs)}
+
+perfont = {}
 for n in EDU:
-    per=out[n]
-    # split into (cons, vowel) where separable
-    parts={}
+    per = out[n]
+    parts = {}
     for s in SYL:
-        c=per[s['ch']]
-        if len(c)!=2: continue
-        key=(lambda b:(b['x0']+b['x1'])/2) if s['side'] else (lambda b:(b['y0']+b['y1'])/2)
-        a,b=sorted(c,key=key)
-        parts[s['ch']]=(a,b)
-    # thickness
-    tv=st.median([parts[ch][1]['x1']-parts[ch][1]['x0'] for ch in '기니미비' if ch in parts])
-    th=st.median([parts[ch][1]['y1']-parts[ch][1]['y0'] for ch in '그느므브' if ch in parts])
-    # global ink box over all syllables
-    allc=[b for s in SYL for b in per[s['ch']]]
-    gx0=min(b['x0'] for b in allc)+tv/2; gx1=max(b['x1'] for b in allc)-tv/2
-    gy0=min(b['y0'] for b in allc)+th/2; gy1=max(b['y1'] for b in allc)-th/2
-    k=76/max(gx1-gx0,gy1-gy0); cx=(gx0+gx1)/2; cy=(gy0+gy1)/2
+        c = per[s['ch']]
+        if len(c) < 2:
+            continue  # consonant and vowel touch in this font
+        # The vowel is the piece with the long bar: tallest (side) or widest (stack). The rest is the consonant.
+        size = (lambda b: b['y1'] - b['y0']) if s['side'] else (lambda b: b['x1'] - b['x0'])
+        v = max(c, key=size)
+        rest = [b for b in c if b is not v]
+        parts[s['ch']] = (union(rest), v)
+    tv = st.median([parts[ch][1]['x1'] - parts[ch][1]['x0'] for ch in '기니미비' if ch in parts])
+    th = st.median([parts[ch][1]['y1'] - parts[ch][1]['y0'] for ch in '그느므브' if ch in parts])
+    allc = [b for s in SYL for b in per[s['ch']]]
+    gx0 = min(b['x0'] for b in allc) + tv / 2; gx1 = max(b['x1'] for b in allc) - tv / 2
+    gy0 = min(b['y0'] for b in allc) + th / 2; gy1 = max(b['y1'] for b in allc) - th / 2
+    k = BODY / max(gx1 - gx0, gy1 - gy0); cx = (gx0 + gx1) / 2; cy = (gy0 + gy1) / 2
     def norm(b):
-        x0=b['x0']+tv/2; x1=b['x1']-tv/2; y0=b['y0']+th/2; y1=b['y1']-th/2
-        x1=max(x1,x0); y1=max(y1,y0)
-        return [50+(x0-cx)*k, 50+(y0-cy)*k, (x1-x0)*k, (y1-y0)*k]
-    perfont[n]={ch:(norm(a),norm(b)) for ch,(a,b) in parts.items()}
-    print(n,'thickness %% of body: v %.1f h %.1f'%(tv*k, th*k), 'body w/h %.2f'%((gx1-gx0)/(gy1-gy0)))
-final={}
+        x0 = b['x0'] + tv / 2; x1 = max(b['x1'] - tv / 2, x0); y0 = b['y0'] + th / 2; y1 = max(b['y1'] - th / 2, y0)
+        return [50 + (x0 - cx) * k, 50 + (y0 - cy) * k, (x1 - x0) * k, (y1 - y0) * k]
+    normed = {ch: (norm(a), norm(b)) for ch, (a, b) in parts.items()}
+    # A piece of the consonant can fuse with the vowel (the circle of ㅎ onto ㅗ's stub), leaving a
+    # consonant that is far too small: drop measurements well under that font's median for the vowel.
+    vowel_of = {s['ch']: s['v'] for s in SYL}
+    for v in set(vowel_of.values()):
+        chs = [ch for ch in normed if vowel_of[ch] == v]
+        mw = st.median([normed[ch][0][2] for ch in chs]); mh = st.median([normed[ch][0][3] for ch in chs])
+        for ch in chs:
+            if normed[ch][0][2] < 0.6 * mw or normed[ch][0][3] < 0.6 * mh:
+                del normed[ch]
+    perfont[n] = normed
+
+r = lambda v: round(v * 2) / 2
+fmt = lambda b: '[' + ', '.join(('%g' % r(x)) for x in b) + ']'
+lines, byv, missing = [], {}, []
+SIBLING = dict(zip('ㅏㅑㅓㅕㅗㅛㅜㅠ', 'ㅑㅏㅕㅓㅛㅗㅠㅜ'))
+bykey = {(s['c'], s['v']): s['ch'] for s in SYL}
 for s in SYL:
-    ch=s['ch']
-    have=[perfont[n][ch] for n in EDU if ch in perfont[n]]
-    med=lambda i,j:round(st.median([h[i][j] for h in have]),1)
-    final[ch]={'cons':[med(0,j) for j in range(4)],'vowel':[med(1,j) for j in range(4)],'n':len(have),'c':s['c'],'v':s['v']}
-json.dump(final,open(f'{S}/boxes.json','w'),ensure_ascii=False)
-for ch,f in final.items(): print(ch,f['n'],'cons',f['cons'],'vowel',f['vowel'])
+    have = [perfont[n][s['ch']] for n in EDU if s['ch'] in perfont[n]]
+    if not have:
+        # Touching in every font (호): borrow the same consonant with the sister vowel (효).
+        sib = bykey.get((s['c'], SIBLING.get(s['v'], '')))
+        have = [perfont[n][sib] for n in EDU if sib in perfont[n]]
+        missing.append(s['ch'])
+        if not have:
+            continue
+    med = lambda i: [st.median([h[i][j] for h in have]) for j in range(4)]
+    cons, vowel = med(0), med(1)
+    byv.setdefault(s['v'], []).append((cons, vowel))
+    if s['c'] == 'ㄱ' and s['side']:
+        cons[3] *= 0.9  # ㄱ stays straight for children; a straight stem reads heavier than a sweep
+    lines.append(f"  {s['c']}{s['v']}: {{ cons: {fmt(cons)}, vowel: {fmt(vowel)} }}, // {s['ch']}: {len(have)} font{'s' if len(have) > 1 else ''}")
+vl = []
+for v, es in byv.items():
+    m = lambda i: [st.median([e[i][j] for e in es]) for j in range(4)]
+    vl.append(f"  {v}: {{ cons: {fmt(m(0))}, vowel: {fmt(m(1))} }},")
+open(OUT, 'w').write("""// GENERATED by scripts/syllable-boxes (see docs/SYLLABLE_SHAPES.md). Do not hand-tune single values.
+//
+// Where the consonant and the vowel sit in each syllable, as [x, y, w, h] boxes of stroke
+// centerlines on the 100 x 100 frame. Measured from seven Korean sans fonts used in education
+// and on screens (the Ministry of Education's 학교안심 바른돋움, 우주 and 산뜻돋움; 나눔고딕;
+// 고운돋움; Noto Sans KR; Pretendard): each syllable was rendered, split into its consonant and
+// vowel, normalized to the font's own letter body, and the median taken across the fonts in
+// which the two parts do not touch (count in the comment).
+
+export type Box = [number, number, number, number]
+
+/** Keyed by consonant + vowel jamo, e.g. 'ㄱㅏ' for 가. */
+export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
+""" + '\n'.join(lines) + """
+}
+
+/** For a syllable with no measurement: the median over the measured consonants, per vowel. */
+export const VOWEL_BOXES: Record<string, { cons: Box; vowel: Box }> = {
+""" + '\n'.join(vl) + """
+}
+""")
+print('syllables:', len(lines), '| borrowed from the sister vowel:', ''.join(missing) or 'none')

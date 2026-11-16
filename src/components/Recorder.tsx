@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { setLocalRecording, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
-import { WORD_RECORD_GROUP } from '../words'
+import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
 import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress } from './ParentProgress'
 import {
@@ -32,7 +32,7 @@ const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
-const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP]
+const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP]
 
 /** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */
 async function serverCopies(takes: Map<string, Blob>): Promise<Set<string>> {

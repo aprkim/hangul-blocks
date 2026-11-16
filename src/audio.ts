@@ -69,6 +69,24 @@ function voiceOffset(buf: AudioBuffer): number {
   return first < 0 ? 0 : Math.max(0, first / buf.sampleRate - 0.008)
 }
 
+/** <audio> fallbacks that have shown they hold real audio (a missing file never gets here). */
+const playable = new Set<string>()
+
+function useHtmlAudio(name: string, url: string) {
+  const el = new Audio(url)
+  el.preload = 'auto'
+  el.addEventListener('loadedmetadata', () => playable.add(name))
+  // Not audio after all (a missing file answered with a page, or nothing): forget it.
+  el.addEventListener('error', () => {
+    if (htmlFallback.get(name) !== el) return
+    htmlFallback.delete(name)
+    needsUnlock.delete(el)
+    warnMissing(name, 'not playable')
+  })
+  htmlFallback.set(name, el)
+  needsUnlock.add(el)
+}
+
 function load(name: string): Promise<Clip | null> {
   const ready = clips.get(name)
   if (ready) return Promise.resolve(ready)
@@ -94,10 +112,7 @@ function load(name: string): Promise<Clip | null> {
       }
       // Couldn't read the bytes, but <audio> may still play the file: fall back to it.
       console.warn(`[audio] fetch failed, using <audio> for ${name}.mp3`, err instanceof Error ? err.message : err)
-      const el = new Audio(url)
-      el.preload = 'auto'
-      htmlFallback.set(name, el)
-      needsUnlock.add(el)
+      useHtmlAudio(name, url)
       loading.delete(name)
       return null
     }
@@ -109,10 +124,7 @@ function load(name: string): Promise<Clip | null> {
     } catch (err) {
       // The file exists but this decoder refused it: keep it playable through <audio>.
       console.warn(`[audio] decode failed, using <audio> for ${name}.mp3`, err instanceof Error ? `${err.name}: ${err.message}` : err)
-      const el = new Audio(url)
-      el.preload = 'auto'
-      htmlFallback.set(name, el)
-      needsUnlock.add(el)
+      useHtmlAudio(name, url)
       return null
     } finally {
       loading.delete(name)
@@ -130,8 +142,14 @@ export function setLocalRecording(name: string, mp3: Blob | null) {
   else local.delete(name)
   clips.delete(name)
   htmlFallback.delete(name)
+  playable.delete(name)
   missing.delete(name)
   void load(name)
+}
+
+/** A sound known to be there: recorded on this device, or loaded and decoded from the app. */
+export function hasSound(name: string): boolean {
+  return local.has(name) || clips.has(name) || playable.has(name)
 }
 
 /** Fetch and decode in the background, a few at a time. */

@@ -174,19 +174,67 @@ function fit(strokes: Stroke[], to: Box, from: Box = bbox(strokes)): Stroke[] {
   return strokes.map((s) => s.map(([x, y]) => [mx(x), my(y)] as Pt))
 }
 
+/**
+ * The two parts of a syllable never touch (two pieces joining is what the child is learning),
+ * and a finger must be able to tell their strokes apart: at least this far, centerline to centerline.
+ */
+const MIN_GAP = 13
+
+function gap(a: Stroke[], b: Stroke[]): number {
+  let m = Infinity
+  const pb = b.flatMap((s) => sample(s, 1.5))
+  for (const s of a) for (const p of sample(s, 1.5)) for (const q of pb) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1]))
+  return m
+}
+
+const laidOut = new Map<string, { cons: Stroke[] | null; vowel: Stroke[] | null }>()
+
 /** The consonant and vowel strokes of a syllable on the 100 x 100 frame (either may be missing). */
 export function layoutSyllable(
   cons: string | null,
   vowel: string | null,
   layout: VowelLayout,
 ): { cons: Stroke[] | null; vowel: Stroke[] | null } {
+  const key = `${cons}${vowel}${layout}`
+  const cached = laidOut.get(key)
+  if (cached) return cached
+
   const box = boxesFor(cons, vowel, layout)
+  const v = vowel ? fit(STROKES[vowel] ?? [], box.vowel) : null
+  const consIn = (to: Box): Stroke[] => {
+    const shape = SHAPES[cons!]?.[layout]
+    return shape ? fit(shape, to, [0, 0, 1, 1]) : fit(STROKES[cons!] ?? [], to)
+  }
   let c: Stroke[] | null = null
   if (cons) {
-    const shape = SHAPES[cons]?.[layout]
-    c = shape ? fit(shape, box.cons, [0, 0, 1, 1]) : fit(STROKES[cons] ?? [], box.cons)
+    // Fonts let some pairs touch (머, 텨). Here the consonant gives way until the gap is clear,
+    // trying the gentlest change first: slide away from the vowel, then get narrower or (beside
+    // a vowel) a little taller so the vowel's arm clears its bottom stroke, or shorter above one.
+    const [x, y, w, h] = box.cons
+    const side = layout === 'side'
+    const tries: { box: Box; cost: number }[] = []
+    for (const d of [0, 2, 4, 6])
+      for (let kw = 1; kw > 0.58; kw -= 0.04)
+        for (const kh of side ? [1, 1.06, 1.12, 1.18] : [1, 0.94, 0.88, 0.82, 0.76])
+          tries.push({
+            box: side ? [Math.max(10, x - d), y, w * kw, h * kh] : [x + (w * (1 - kw)) / 2, Math.max(9, y - d), w * kw, h * kh],
+            cost: d * 0.02 + (1 - kw) * (side ? 1 : 1.5) + Math.abs(1 - kh) * (side ? 1 : 1.2),
+          })
+    tries.sort((p, q) => p.cost - q.cost)
+    let best = -1
+    for (const t of tries) {
+      const candidate = consIn(t.box)
+      const g = v ? gap(candidate, v) : Infinity
+      if (g > best) {
+        best = g
+        c = candidate
+      }
+      if (g >= MIN_GAP) break
+    }
   }
-  return { cons: c, vowel: vowel ? fit(STROKES[vowel] ?? [], box.vowel) : null }
+  const result = { cons: c, vowel: v }
+  laidOut.set(key, result)
+  return result
 }
 
 /** Strokes of a syllable on the 100 x 100 frame: consonant strokes, then vowel strokes (Korean stroke order). */

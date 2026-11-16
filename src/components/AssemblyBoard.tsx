@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { play } from '../audio'
 import {
-  ASSEMBLE_CONSONANTS,
+  SETS,
   VOWELS,
   composeSyllable,
   consonantSound,
@@ -13,7 +13,8 @@ import {
 } from '../jamo'
 import { successFeedback } from '../native'
 import { cardFor, type Card } from '../words'
-import { ResetIcon } from './Icons'
+import { useProgress } from '../progress'
+import { ArrowIcon, ResetIcon } from './Icons'
 import { Syllable } from './JamoStrokes'
 import { Tile } from './Tile'
 
@@ -55,6 +56,13 @@ export function AssemblyBoard() {
   const glyphRef = useRef<SVGSVGElement>(null)
 
   const layout: VowelLayout = vowel?.layout ?? 'side'
+
+  // The consonant tray shows one set at a time. Later sets appear once the child has opened
+  // them on the Write road; then arrows at the ends of the tray switch sets.
+  const { setsOpen } = useProgress()
+  const [setIndex, setSetIndex] = useState(0)
+  const shownSet = Math.min(setIndex, setsOpen - 1)
+  const turnSet = (d: number) => setSetIndex((shownSet + d + setsOpen) % setsOpen)
 
   function place(nextCons: Consonant | null, nextVowel: Vowel | null) {
     window.clearTimeout(timer.current)
@@ -153,7 +161,12 @@ export function AssemblyBoard() {
       {/* Trays. Consonants not yet recorded are hidden, not greyed. */}
       <div className="trays flex flex-col items-center gap-[2vh]">
         <div className="tray">
-          {ASSEMBLE_CONSONANTS.map((c) => (
+          {setsOpen > 1 && (
+            <Tile kind="control" onTap={() => turnSet(-1)} label="previous consonants" className="size-(--tile)">
+              <ArrowIcon dir="left" />
+            </Tile>
+          )}
+          {SETS[shownSet].map((c) => (
             <Tile
               key={c.char}
               kind="consonant"
@@ -164,6 +177,11 @@ export function AssemblyBoard() {
               {c.char}
             </Tile>
           ))}
+          {setsOpen > 1 && (
+            <Tile kind="control" onTap={() => turnSet(1)} label="more consonants" className="size-(--tile)">
+              <ArrowIcon dir="right" />
+            </Tile>
+          )}
         </div>
         {/* Two vowel rows: side-by-side vowels, then stacked vowels. */}
         {(['side', 'stack'] as const).map((row) => (

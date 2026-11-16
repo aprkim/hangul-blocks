@@ -664,6 +664,9 @@ body {
 .road-dots i.is-vowel {
   background: var(--color-vowel);
 }
+.road-dots i.is-star {
+  background: var(--color-star);
+}
 
 /* Effects (effects.ts) */
 .fx-star,

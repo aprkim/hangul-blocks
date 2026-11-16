@@ -2,14 +2,17 @@ import {
   JAMO_CHARS,
   SYLLABLE_CHARS,
   TREASURES,
+  SET_GOAL,
   jamoWrittenCount,
   letterStickers,
-  openSyllables,
+  openAllSets,
+  reachableSyllables,
   resetProgress,
   timesWritten,
   useProgress,
 } from '../progress'
 import { t } from '../i18n'
+import { SET_COUNT } from '../jamo'
 
 /** Parents' view of the Write tab (behind the grown-up question): numbers live here, not on the child's screens. */
 export function ParentProgress() {
@@ -40,17 +43,17 @@ export function ParentProgress() {
         <span>{t('보물 스티커', 'Treasure stickers')} {p.treasures.length}/{TREASURES.length}</span>
       </div>
       <div className="flex flex-wrap gap-1.5">{JAMO_CHARS.map(chip)}</div>
-      {p.syllablesOpen && <div className="flex flex-wrap gap-1.5">{SYLLABLE_CHARS.map(chip)}</div>}
+      {p.syllablesOpen && <div className="flex flex-wrap gap-1.5">{reachableSyllables(p).map((s) => chip(s.char))}</div>}
       <p className="text-[13px] leading-relaxed text-muted">
         {t(
-          '글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기가 열려요. 기록은 이 기기에만 저장돼요.',
-          'One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing. This record stays on this device.',
+          `글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기(ㄱㄴㅁㅂ)가 열리고, 한 세트에서 글자 ${SET_GOAL}개를 쓰면 다음 세트(ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ)가 열려요. 열린 세트는 만들기에도 나와요. 지금 ${p.setsOpen}/${SET_COUNT}세트. 기록은 이 기기에만 저장돼요.`,
+          `One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing (ㄱㄴㅁㅂ); writing ${SET_GOAL} syllables of a set opens the next one (ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ). Open sets also appear on Build. Now ${p.setsOpen} of ${SET_COUNT} sets. This record stays on this device.`,
         )}
       </p>
       <div className="flex flex-wrap gap-2">
-        {!p.syllablesOpen && (
-          <button type="button" onClick={openSyllables} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
-            {t('음절 쓰기 바로 열기', 'Open syllable writing now')}
+        {(!p.syllablesOpen || p.setsOpen < SET_COUNT) && (
+          <button type="button" onClick={openAllSets} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
+            {t('모든 글자 바로 열기', 'Open all letters now')}
           </button>
         )}
         <button

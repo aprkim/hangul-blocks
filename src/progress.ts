@@ -2,7 +2,7 @@
 // Nothing here ever goes down: stars only add up, stickers are never taken away.
 
 import { useSyncExternalStore } from 'react'
-import { ASSEMBLE_CONSONANTS, CONSONANTS, VOWELS, composeSyllable, type Consonant, type Vowel } from './jamo'
+import { CONSONANTS, SET_COUNT, VOWELS, composeSyllable, type Consonant, type Vowel } from './jamo'
 
 /** Stars that fill the jar; a full jar gives a treasure sticker. */
 export const JAR_SIZE = 10
@@ -10,11 +10,15 @@ export const JAR_SIZE = 10
 /** The 24 basic jamo, in the Write tab's order. */
 export const JAMO_CHARS = [...CONSONANTS.map((c) => c.char), ...VOWELS.map((v) => v.char)]
 
-/** Syllables that can be written: consonants on the Build board x all vowels (each is a sticker). */
-export const SYLLABLES: { char: string; cons: Consonant; vowel: Vowel }[] = ASSEMBLE_CONSONANTS.flatMap((cons) =>
-  VOWELS.map((vowel) => ({ char: composeSyllable(cons, vowel), cons, vowel })),
-)
+/** Every syllable that can be built and written (each is a sticker), with its set (1..4). */
+export const SYLLABLES: { char: string; cons: Consonant; vowel: Vowel; set: number }[] = CONSONANTS.flatMap((cons) =>
+  VOWELS.map((vowel) => ({ char: composeSyllable(cons, vowel), cons, vowel, set: cons.set })),
+).sort((x, y) => x.set - y.set)
 export const SYLLABLE_CHARS = SYLLABLES.map((s) => s.char)
+export const syllablesOfSet = (set: number) => SYLLABLES.filter((s) => s.set === set)
+
+/** Different syllables of a set to write before the next set's gift box can be opened. */
+export const SET_GOAL = 20
 
 /** Treasure stickers, given one at a time when the star jar is full. */
 export const TREASURES = [
@@ -35,10 +39,12 @@ export type Progress = {
   pendingGift: string | null
   /** The syllable road has been opened (gift box tapped, or opened by a parent). */
   syllablesOpen: boolean
+  /** How many syllable sets are open (1..4). Set 1 is always open on Build. */
+  setsOpen: number
 }
 
 const KEY = 'soriblocks.progress.v1'
-const EMPTY: Progress = { written: {}, stars: 0, jar: 0, treasures: [], pendingGift: null, syllablesOpen: false }
+const EMPTY: Progress = { written: {}, stars: 0, jar: 0, treasures: [], pendingGift: null, syllablesOpen: false, setsOpen: 1 }
 
 function load(): Progress {
   try {
@@ -81,6 +87,12 @@ export const jamoWrittenCount = (p: Progress) => JAMO_CHARS.filter((c) => timesW
 export const allJamoWritten = (p: Progress) => jamoWrittenCount(p) === JAMO_CHARS.length
 /** Letter stickers: one for each syllable written at least once. */
 export const letterStickers = (p: Progress) => SYLLABLE_CHARS.filter((c) => timesWritten(p, c) > 0)
+/** Different syllables of a set written so far. */
+export const writtenInSet = (p: Progress, set: number) => syllablesOfSet(set).filter((s) => timesWritten(p, s.char) > 0).length
+/** The next set's gift box can be opened: enough of the newest open set has been written. */
+export const nextSetReady = (p: Progress) => p.setsOpen < SET_COUNT && writtenInSet(p, p.setsOpen) >= SET_GOAL
+/** Syllables the child can reach now. */
+export const reachableSyllables = (p: Progress) => SYLLABLES.filter((s) => s.set <= p.setsOpen)
 
 /**
  * A letter was written to the end: count it and drop one star in the jar.
@@ -111,6 +123,16 @@ export function openGift() {
 
 export function openSyllables() {
   if (!state.syllablesOpen) set({ ...state, syllablesOpen: true })
+}
+
+/** The next set's gift box was opened. */
+export function openNextSet() {
+  if (state.setsOpen < SET_COUNT) set({ ...state, setsOpen: state.setsOpen + 1 })
+}
+
+/** Parents: open everything now. */
+export function openAllSets() {
+  set({ ...state, syllablesOpen: true, setsOpen: SET_COUNT })
 }
 
 /** Parents: start over. */
