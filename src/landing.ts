@@ -3,7 +3,7 @@ import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './landing.css'
 
 /** App Store "Apple ID" of 소리블록 (App Store Connect → App Information). Empty until set. */
-const APP_STORE_ID = ''
+const APP_STORE_ID = '6833827598'
 
 // Opened from a Home Screen icon (the web app added before this page existed), or an old
 // /?record link: go straight to the game, as before.
