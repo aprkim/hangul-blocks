@@ -117,14 +117,20 @@ export const STROKES: Record<string, Stroke[]> = {
   ㅣ: [[[50, 10], [50, 90]]],
 }
 
-// Where each part sits in the 100 x 100 frame. Each part keeps its own uniform scale in both
-// layouts, so the consonant only translates when it slides (and its strokes keep their weight).
+// Where each part sits in the 100 x 100 frame.
+// 가로모임 (side): consonant left, vowel right, fixed places.
+// 세로모임 (stack): the consonant is drawn wider and flatter (as in 고, 구, 그) and the pair is
+// centered as a block, with the same small gap under the consonant for every vowel.
 export const CONS_SCALE = 0.5
 export const VOWEL_SCALE = 0.88
+const STACK_CONS_SCALE = 0.56
+/** Gap between the consonant's lowest stroke and the vowel's highest, centerline to centerline. */
+const STACK_GAP = 15
+/** Height of a consonant in the stack, for placing a vowel before a consonant is chosen. */
+const STACK_NOMINAL_CONS = 24
+
 export const PLACE: Record<VowelLayout, { cons: [number, number]; vowel: [number, number] }> = {
-  // 가로모임: consonant left, vowel right
   side: { cons: [3, 25], vowel: [29, 6] },
-  // 세로모임: consonant top, vowel below
   stack: { cons: [25, 3], vowel: [6, 29] },
 }
 // Dashed placeholders for an empty slot, per layout (x, y, w, h).
@@ -133,12 +139,55 @@ export const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
   stack: { cons: [20, 4, 60, 46], vowel: [8, 54, 84, 40] },
 }
 
+/** A consonant's strokes for a layout: as written alone, or wider and flatter on top of a vowel. */
+export function consonantShape(char: string, layout: VowelLayout): Stroke[] {
+  const strokes = STROKES[char] ?? []
+  if (layout === 'side') return strokes
+  return strokes.map((s) => s.map(([x, y]) => [50 + (x - 50) * 1.35, 50 + (y - 50) * 0.72] as Pt))
+}
+
+function yRange(strokes: Stroke[]): [number, number] {
+  const ys = strokes.flat().map((p) => p[1])
+  return ys.length ? [Math.min(...ys), Math.max(...ys)] : [0, 0]
+}
+
+export type Placed = { strokes: Stroke[]; x: number; y: number; k: number }
+
+/** Where the consonant and vowel go (translate x, y then scale k, in frame units). */
+export function placeSyllable(
+  cons: string | null,
+  vowel: string | null,
+  layout: VowelLayout,
+): { cons: Placed | null; vowel: Placed | null } {
+  if (layout === 'side') {
+    return {
+      cons: cons ? { strokes: STROKES[cons] ?? [], x: PLACE.side.cons[0], y: PLACE.side.cons[1], k: CONS_SCALE } : null,
+      vowel: vowel ? { strokes: STROKES[vowel] ?? [], x: PLACE.side.vowel[0], y: PLACE.side.vowel[1], k: VOWEL_SCALE } : null,
+    }
+  }
+  const cs = cons ? consonantShape(cons, 'stack') : []
+  const [c0, c1] = yRange(cs)
+  const consH = cons ? (c1 - c0) * STACK_CONS_SCALE : STACK_NOMINAL_CONS
+  const vs = vowel ? (STROKES[vowel] ?? []) : []
+  const [v0, v1] = vowel ? yRange(vs) : [30, 62]
+  const vowelH = (v1 - v0) * VOWEL_SCALE
+  const top = 50 - (consH + STACK_GAP + vowelH) / 2
+  const k = STACK_CONS_SCALE
+  return {
+    cons: cons ? { strokes: cs, x: 50 - 50 * k, y: top - c0 * k, k } : null,
+    vowel: vowel ? { strokes: vs, x: 50 - 50 * VOWEL_SCALE, y: top + consH + STACK_GAP - v0 * VOWEL_SCALE, k: VOWEL_SCALE } : null,
+  }
+}
+
 /** Strokes of a syllable on the 100 x 100 frame: consonant strokes, then vowel strokes (Korean stroke order). */
 export function syllableStrokes(cons: string, vowel: string, layout: VowelLayout): { stroke: Stroke; part: 'consonant' | 'vowel' }[] {
-  const move = (s: Stroke, [dx, dy]: [number, number], k: number): Stroke => s.map(([x, y]) => [dx + x * k, dy + y * k] as Pt)
+  const placed = placeSyllable(cons, vowel, layout)
+  const move = (s: Stroke, p: Placed): Stroke => s.map(([x, y]) => [p.x + x * p.k, p.y + y * p.k] as Pt)
+  const c = placed.cons!
+  const v = placed.vowel!
   return [
-    ...(STROKES[cons] ?? []).map((s) => ({ stroke: move(s, PLACE[layout].cons, CONS_SCALE), part: 'consonant' as const })),
-    ...(STROKES[vowel] ?? []).map((s) => ({ stroke: move(s, PLACE[layout].vowel, VOWEL_SCALE), part: 'vowel' as const })),
+    ...c.strokes.map((s) => ({ stroke: move(s, c), part: 'consonant' as const })),
+    ...v.strokes.map((s) => ({ stroke: move(s, v), part: 'vowel' as const })),
   ]
 }
 
