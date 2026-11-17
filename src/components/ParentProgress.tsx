@@ -94,44 +94,75 @@ export function ParentProgress() {
     )
   }
   return (
-    <section className="flex flex-col gap-3 rounded-[28px] bg-card px-6 py-5">
-      <div className="text-[18px] font-bold">{t('아이의 쓰기 기록', "Your child's writing")}</div>
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-[15px]">
-        <span>⭐ {t(`별 ${p.stars}개`, `${p.stars} stars`)}</span>
-        <span>{t('자모', 'Letters')} {jamoWrittenCount(p)}/{JAMO_CHARS.length}</span>
-        <span>{t('음절', 'Syllables')} {sylDone}/{SYLLABLE_CHARS.length}</span>
-        <span>{t('보물 스티커', 'Treasure stickers')} {p.treasures.length}/{TREASURES.length}</span>
+    <section className="parent-card">
+      <h2>{t('아이의 기록', "Your child's progress")}</h2>
+      <div className="parent-stats">
+        <div><b>{p.stars}</b><span>{t('별', 'Stars')}</span></div>
+        <div><b>{jamoWrittenCount(p)}<small>/{JAMO_CHARS.length}</small></b><span>{t('쓴 자음·모음', 'Letters written')}</span></div>
+        <div><b>{sylDone}<small>/{SYLLABLE_CHARS.length}</small></b><span>{t('쓴 글자', 'Syllables written')}</span></div>
+        <div><b>{p.treasures.length}<small>/{TREASURES.length}</small></b><span>{t('보물 스티커', 'Treasures')}</span></div>
       </div>
+      <p className="parent-sub">{t('글자를 쓴 횟수 (파란색 = 써 봤어요)', 'Times each letter was written (blue = written)')}</p>
       <div className="flex flex-wrap gap-1.5">{JAMO_CHARS.map(chip)}</div>
       {p.syllablesOpen && <div className="flex flex-wrap gap-1.5">{reachableSyllables(p).map((s) => chip(s.char))}</div>}
-      <p className="text-[13px] leading-relaxed text-muted">
+      <p className="parent-sub">
         {t(
-          `글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기(ㄱㄴㅁㅂ)가 열리고, 한 세트에서 글자 ${SET_GOAL}개를 쓰면 다음 세트(ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ)가 열려요. 만들기에서는 처음부터 자음 14개를 모두 쓸 수 있어요. 지금 ${p.setsOpen}/${SET_COUNT}세트. 기록은 이 기기에만 저장돼요.`,
-          `One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing (ㄱㄴㅁㅂ); writing ${SET_GOAL} syllables of a set opens the next one (ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ). Build has all 14 consonants from the start. Now ${p.setsOpen} of ${SET_COUNT} sets. This record stays on this device.`,
+          '글자를 끝까지 따라 쓰면 별 1개, 별 10개마다 보물 스티커를 받아요. 기록은 이 기기에만 저장돼요.',
+          'One star for each letter traced to the end, a treasure sticker for every 10 stars. This record stays on this device.',
         )}
       </p>
-      <div className="flex flex-wrap gap-2">
-        {(!p.syllablesOpen || p.setsOpen < SET_COUNT) && (
-          <button type="button" onClick={openAllSets} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
-            {t('모든 글자 바로 열기', 'Open all letters now')}
-          </button>
-        )}
-        {written.length > 0 && (
-          <button type="button" onClick={saveHandwriting} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
+      {written.length > 0 && (
+        <div>
+          <button type="button" onClick={saveHandwriting} className="parent-btn">
             {t(`아이 글씨 그림으로 저장 (${written.length})`, `Save handwriting as a picture (${written.length})`)}
           </button>
-        )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+/** Settings that change the child's progress: open everything now, or start over. */
+export function ParentSettings() {
+  const p = useProgress()
+  return (
+    <section className="parent-card">
+      <h2>{t('설정', 'Settings')}</h2>
+      <div className="parent-row">
+        <div>
+          <b>{t('모든 글자 바로 열기', 'Open all letters now')}</b>
+          <p className="parent-sub">
+            {t(
+              `원래는 아이가 써서 열어요: 자모 24개를 다 쓰면 글자 쓰기, 한 세트에서 ${SET_GOAL}개를 쓰면 다음 세트(지금 ${p.setsOpen}/${SET_COUNT}).`,
+              `Normally the child opens them by writing: all 24 letters open syllables, ${SET_GOAL} syllables of a set open the next set (now ${p.setsOpen} of ${SET_COUNT}).`,
+            )}
+          </p>
+        </div>
         <button
           type="button"
+          className="parent-btn"
+          disabled={p.syllablesOpen && p.setsOpen >= SET_COUNT}
+          onClick={openAllSets}
+        >
+          {p.syllablesOpen && p.setsOpen >= SET_COUNT ? t('모두 열림', 'All open') : t('열기', 'Open')}
+        </button>
+      </div>
+      <div className="parent-row">
+        <div>
+          <b>{t('기록 지우기', 'Reset progress')}</b>
+          <p className="parent-sub">{t('별, 스티커, 놀이판, 아이 글씨를 모두 지우고 처음부터 시작해요. 녹음은 그대로예요.', 'Erases stars, stickers, play scenes and handwriting. Recordings are kept.')}</p>
+        </div>
+        <button
+          type="button"
+          className="parent-btn is-danger"
           onClick={() => {
             if (confirm(t('쓰기 기록(별, 스티커, 놀이판, 아이 글씨)을 모두 지울까요?', 'Erase all writing progress (stars, stickers, play scenes, handwriting)?'))) {
               resetProgress()
               resetKeepsakes()
             }
           }}
-          className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold"
         >
-          {t('기록 지우기', 'Reset progress')}
+          {t('지우기', 'Reset')}
         </button>
       </div>
     </section>

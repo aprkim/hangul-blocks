@@ -3,7 +3,7 @@ import { setLocalRecording, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
 import { isNativeApp, shareFileNative } from '../native'
-import { ParentProgress } from './ParentProgress'
+import { ParentProgress, ParentSettings } from './ParentProgress'
 import {
   deleteRecording,
   encodeMp3,
@@ -15,8 +15,9 @@ import {
 } from '../recordings'
 import { t } from '../i18n'
 
-// Adult-only recording page. Open with ?record, or hold the empty corner of the jamo
-// board for 3 seconds. One sound per take: hold the button, say it, let go.
+// The parents' page (behind the grown-up question): the child's writing record, the family's
+// own voice for any sound (hold the button, say it, let go), settings, and a backup of the
+// recordings. Open from settings (top right) or with ?record.
 
 type Phase = 'idle' | 'recording' | 'processing'
 
@@ -33,6 +34,14 @@ const MIN_PRESS_MS = 300
 const MIN_TAKE_S = 0.2
 
 const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP]
+
+/** What parents see: three kinds of sound, not the production batches. */
+type UiGroup = { id: string; label: string; items: RecordItem[] }
+const UI_GROUPS: UiGroup[] = [
+  { id: 'jamo', label: t('자음·모음', 'Letters'), items: JAMO_GROUPS[0].items },
+  { id: 'syllables', label: t('글자', 'Syllables'), items: JAMO_GROUPS.slice(1).flatMap((g) => g.items) },
+  { id: 'words', label: t('그림 단어', 'Picture words'), items: [...WORD_RECORD_GROUP.items, ...MORE_WORD_RECORD_GROUP.items] },
+]
 
 /** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */
 async function serverCopies(takes: Map<string, Blob>): Promise<Set<string>> {
@@ -82,7 +91,7 @@ function errText(err: unknown): string {
 }
 
 export function Recorder({ onExit }: { onExit: () => void }) {
-  const [groupId, setGroupId] = useState(RECORD_GROUPS[0].id)
+  const [groupId, setGroupId] = useState(UI_GROUPS[0].id)
   const [index, setIndex] = useState(0)
   const [takes, setTakes] = useState<Map<string, Blob>>(new Map())
   const [phase, setPhase] = useState<Phase>('idle')
@@ -99,7 +108,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const [level, setLevel] = useState(0)
   const [elapsed, setElapsed] = useState(0)
 
-  const group = RECORD_GROUPS.find((g) => g.id === groupId)!
+  const group = UI_GROUPS.find((g) => g.id === groupId)!
   const item: RecordItem = group.items[index]
   // Recorded on this device, or already uploaded to the site from any device.
   const [onSiteAll, setOnSiteAll] = useState<Set<string>>(new Set())
@@ -107,7 +116,6 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     siteFiles(RECORD_GROUPS.flatMap((g) => g.items.map((i) => i.name))).then(setOnSiteAll)
   }, [])
   const isDone = (name: string) => takes.has(name) || onSiteAll.has(name)
-  const doneCount = group.items.filter((i) => isDone(i.name)).length
 
   useEffect(() => {
     stopGameAudio()
@@ -447,138 +455,135 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   const hasTake = takes.has(item.name)
   const canListen = hasTake || onSiteAll.has(item.name)
+  const mineCount = (g: UiGroup) => g.items.filter((i) => takes.has(i.name)).length
+  const missingCount = (g: UiGroup) => g.items.filter((i) => !isDone(i.name)).length
 
   return (
-    <div data-scroll className="h-full overflow-y-auto bg-page text-ink" style={{ touchAction: 'pan-y' }}>
-      <div className="mx-auto flex max-w-3xl flex-col gap-5 p-5">
-        <header className="flex flex-wrap items-center gap-2">
-          {RECORD_GROUPS.map((g) => {
-            const done = g.items.filter((i) => isDone(i.name)).length
-            return (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => {
-                  setGroupId(g.id)
-                  setIndex(Math.max(0, g.items.findIndex((i) => !isDone(i.name))))
-                  setNote('')
-                }}
-                className={`rounded-full px-4 py-2 text-[15px] font-semibold ${
-                  g.id === groupId ? 'bg-ink text-on-tile' : 'bg-card text-ink'
-                }`}
-              >
-                {g.label} {done}/{g.items.length}
-              </button>
-            )
-          })}
-          <span className="flex-1" />
-          <button type="button" onClick={download} disabled={!zipFile}
-            className="rounded-full bg-card px-4 py-2 text-[15px] font-semibold disabled:opacity-40">
-            {zipLabel()}
+    <div data-scroll className="parent h-full overflow-y-auto bg-page text-ink" style={{ touchAction: 'pan-y' }}>
+      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-4 pb-10">
+        <header className="parent-header">
+          <button type="button" onClick={onExit} className="parent-back">
+            <span aria-hidden>←</span> {t('게임으로', 'Back to game')}
           </button>
-          {takes.size > 0 && (
-            <label className="flex items-center gap-1 text-[13px] text-muted">
-              <input type="checkbox" checked={zipAll} onChange={(e) => setZipAll(e.target.checked)} />
-              {t('전체', 'All')}
-            </label>
-          )}
-          <button type="button" onClick={onExit} className="rounded-full bg-card px-4 py-2 text-[15px] font-semibold">
-            {t('게임으로', 'Back to game')}
-          </button>
+          <h1>{t('부모님', 'Parents')}</h1>
         </header>
 
-        <section className="flex flex-col items-center gap-3 rounded-[28px] bg-card px-6 py-6 shadow-[0_16px_40px_-20px_var(--color-drop-shadow)]">
-          <div className="text-[15px] text-muted">
-            {index + 1} / {group.items.length} · {item.name}.mp3
-          </div>
-          <div className="text-[120px] font-bold leading-none">{item.shown}</div>
-          <div className="text-[22px]">
-            {t('「', 'Say “')}<b className="text-ink">{item.say}</b>{t('」 라고 말하기', '”')}
-          </div>
-          <div className="text-[14px] text-muted">{t('버튼을 누른 채로, 한 박자 쉬고 말한 다음 손 떼기. 평평한 톤, 자모는 살짝 길게.', 'Hold the button, wait a beat, say it, then let go. Keep a flat tone; stretch single letters slightly.')}</div>
+        <ParentProgress />
 
-          <button
-            type="button"
-            onPointerDown={(e) => {
-              e.preventDefault()
-              startTake()
-            }}
-            onContextMenu={(e) => e.preventDefault()}
-            disabled={phase === 'processing'}
-            aria-label="record"
-            style={{ touchAction: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' } as CSSProperties}
-            className={`mt-2 flex size-40 flex-col items-center justify-center gap-2 rounded-full text-[22px] font-bold text-on-tile active:translate-y-1 ${
-              phase === 'recording'
-                ? 'scale-105 bg-ink shadow-[0_10px_0_var(--color-muted)]'
-                : 'bg-consonant shadow-[0_10px_0_var(--color-consonant-dark)]'
-            } disabled:opacity-60`}
-          >
-            {phase === 'recording' ? (
-              <>
-                <span className="block size-10 animate-pulse rounded-full bg-consonant" />
-                <span className="text-[18px]">{t('말하세요', 'Speak')}</span>
-              </>
-            ) : phase === 'processing' ? (
-              t('저장 중…', 'Saving…')
-            ) : (
-              <>
-                <span className="block size-10 rounded-full bg-card" />
-                <span className="text-[18px]">{t('누르고 있기', 'Hold')}</span>
-              </>
+        {/* ---------- family voice (optional) ---------- */}
+        <section className="parent-card">
+          <h2>{t('우리 가족 목소리', "Your family's voice")}</h2>
+          <p className="parent-sub">
+            {t(
+              '녹음하면 게임 속 소리가 그 목소리로 바뀌어요. 원하는 소리만 골라서 녹음해도 돼요.',
+              'Record a sound and the game plays it in your voice. Record as many or as few as you like.',
             )}
-          </button>
+          </p>
 
-          {/* Mic level: moves when the mic hears you. */}
-          <div className="flex h-6 w-64 items-center gap-3">
-            <div className="h-3 flex-1 overflow-hidden rounded-full bg-page">
-              <div
-                className="h-full rounded-full bg-vowel transition-[width] duration-75"
-                style={{ width: `${phase === 'recording' ? Math.max(4, level * 100) : 0}%` }}
-              />
+          <div className="parent-tabs" role="tablist">
+            {UI_GROUPS.map((g) => {
+              const missing = missingCount(g)
+              return (
+                <button
+                  key={g.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={g.id === groupId}
+                  className={`parent-tab ${g.id === groupId ? 'is-current' : ''}`}
+                  onClick={() => {
+                    setGroupId(g.id)
+                    setIndex(Math.max(0, g.items.findIndex((i) => !isDone(i.name))))
+                    setNote('')
+                  }}
+                >
+                  {g.label}
+                  {missing > 0 && <span className="parent-badge">{t(`녹음 필요 ${missing}`, `${missing} to record`)}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="rec-card">
+            <div className="rec-shown">{item.shown}</div>
+            <div className="rec-say">
+              {t('「', '“')}
+              <b>{item.say}</b>
+              {t('」 라고 말해 주세요', '”, please')}
             </div>
-            <span className="w-10 text-right text-[15px] tabular-nums text-muted">
-              {phase === 'recording' ? `${elapsed.toFixed(1)}s` : ''}
-            </span>
+            {!isDone(item.name) && (
+              <div className="rec-need">{t('아직 소리가 없어요. 녹음하면 게임에 나와요.', 'No sound yet: record it and it appears in the game.')}</div>
+            )}
+
+            <button
+              type="button"
+              onPointerDown={(e) => {
+                e.preventDefault()
+                startTake()
+              }}
+              onContextMenu={(e) => e.preventDefault()}
+              disabled={phase === 'processing'}
+              aria-label="record"
+              style={
+                {
+                  touchAction: 'none',
+                  WebkitUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
+                  '--level': phase === 'recording' ? level : 0,
+                  '--progress': phase === 'recording' ? Math.min(1, elapsed / (MAX_TAKE_MS / 1000)) : 0,
+                } as CSSProperties
+              }
+              className={`rec-btn is-${phase}`}
+            >
+              <svg viewBox="0 0 100 100" className="rec-ring" aria-hidden>
+                <circle cx="50" cy="50" r="47" pathLength={100} className="rec-ring-track" />
+                <circle cx="50" cy="50" r="47" pathLength={100} className="rec-ring-fill" />
+              </svg>
+              <svg viewBox="0 0 48 48" className="rec-mic" aria-hidden>
+                <rect x="17" y="6" width="14" height="23" rx="7" fill="currentColor" />
+                <path d="M11 22a13 13 0 0 0 26 0M24 35v7M17 42h14" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" fill="none" />
+              </svg>
+            </button>
+            <div className="rec-hint">
+              {phase === 'recording'
+                ? t('말하는 중… 다 말하면 손을 떼세요', 'Listening… let go when you are done')
+                : phase === 'processing'
+                  ? t('저장 중…', 'Saving…')
+                  : t('누른 채로 말하기', 'Hold and speak')}
+            </div>
+            <div className="rec-note">{note}</div>
+
+            <fieldset disabled={phase !== 'idle'} className="rec-actions">
+              <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}>
+                {t('이전', 'Back')}
+              </button>
+              <button type="button" disabled={!canListen} onClick={() => listen(item.name)}>
+                {t('들어보기', 'Listen')}
+              </button>
+              {hasTake && (
+                <button type="button" onClick={removeTake}>
+                  {onSiteAll.has(item.name) ? t('원래 소리로', 'Use original') : t('녹음 지우기', 'Delete')}
+                </button>
+              )}
+              <button type="button" className="is-primary" onClick={() => goTo(nextUnrecorded(index))}>
+                {t('다음', 'Next')}
+              </button>
+            </fieldset>
           </div>
 
-          <div className="min-h-6 text-center text-[15px]">{note}</div>
-
-          <fieldset disabled={phase !== 'idle'} className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
-            <button type="button" disabled={index === 0} onClick={() => goTo(index - 1)}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('이전', 'Back')}</button>
-            <button type="button" disabled={!canListen} onClick={() => listen(item.name)}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('들어보기', 'Listen')}</button>
-            <button type="button" disabled={!hasTake} onClick={removeTake}
-              className="rounded-full bg-page px-4 py-3 text-[16px] font-semibold disabled:opacity-40">{t('지우기', 'Delete')}</button>
-            <button type="button" onClick={() => goTo(nextUnrecorded(index))}
-              className="rounded-full bg-vowel px-6 py-3 text-[16px] font-semibold text-on-tile disabled:opacity-40">{t('다음', 'Next')}</button>
-          </fieldset>
-        </section>
-
-        <section>
-          <div className="mb-2 text-[15px] text-muted">
-            {group.label}: {doneCount}/{group.items.length} {t('완료 · 눌러서 이동', 'done · tap to jump')}
+          <div className="rec-legend">
+            <span><i className="is-mine" />{t('내 목소리', 'My voice')} {mineCount(group)}</span>
+            <span><i className="is-built" />{t('기본 소리', 'Built-in')}</span>
+            {missingCount(group) > 0 && <span><i className="is-missing" />{t('녹음 필요', 'To record')}</span>}
           </div>
-          <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-muted">
-            <span><i className="mr-1 inline-block size-3 rounded bg-vowel align-middle" />{t('이 기기에서 녹음', 'Recorded on this device')}</span>
-            <span><i className="mr-1 inline-block size-3 rounded bg-vowel-soft align-middle" />{t('기본 소리', 'Built-in sound')}</span>
-            <span><i className="mr-1 inline-block size-3 rounded border border-card-shadow bg-card align-middle" />{t('아직 없음', 'None yet')}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="rec-grid">
             {group.items.map((it, i) => (
               <button
                 key={it.name}
                 type="button"
                 onClick={() => goTo(i)}
-                className={`h-13 min-w-13 whitespace-nowrap rounded-xl px-2 font-bold ${
-                  it.shown.length > 1 ? 'text-[18px]' : 'text-[24px]'
-                } ${
-                  takes.has(it.name)
-                    ? 'bg-vowel text-on-tile'
-                    : onSiteAll.has(it.name)
-                      ? 'bg-vowel-soft text-on-tile'
-                      : 'bg-card text-ink'
-                } ${i === index ? 'ring-[3px] ring-ink' : ''}`}
+                className={`${takes.has(it.name) ? 'is-mine' : onSiteAll.has(it.name) ? 'is-built' : 'is-missing'} ${
+                  i === index ? 'is-current' : ''
+                } ${it.shown.length > 1 ? 'is-word' : ''}`}
               >
                 {it.shown}
               </button>
@@ -586,14 +591,29 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           </div>
         </section>
 
-        <ParentProgress />
+        <ParentSettings />
 
-        <p className="pb-6 text-[14px] leading-relaxed text-muted">
-          {t(
-            '녹음은 이 기기에 저장되고 게임에서 바로 쓰여요. 녹음한 소리가 기본 소리 대신 나와요. 백업하거나 다른 기기로 옮기려면 zip을 받아 두세요.',
-            'Recordings are saved on this device and used in the game right away, in place of the built-in sounds. Download the zip to back them up or move them to another device.',
-          )}
-        </p>
+        {/* ---------- backup (rarely needed) ---------- */}
+        <details className="parent-card parent-backup">
+          <summary>{t('녹음 백업', 'Back up recordings')}</summary>
+          <p className="parent-sub">
+            {t(
+              '녹음은 이 기기에만 저장돼요. 다른 기기로 옮기거나 보관하려면 zip 파일로 받아 두세요.',
+              'Recordings are saved on this device only. Download them as a zip to keep them or move them to another device.',
+            )}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" onClick={download} disabled={!zipFile} className="parent-btn">
+              {zipLabel()}
+            </button>
+            {takes.size > 0 && (
+              <label className="flex items-center gap-1 text-[14px] text-muted">
+                <input type="checkbox" checked={zipAll} onChange={(e) => setZipAll(e.target.checked)} />
+                {t('전체', 'All')}
+              </label>
+            )}
+          </div>
+        </details>
       </div>
     </div>
   )

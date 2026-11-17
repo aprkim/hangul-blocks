@@ -1290,3 +1290,299 @@ body {
 .play-size-btn:disabled {
   opacity: 0.35;
 }
+
+/* ---------- Parents' page: calm, flat, readable (no child-screen blocks) ---------- */
+.parent {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.parent h1 {
+  font-size: 20px;
+  font-weight: 800;
+}
+.parent h2 {
+  font-size: 19px;
+  font-weight: 800;
+}
+.parent-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+.parent-back {
+  justify-self: start;
+  padding: 8px 14px 8px 10px;
+  border-radius: 999px;
+  background: var(--color-card);
+  font-size: 15px;
+  font-weight: 700;
+}
+.parent-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 22px 24px;
+  border-radius: 24px;
+  background: var(--color-card);
+}
+.parent-sub {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+.parent-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--color-page);
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.parent-btn:disabled {
+  opacity: 0.4;
+}
+.parent-btn.is-danger {
+  color: var(--color-consonant);
+}
+.parent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-card-shadow);
+}
+.parent-row b {
+  font-size: 15.5px;
+}
+.parent-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.parent-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--color-page);
+}
+.parent-stats b {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.parent-stats small {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+.parent-stats span {
+  font-size: 12.5px;
+  color: var(--color-muted);
+}
+@media (max-width: 560px) {
+  .parent-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.parent-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--color-page);
+}
+.parent-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 6px;
+  border-radius: 11px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.parent-tab.is-current {
+  background: var(--color-card);
+  color: var(--color-ink);
+  box-shadow: 0 1px 3px var(--color-drop-shadow);
+}
+.parent-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-consonant);
+}
+.parent-backup summary {
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+/* Recording card */
+.rec-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 12px 6px;
+}
+.rec-shown {
+  font-size: clamp(72px, 14vmin, 112px);
+  font-weight: 800;
+  line-height: 1;
+}
+.rec-say {
+  font-size: 19px;
+}
+.rec-need {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-consonant);
+}
+/* The hold-to-record button: a flat red disc with a mic. While recording, its ring fills over
+   the 5-second limit and a soft halo follows the voice level. */
+.rec-btn {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--color-consonant);
+  color: var(--color-on-tile);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.08s linear;
+  box-shadow: 0 0 0 calc(var(--level, 0) * 22px) color-mix(in srgb, var(--color-consonant) 22%, transparent);
+}
+.rec-btn.is-recording {
+  transform: scale(1.06);
+}
+.rec-btn.is-processing {
+  opacity: 0.6;
+}
+.rec-mic {
+  width: 46%;
+  height: 46%;
+}
+.rec-ring {
+  position: absolute;
+  inset: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  rotate: -90deg;
+  overflow: visible;
+}
+.rec-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+.rec-ring-track {
+  stroke: transparent;
+}
+.rec-btn.is-recording .rec-ring-track {
+  stroke: var(--color-card-shadow);
+}
+.rec-ring-fill {
+  stroke: var(--color-consonant);
+  stroke-linecap: round;
+  stroke-dasharray: calc(var(--progress, 0) * 100) 100;
+}
+.rec-hint {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.rec-note {
+  min-height: 20px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--color-muted);
+}
+.rec-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.rec-actions button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--color-page);
+  font-size: 15px;
+  font-weight: 700;
+}
+.rec-actions button.is-primary {
+  background: var(--color-ink);
+  color: var(--color-on-tile);
+}
+.rec-actions button:disabled {
+  opacity: 0.35;
+}
+.rec-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.rec-legend i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 5px;
+  border-radius: 4px;
+  vertical-align: -1px;
+}
+.rec-legend i.is-mine,
+.rec-grid .is-mine {
+  background: var(--color-vowel);
+  color: var(--color-on-tile);
+}
+.rec-legend i.is-built,
+.rec-grid .is-built {
+  background: var(--color-page);
+}
+.rec-legend i.is-missing {
+  border: 1.5px dashed var(--color-consonant);
+}
+.rec-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rec-grid button {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.rec-grid button.is-word {
+  font-size: 15px;
+}
+.rec-grid button.is-missing {
+  border: 1.5px dashed color-mix(in srgb, var(--color-consonant) 60%, transparent);
+  color: var(--color-muted);
+}
+.rec-grid button.is-current {
+  box-shadow: 0 0 0 2.5px var(--color-ink);
+}
+.rec-ring-fill {
+  opacity: 0;
+}
+.rec-btn.is-recording .rec-ring-fill {
+  opacity: 1;
+}
+.rec-hint {
+  margin-top: 18px;
+}
