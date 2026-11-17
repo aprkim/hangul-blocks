@@ -46,8 +46,8 @@ export function ParentProgress() {
       {p.syllablesOpen && <div className="flex flex-wrap gap-1.5">{reachableSyllables(p).map((s) => chip(s.char))}</div>}
       <p className="text-[13px] leading-relaxed text-muted">
         {t(
-          `글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기(ㄱㄴㅁㅂ)가 열리고, 한 세트에서 글자 ${SET_GOAL}개를 쓰면 다음 세트(ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ)가 열려요. 열린 세트는 만들기에도 나와요. 지금 ${p.setsOpen}/${SET_COUNT}세트. 기록은 이 기기에만 저장돼요.`,
-          `One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing (ㄱㄴㅁㅂ); writing ${SET_GOAL} syllables of a set opens the next one (ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ). Open sets also appear on Build. Now ${p.setsOpen} of ${SET_COUNT} sets. This record stays on this device.`,
+          `글자를 끝까지 따라 쓰면 별 1개, 별 10개가 모이면 보물 스티커. 자모 24개를 한 번씩 다 쓰면 음절 쓰기(ㄱㄴㅁㅂ)가 열리고, 한 세트에서 글자 ${SET_GOAL}개를 쓰면 다음 세트(ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ)가 열려요. 만들기에서는 처음부터 자음 14개를 모두 쓸 수 있어요. 지금 ${p.setsOpen}/${SET_COUNT}세트. 기록은 이 기기에만 저장돼요.`,
+          `One star for each letter traced to the end; 10 stars give a treasure sticker. Writing all 24 letters once opens syllable writing (ㄱㄴㅁㅂ); writing ${SET_GOAL} syllables of a set opens the next one (ㄷㄹㅅㅇ → ㅈㅊㅋ → ㅌㅍㅎ). Build has all 14 consonants from the start. Now ${p.setsOpen} of ${SET_COUNT} sets. This record stays on this device.`,
         )}
       </p>
       <div className="flex flex-wrap gap-2">

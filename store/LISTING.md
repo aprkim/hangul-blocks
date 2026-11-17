@@ -42,7 +42,8 @@ App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의
 [쓰기]
 자음과 모음 24개를 손가락으로 따라 써요. 시작점과 방향이 안내되어 획순대로 쓰게 되고, 다 쓰면 그 소리가 나요.
 24개를 한 번씩 다 쓰면 선물 상자가 열리고 가, 고, 나, 무 같은 글자 쓰기가 시작돼요. 자음은 빨강, 모음은 파랑으로 획순대로 써요.
-글자를 20개 쓸 때마다 새 선물 상자가 열려요. ㄱㄴㅁㅂ 다음에 ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ까지 모두 140글자. 열린 자음은 만들기에도 나와요.
+글자를 20개 쓸 때마다 새 선물 상자가 열려요. ㄱㄴㅁㅂ 다음에 ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ까지 모두 140글자.
+만들기에서는 처음부터 자음 14개를 모두 마음껏 조합해요.
 
 [별 병과 스티커북]
 글자를 하나 쓸 때마다 별이 날아와 병에 쏙. 별이 10개 모이면 보물 스티커를 받아요.
@@ -95,7 +96,7 @@ https://soriblocks.lihallc.com
 - 별 병: 글자를 하나 쓸 때마다 별이 하나씩 모여요. 10개가 모이면 보물 스티커 선물!
 - 글자 길: 쓴 글자에는 별이 붙어요. 자음과 모음 24개를 다 쓰면 선물 상자가 열려요.
 - 글자 쓰기: 가, 고, 나, 무 같은 글자 40개를 획순대로 써요. 다 쓰면 그림 단어가 나와요.
-- 새 글자 세트: 글자를 20개 쓰면 선물 상자에서 새 자음이 나와요. ㄱㄴㅁㅂ 다음에 ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ. 열린 자음은 만들기에도 나와요.
+- 새 글자 세트: 글자를 20개 쓰면 선물 상자에서 새 자음이 나와요. ㄱㄴㅁㅂ 다음에 ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ. 만들기에서는 자음 14개를 모두 쓸 수 있어요.
 - 스티커북: 쓴 글자의 그림 단어와 보물 스티커를 모아요.
 - 글자 모양을 다듬었어요. 자음과 모음의 자리와 크기를 학교용 글꼴에 맞췄어요.
 - 부모님 화면에서 아이가 쓴 기록을 볼 수 있어요.
@@ -148,7 +149,7 @@ Sori Blocks helps young children who can't read Korean yet discover that each sh
 Tap a consonant and a vowel to build a syllable and hear it. Consonants are red and vowels are blue, so kids see which pieces came together. Switch ㅏ to ㅗ and watch the consonant move from the side to the top.
 
 - Write
-Trace all 24 letters with a finger, guided by a start dot and the stroke direction. Once every letter has been written, a gift box opens syllables to write, like 가, 고, 나 and 무. Every 20 syllables written opens the next set of consonants, 140 syllables in all, and they appear on the Build screen too.
+Trace all 24 letters with a finger, guided by a start dot and the stroke direction. Once every letter has been written, a gift box opens syllables to write, like 가, 고, 나 and 무. Every 20 syllables written opens the next set of consonants, 140 syllables in all. On the Build screen all 14 consonants are there from the start.
 
 - Star jar and sticker book
 Every letter written drops a star into the jar. Ten stars bring a treasure sticker. Each syllable written adds its picture word to the sticker book: 가 for 가방 (bag), 고 for 고양이 (cat). Stars never go down and there are no timers.
@@ -175,7 +176,7 @@ Writing just got more fun
 - Star jar: every letter your child writes adds a star. Ten stars bring a treasure sticker.
 - Letter road: written letters get a star. Write all 24 consonants and vowels to open a gift box.
 - Syllable writing: write 40 syllables like 가, 고, 나 and 무 in stroke order, and see their picture words.
-- New letter sets: write 20 syllables and a gift box brings new consonants. After ㄱㄴㅁㅂ come ㄷㄹㅅㅇ, ㅈㅊㅋ and ㅌㅍㅎ, on the Build screen too.
+- New letter sets: write 20 syllables and a gift box brings new consonants. After ㄱㄴㅁㅂ come ㄷㄹㅅㅇ, ㅈㅊㅋ and ㅌㅍㅎ. All 14 consonants are on the Build screen.
 - Sticker book: collect picture-word stickers and treasures.
 - Refined letter shapes, matched to the fonts Korean schools use.
 - Parents can see their child's writing record.
@@ -226,7 +227,7 @@ This is a Korean letter-sound app for young children. Three tabs at the bottom: 
 
 Parents-only screen: tap the settings button (top right), tap the microphone button, then answer the multiplication question (parental gate). There a parent can record the sounds in their own voice and see the child's writing record. The microphone is used only on that screen, and recordings stay on the device.
 
-Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). That also shows all 14 consonants on the Build screen (arrows at the ends of the consonant row switch sets).
+Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 
 The app collects no data, has no ads or purchases, and works fully offline.
 ```
