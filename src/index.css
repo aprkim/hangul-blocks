@@ -870,3 +870,27 @@ body {
     width: min(100% - 2 * (var(--settings) + 2 * var(--settings-gap)), calc(7 * 1.35 * var(--tile-h) + 6 * 2vh));
   }
 }
+
+/* Build: the consonant row is arrow, four consonants, arrow, and must stay on one line (on a
+   phone held upright it wrapped, putting the arrows on separate lines). The arrows are a little
+   narrower than the letters, and on narrow screens the whole row shrinks to fit. */
+.tray-cons {
+  --ct: min(var(--tile), calc((100vw - 5vh - 5 * max(2vh, 12px)) / 5.4));
+  flex-wrap: nowrap;
+  max-width: none;
+}
+.tray-cons > .tile {
+  width: var(--ct) !important;
+  height: var(--ct) !important;
+  flex: none;
+}
+.tray-cons > .tile.tray-arrow {
+  width: calc(var(--ct) * 0.7) !important;
+}
+/* Build on a phone held upright: there is room across for bigger tiles than the landscape rule
+   gives, so size them from the width (the consonant row, arrows included, is the widest). */
+@media (orientation: portrait) and (max-width: 900px) {
+  .assembly {
+    --tile: min(calc((100vw - 5vh - 5 * max(2vh, 12px)) / 5.4), 11dvh, 120px);
+  }
+}

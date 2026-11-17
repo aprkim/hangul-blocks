@@ -158,8 +158,8 @@ export function AssemblyBoard() {
 
       {/* Trays. Consonants not yet recorded are hidden, not greyed. */}
       <div className="trays flex flex-col items-center gap-[2vh]">
-        <div className="tray">
-          <Tile kind="control" onTap={() => turnSet(-1)} label="previous consonants" className="size-(--tile)">
+        <div className="tray tray-cons">
+          <Tile kind="control" onTap={() => turnSet(-1)} label="previous consonants" className="size-(--tile) tray-arrow">
             <ArrowIcon dir="left" />
           </Tile>
           {SETS[shownSet].map((c) => (
@@ -173,7 +173,7 @@ export function AssemblyBoard() {
               {c.char}
             </Tile>
           ))}
-          <Tile kind="control" onTap={() => turnSet(1)} label="more consonants" className="size-(--tile)">
+          <Tile kind="control" onTap={() => turnSet(1)} label="more consonants" className="size-(--tile) tray-arrow">
             <ArrowIcon dir="right" />
           </Tile>
         </div>
