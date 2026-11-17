@@ -1,5 +1,6 @@
 import { useRef, type ReactNode } from 'react'
 import { tapFeedback } from '../native'
+import { chromeLocked } from '../touchGuard'
 
 export type TileKind = 'consonant' | 'vowel' | 'control'
 
@@ -35,6 +36,8 @@ export function Tile({ kind, onTap, children, selected, className = '', label }:
       aria-label={label}
       onPointerDown={(e) => {
         e.preventDefault()
+        // A palm or second finger while a letter is being written (touchGuard).
+        if (chromeLocked()) return
         ref.current?.animate(BOUNCE, { duration: 320, easing: 'ease-out' })
         tapFeedback()
         onTap()

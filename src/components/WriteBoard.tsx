@@ -19,6 +19,7 @@ import {
 } from '../progress'
 import { STROKES, strokePath, syllableStrokes, traceMatches, type Pt, type Stroke } from '../strokes'
 import { recordWriting } from '../keepsakes'
+import { setWriting, useTap } from '../touchGuard'
 import { cardFor, type Card } from '../words'
 import { ArrowIcon, GiftIcon, MapIcon, StarShape } from './Icons'
 import { Syllable } from './JamoStrokes'
@@ -286,6 +287,13 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   const timers = useRef<number[]>([])
   /** The child's own accepted strokes, kept for the handwriting fridge. */
   const accepted = useRef<Pt[][]>([])
+  // Back to the road on a clean tap only, never while writing (touchGuard).
+  const tapBack = useTap(() => {
+    tapFeedback()
+    onBack()
+  })
+  // Leaving mid-stroke must not leave the other buttons locked.
+  useEffect(() => () => setWriting(false), [])
 
   const strokes = target.strokes
   const complete = done >= strokes.length
@@ -326,6 +334,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
       return
     }
     e.currentTarget.setPointerCapture(e.pointerId)
+    setWriting(true)
     const p = toGrid(e)
     drawing.current = { id: e.pointerId, pts: [p] }
     setInk([p])
@@ -367,6 +376,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
     const d = drawing.current
     if (!d || d.id !== e.pointerId) return
     drawing.current = null
+    setWriting(false)
     setInk([])
     if (traceMatches(strokes[done].stroke, d.pts)) {
       accepted.current[done] = d.pts
@@ -383,16 +393,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
 
   return (
     <div className="write-trace flex h-full items-center justify-between gap-[2vh] p-[2.5vh]">
-      <button
-        type="button"
-        aria-label="letters"
-        className="write-back"
-        onPointerDown={(e) => {
-          e.preventDefault()
-          tapFeedback()
-          onBack()
-        }}
-      >
+      <button type="button" aria-label="letters" className="write-back" {...tapBack}>
         <MapIcon />
       </button>
 

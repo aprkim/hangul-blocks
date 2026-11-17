@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { tapFeedback } from '../native'
+import { useTap } from '../touchGuard'
 import { THEMES, applyTheme, loadTheme, saveTheme, type ThemeId } from '../theme'
 import { ParentIcon, SettingsIcon } from './Icons'
 
@@ -21,6 +22,12 @@ export function Settings({ onParent }: { onParent: () => void }) {
     setOpen(false)
   }
 
+  // Fires on a clean tap only, never while a letter is being written (touchGuard).
+  const tapButton = useTap(() => {
+    tapFeedback()
+    setOpen((o) => !o)
+  })
+
   return (
     <>
       <button
@@ -28,11 +35,7 @@ export function Settings({ onParent }: { onParent: () => void }) {
         className="settings-btn"
         aria-label="settings"
         aria-expanded={open}
-        onPointerDown={(e) => {
-          e.preventDefault()
-          tapFeedback()
-          setOpen((o) => !o)
-        }}
+        {...tapButton}
       >
         <SettingsIcon />
       </button>

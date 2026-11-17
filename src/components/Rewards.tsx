@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { confetti } from '../effects'
 import { successFeedback, tapFeedback } from '../native'
+import { useTap } from '../touchGuard'
 import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
 import { ALL_JAMO_STICKERS } from '../keepsakes'
@@ -51,6 +52,11 @@ export function StarJar({ onOpen }: { onOpen: () => void }) {
   const ref = useRef<HTMLButtonElement>(null)
   const shown = p.pendingGift ? JAR_SIZE : p.jar
   const last = useRef(shown)
+  // Fires on a clean tap only, never while a letter is being written (touchGuard).
+  const tapJar = useTap(() => {
+    tapFeedback()
+    onOpen()
+  })
 
   // A star landed: the jar bumps and dings.
   useEffect(() => {
@@ -68,11 +74,7 @@ export function StarJar({ onOpen }: { onOpen: () => void }) {
       type="button"
       aria-label="stars and stickers"
       className={`star-jar ${p.pendingGift ? 'is-full' : ''}`}
-      onPointerDown={(e) => {
-        e.preventDefault()
-        tapFeedback()
-        onOpen()
-      }}
+      {...tapJar}
     >
       <Jar count={shown} />
     </button>
