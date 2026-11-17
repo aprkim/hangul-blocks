@@ -303,16 +303,26 @@ body {
   bottom: 0;
 }
 
-/* Selected tile: lifted 6px (no bottom shadow), with a 5px gap in the page color and then a
-   5px ink ring. The gap follows --color-page, so it changes with the background theme. */
-.tile.is-selected {
-  translate: 0 -6px;
-  box-shadow:
-    0 0 0 5px var(--color-page),
-    0 0 0 10px var(--color-ink) !important;
-}
+/* Selected tile: pressed in, like a block clicked into place. It sinks 6px into its own shadow
+   (the 8px ledge becomes 2px) and gets a white ring drawn inside its edge. Nothing reaches past
+   the tile's own footprint, so it never touches the row above or the tiles beside it. */
 .tile {
-  transition: translate 120ms ease-out;
+  transition:
+    translate 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+.tile.is-selected {
+  translate: 0 6px;
+}
+.tile.is-selected.bg-consonant {
+  box-shadow:
+    0 2px 0 var(--color-consonant-dark),
+    inset 0 0 0 5px color-mix(in srgb, var(--color-on-tile) 92%, transparent) !important;
+}
+.tile.is-selected.bg-vowel {
+  box-shadow:
+    0 2px 0 var(--color-vowel-dark),
+    inset 0 0 0 5px color-mix(in srgb, var(--color-on-tile) 92%, transparent) !important;
 }
 
 /* ---------- Settings (top right, every child screen) ---------- */
@@ -893,4 +903,40 @@ body {
   .assembly {
     --tile: min(calc((100vw - 5vh - 5 * max(2vh, 12px)) / 5.4), 11dvh, 120px);
   }
+}
+/* Small tiles (phones): a thinner inner ring, in proportion. */
+@media (max-width: 900px), (max-height: 600px) {
+  .tile.is-selected.bg-consonant {
+    box-shadow:
+      0 2px 0 var(--color-consonant-dark),
+      inset 0 0 0 3px color-mix(in srgb, var(--color-on-tile) 92%, transparent) !important;
+  }
+  .tile.is-selected.bg-vowel {
+    box-shadow:
+      0 2px 0 var(--color-vowel-dark),
+      inset 0 0 0 3px color-mix(in srgb, var(--color-on-tile) 92%, transparent) !important;
+  }
+}
+
+/* Opening animation (Intro.tsx): over everything, on the page color, 가 in the middle. */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-page);
+  touch-action: none;
+}
+.intro-glyph {
+  width: min(46vmin, 380px);
+  height: min(46vmin, 380px);
+  overflow: visible;
+}
+.intro-stroke {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

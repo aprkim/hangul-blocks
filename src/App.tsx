@@ -4,6 +4,7 @@ import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
 import { ParentGate, gatePassed } from './components/ParentGate'
 import { Recorder } from './components/Recorder'
+import { Intro } from './components/Intro'
 import { Settings } from './components/Settings'
 import { TabBar, type Tab } from './components/TabBar'
 import { WriteBoard } from './components/WriteBoard'
@@ -16,6 +17,8 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(initial)
   const [lastTab, setLastTab] = useState<Tab>('jamo')
   const [unlocked, setUnlocked] = useState(gatePassed)
+  // The opening animation plays once per launch, not when a parent opens the recorder link.
+  const [intro, setIntro] = useState(initial !== 'record')
   // Tapping the Write tab again goes back to the road.
   const [writeKey, setWriteKey] = useState(0)
   const go = (next: Screen) => {
@@ -43,6 +46,7 @@ export default function App() {
       </main>
       <TabBar tab={screen} onTab={go} />
       <Settings onParent={() => go('record')} />
+      {intro && <Intro onDone={() => setIntro(false)} />}
     </div>
   )
 }
