@@ -5,7 +5,8 @@
 // and on screens (the Ministry of Education's 학교안심 바른돋움, 우주 and 산뜻돋움; 나눔고딕;
 // 고운돋움; Noto Sans KR; Pretendard): each syllable was rendered, split into its consonant and
 // vowel, normalized to the font's own letter body, and the median taken across the fonts in
-// which the two parts do not touch (count in the comment).
+// which the two parts do not touch (count in the comment). Where fewer than three fonts keep
+// them apart, the box is derived from well-measured neighbors (see derive.py).
 
 export type Box = [number, number, number, number]
 
@@ -18,16 +19,16 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㄱㅣ: { cons: [17.5, 21, 34.5, 46], vowel: [76, 12.5, 0, 75] }, // 기: 7 fonts
   ㄱㅗ: { cons: [24.5, 20, 49.5, 39], vowel: [16, 47, 69.5, 28.5] }, // 고: 7 fonts
   ㄱㅛ: { cons: [24, 20, 50, 38.5], vowel: [16, 47.5, 69.5, 28] }, // 교: 7 fonts
-  ㄱㅜ: { cons: [25.5, 16.5, 50.5, 28], vowel: [15, 55, 70.5, 30.5] }, // 구: 2 fonts
-  ㄱㅠ: { cons: [25.5, 16.5, 50.5, 27.5], vowel: [15, 55, 70.5, 31] }, // 규: 2 fonts
+  ㄱㅜ: { cons: [24.5, 16, 48, 28.5], vowel: [15.5, 59.5, 70, 27.5] }, // 구: derived (only 2 fonts measured)
+  ㄱㅠ: { cons: [24.5, 15.5, 48, 28.5], vowel: [15.5, 59.5, 70, 28] }, // 규: derived (only 2 fonts measured)
   ㄱㅡ: { cons: [24.5, 21, 48, 41.5], vowel: [16, 75.5, 67.5, 0] }, // 그: 5 fonts
   ㄴㅏ: { cons: [20, 20.5, 39.5, 46.5], vowel: [72.5, 12.5, 12.5, 75] }, // 나: 7 fonts
   ㄴㅑ: { cons: [20, 20.5, 39.5, 46.5], vowel: [72.5, 12.5, 12.5, 75] }, // 냐: 7 fonts
   ㄴㅓ: { cons: [21, 21, 38.5, 46.5], vowel: [51.5, 12.5, 25, 75] }, // 너: 7 fonts
   ㄴㅕ: { cons: [21, 21, 38.5, 47.5], vowel: [52.5, 12.5, 24, 75] }, // 녀: 7 fonts
   ㄴㅣ: { cons: [21.5, 20.5, 41, 46.5], vowel: [76, 12.5, 0, 75] }, // 니: 7 fonts
-  ㄴㅗ: { cons: [28, 20.5, 46, 24.5], vowel: [16, 58, 69.5, 16.5] }, // 노: 1 font
-  ㄴㅛ: { cons: [28, 20.5, 46, 24], vowel: [16, 59, 69.5, 16] }, // 뇨: 1 font
+  ㄴㅗ: { cons: [25.5, 19.5, 49, 39], vowel: [16, 57, 69.5, 19.5] }, // 노: derived (only 1 font measured)
+  ㄴㅛ: { cons: [25.5, 18, 49, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 뇨: derived (only 1 font measured)
   ㄴㅜ: { cons: [26, 15.5, 49, 24.5], vowel: [15.5, 58, 70, 29] }, // 누: 7 fonts
   ㄴㅠ: { cons: [26, 15.5, 48.5, 24.5], vowel: [15.5, 58, 70, 29.5] }, // 뉴: 7 fonts
   ㄴㅡ: { cons: [25.5, 19.5, 49, 32], vowel: [16, 75.5, 69.5, 0] }, // 느: 7 fonts
@@ -36,8 +37,8 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㄷㅓ: { cons: [20.5, 20, 39, 46], vowel: [53, 12.5, 23.5, 75] }, // 더: 7 fonts
   ㄷㅕ: { cons: [21, 19.5, 39, 47], vowel: [54, 12.5, 22, 75] }, // 뎌: 7 fonts
   ㄷㅣ: { cons: [21.5, 20, 42, 46], vowel: [76, 12.5, 0, 75] }, // 디: 7 fonts
-  ㄷㅗ: { cons: [28.5, 20, 44.5, 26.5], vowel: [16, 59, 69.5, 16] }, // 도: 1 font
-  ㄷㅛ: { cons: [28.5, 20, 44.5, 26.5], vowel: [16, 58, 69.5, 17] }, // 됴: 1 font
+  ㄷㅗ: { cons: [25.5, 19.5, 49, 39], vowel: [16, 57, 69.5, 19.5] }, // 도: derived (only 1 font measured)
+  ㄷㅛ: { cons: [25.5, 18, 49, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 됴: derived (only 1 font measured)
   ㄷㅜ: { cons: [26, 17, 47.5, 25.5], vowel: [15.5, 59, 70, 28] }, // 두: 7 fonts
   ㄷㅠ: { cons: [26, 16.5, 47.5, 25.5], vowel: [15, 59, 70, 28.5] }, // 듀: 7 fonts
   ㄷㅡ: { cons: [25.5, 20, 49, 31.5], vowel: [16, 75.5, 69.5, 0] }, // 드: 7 fonts
@@ -46,28 +47,28 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㄹㅓ: { cons: [20, 20, 37, 48.5], vowel: [60.5, 12.5, 16.5, 75] }, // 러: 7 fonts
   ㄹㅕ: { cons: [20, 19.5, 35.5, 49], vowel: [59.5, 12.5, 16.5, 75] }, // 려: 6 fonts
   ㄹㅣ: { cons: [21, 20, 41.5, 48.5], vowel: [76, 12.5, 0, 75] }, // 리: 7 fonts
-  ㄹㅗ: { cons: [29.5, 19.5, 43.5, 31.5], vowel: [16, 62.5, 69.5, 12.5] }, // 로: 1 font
-  ㄹㅛ: { cons: [29.5, 19.5, 43.5, 31], vowel: [16, 61, 69.5, 14] }, // 료: 1 font
+  ㄹㅗ: { cons: [25.5, 19.5, 50.5, 39], vowel: [16, 57, 69.5, 19.5] }, // 로: derived (only 1 font measured)
+  ㄹㅛ: { cons: [25.5, 18, 50.5, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 료: derived (only 1 font measured)
   ㄹㅜ: { cons: [25, 16, 50.5, 31.5], vowel: [15.5, 62, 70, 26] }, // 루: 7 fonts
   ㄹㅠ: { cons: [25, 16, 50.5, 31], vowel: [15.5, 61.5, 70, 26.5] }, // 류: 7 fonts
   ㄹㅡ: { cons: [25.5, 18.5, 50.5, 37.5], vowel: [16, 75.5, 69.5, 0] }, // 르: 7 fonts
   ㅁㅏ: { cons: [19, 20.5, 31.5, 46], vowel: [72.5, 12.5, 13, 75] }, // 마: 7 fonts
   ㅁㅑ: { cons: [19, 20.5, 31.5, 46], vowel: [72.5, 12.5, 13, 75] }, // 먀: 7 fonts
-  ㅁㅓ: { cons: [21, 24, 32.5, 34], vowel: [61, 14, 15.5, 70] }, // 머: 1 font
-  ㅁㅕ: { cons: [21, 24, 32, 34], vowel: [60.5, 14, 15.5, 70] }, // 며: 1 font
+  ㅁㅓ: { cons: [17, 20.5, 39, 46], vowel: [58.5, 12.5, 18, 75] }, // 머: derived (only 1 font measured)
+  ㅁㅕ: { cons: [16.5, 20.5, 40.5, 46], vowel: [59.5, 12.5, 16.5, 75] }, // 며: derived (only 1 font measured)
   ㅁㅣ: { cons: [21, 20, 31.5, 46], vowel: [76, 12.5, 0, 75] }, // 미: 7 fonts
-  ㅁㅗ: { cons: [29, 20.5, 42.5, 27.5], vowel: [16, 59, 69.5, 16] }, // 모: 1 font
-  ㅁㅛ: { cons: [29, 20.5, 42.5, 27.5], vowel: [16, 59.5, 69.5, 15.5] }, // 묘: 1 font
+  ㅁㅗ: { cons: [25, 19.5, 49, 39], vowel: [16, 57, 69.5, 19.5] }, // 모: derived (only 1 font measured)
+  ㅁㅛ: { cons: [25, 18, 49, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 묘: derived (only 1 font measured)
   ㅁㅜ: { cons: [25.5, 17, 48, 25.5], vowel: [15.5, 59, 70, 28] }, // 무: 7 fonts
   ㅁㅠ: { cons: [25.5, 17, 48, 25.5], vowel: [15.5, 59, 70, 28.5] }, // 뮤: 7 fonts
   ㅁㅡ: { cons: [25, 19, 49, 32.5], vowel: [16, 75.5, 69.5, 0] }, // 므: 7 fonts
   ㅂㅏ: { cons: [19.5, 19, 31, 48.5], vowel: [72.5, 12.5, 13, 75] }, // 바: 7 fonts
   ㅂㅑ: { cons: [19.5, 19, 31, 48.5], vowel: [72.5, 12.5, 12.5, 75] }, // 뱌: 7 fonts
-  ㅂㅓ: { cons: [22, 21, 30, 39], vowel: [60.5, 14, 15.5, 70] }, // 버: 1 font
-  ㅂㅕ: { cons: [22, 21, 30, 39], vowel: [60.5, 14, 15.5, 70] }, // 벼: 1 font
+  ㅂㅓ: { cons: [17, 19, 39, 48.5], vowel: [58.5, 12.5, 18, 75] }, // 버: derived (only 1 font measured)
+  ㅂㅕ: { cons: [16.5, 19, 40.5, 48.5], vowel: [59.5, 12.5, 16.5, 75] }, // 벼: derived (only 1 font measured)
   ㅂㅣ: { cons: [21, 19, 31.5, 48.5], vowel: [76, 12.5, 0, 75] }, // 비: 7 fonts
-  ㅂㅗ: { cons: [29, 17.5, 42.5, 32], vowel: [16, 61, 69.5, 14] }, // 보: 1 font
-  ㅂㅛ: { cons: [29, 17.5, 42.5, 32], vowel: [16, 60.5, 69.5, 14.5] }, // 뵤: 1 font
+  ㅂㅗ: { cons: [25, 19.5, 48.5, 39], vowel: [16, 57, 69.5, 19.5] }, // 보: derived (only 1 font measured)
+  ㅂㅛ: { cons: [25, 18, 48.5, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 뵤: derived (only 1 font measured)
   ㅂㅜ: { cons: [25.5, 15.5, 48, 28.5], vowel: [15.5, 60.5, 70, 27] }, // 부: 7 fonts
   ㅂㅠ: { cons: [25.5, 15.5, 48, 28.5], vowel: [15.5, 60, 70, 27.5] }, // 뷰: 7 fonts
   ㅂㅡ: { cons: [25, 18, 48.5, 36], vowel: [16, 75.5, 69.5, 0] }, // 브: 7 fonts
@@ -83,10 +84,10 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㅅㅡ: { cons: [19.5, 18, 60, 35.5], vowel: [16, 75.5, 69.5, 0] }, // 스: 7 fonts
   ㅇㅏ: { cons: [17.5, 19, 34.5, 50.5], vowel: [72.5, 12.5, 13, 75] }, // 아: 7 fonts
   ㅇㅑ: { cons: [17, 19, 34.5, 50.5], vowel: [72.5, 12.5, 13, 75] }, // 야: 7 fonts
-  ㅇㅓ: { cons: [20, 24.5, 34, 31.5], vowel: [62, 14, 15, 70] }, // 어: 1 font
-  ㅇㅕ: { cons: [20, 24.5, 34, 31.5], vowel: [59.5, 14, 16.5, 70] }, // 여: 1 font
+  ㅇㅓ: { cons: [17, 19, 39, 50.5], vowel: [58.5, 12.5, 18, 75] }, // 어: derived (only 1 font measured)
+  ㅇㅕ: { cons: [16.5, 19, 40.5, 50.5], vowel: [59.5, 12.5, 16.5, 75] }, // 여: derived (only 1 font measured)
   ㅇㅣ: { cons: [19, 19, 34.5, 50.5], vowel: [76.5, 12.5, 0, 75] }, // 이: 7 fonts
-  ㅇㅗ: { cons: [31.5, 18.5, 38.5, 29], vowel: [16, 61, 69.5, 14] }, // 오: 1 font
+  ㅇㅗ: { cons: [23.5, 19.5, 51.5, 39], vowel: [16, 57, 69.5, 19.5] }, // 오: derived (only 1 font measured)
   ㅇㅛ: { cons: [24, 17, 50.5, 32], vowel: [13.5, 58, 72, 17.5] }, // 요: 3 fonts
   ㅇㅜ: { cons: [24.5, 14.5, 50, 29.5], vowel: [15.5, 59, 70, 28] }, // 우: 7 fonts
   ㅇㅠ: { cons: [24.5, 14.5, 50, 29], vowel: [15.5, 59, 70, 28] }, // 유: 7 fonts
@@ -114,20 +115,20 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㅋㅏ: { cons: [17, 21, 34, 51.5], vowel: [72.5, 12.5, 13, 75] }, // 카: 7 fonts
   ㅋㅑ: { cons: [16.5, 21, 34, 51.5], vowel: [72.5, 12.5, 12.5, 75] }, // 캬: 7 fonts
   ㅋㅓ: { cons: [17, 21, 34, 51.5], vowel: [57, 12.5, 19, 75] }, // 커: 7 fonts
-  ㅋㅕ: { cons: [15, 18.5, 36.5, 56.5], vowel: [59.5, 13, 18.5, 74.5] }, // 켜: 2 fonts
+  ㅋㅕ: { cons: [16.5, 21, 40.5, 51.5], vowel: [59.5, 12.5, 16.5, 75] }, // 켜: derived (only 2 fonts measured)
   ㅋㅣ: { cons: [18.5, 21, 35, 51.5], vowel: [76, 12.5, 0, 75] }, // 키: 7 fonts
   ㅋㅗ: { cons: [23, 20, 50.5, 39], vowel: [16, 56, 69.5, 21] }, // 코: 7 fonts
   ㅋㅛ: { cons: [23, 20, 50.5, 39], vowel: [16, 55.5, 69.5, 21] }, // 쿄: 7 fonts
-  ㅋㅜ: { cons: [23.5, 16.5, 53, 30], vowel: [15, 56, 70.5, 30] }, // 쿠: 2 fonts
-  ㅋㅠ: { cons: [23.5, 16.5, 53, 30], vowel: [15, 56, 70.5, 30] }, // 큐: 2 fonts
+  ㅋㅜ: { cons: [23, 16, 50.5, 28.5], vowel: [15.5, 59.5, 70, 27.5] }, // 쿠: derived (only 2 fonts measured)
+  ㅋㅠ: { cons: [23, 15.5, 50.5, 28.5], vowel: [15.5, 59.5, 70, 28] }, // 큐: derived (only 2 fonts measured)
   ㅋㅡ: { cons: [23, 20, 50.5, 43.5], vowel: [16, 76.5, 67.5, 0] }, // 크: 5 fonts
   ㅌㅏ: { cons: [19.5, 19.5, 39, 48], vowel: [72.5, 12.5, 13, 75] }, // 타: 7 fonts
   ㅌㅑ: { cons: [19.5, 19.5, 39, 48], vowel: [72, 12.5, 13, 75] }, // 탸: 7 fonts
   ㅌㅓ: { cons: [20.5, 20, 37, 48], vowel: [60, 12.5, 16, 75] }, // 터: 7 fonts
   ㅌㅕ: { cons: [20.5, 20, 37, 48], vowel: [59.5, 12.5, 16, 75] }, // 텨: 7 fonts
   ㅌㅣ: { cons: [21, 19.5, 40, 48], vowel: [76, 12.5, 0, 75] }, // 티: 7 fonts
-  ㅌㅗ: { cons: [28, 20, 44.5, 30], vowel: [16, 61, 69.5, 14] }, // 토: 1 font
-  ㅌㅛ: { cons: [28, 20, 44.5, 29], vowel: [16, 60.5, 69.5, 14.5] }, // 툐: 1 font
+  ㅌㅗ: { cons: [25.5, 19.5, 49, 39], vowel: [16, 57, 69.5, 19.5] }, // 토: derived (only 1 font measured)
+  ㅌㅛ: { cons: [25.5, 18, 49, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 툐: derived (only 1 font measured)
   ㅌㅜ: { cons: [26, 16, 48.5, 31], vowel: [15.5, 61.5, 70, 25.5] }, // 투: 7 fonts
   ㅌㅠ: { cons: [26, 16, 48.5, 31], vowel: [15.5, 61.5, 70, 26] }, // 튜: 7 fonts
   ㅌㅡ: { cons: [25.5, 19, 49, 37], vowel: [16, 75.5, 69.5, 0] }, // 트: 7 fonts
@@ -136,8 +137,8 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㅍㅓ: { cons: [16, 20.5, 43, 46.5], vowel: [61.5, 12.5, 15, 75] }, // 퍼: 7 fonts
   ㅍㅕ: { cons: [16, 20.5, 43, 47], vowel: [61.5, 12.5, 14.5, 75] }, // 펴: 7 fonts
   ㅍㅣ: { cons: [16.5, 21, 47, 46], vowel: [77, 12.5, 0, 75] }, // 피: 7 fonts
-  ㅍㅗ: { cons: [24, 19.5, 52, 31], vowel: [16, 62, 69.5, 13] }, // 포: 1 font
-  ㅍㅛ: { cons: [24, 19.5, 52, 30], vowel: [16, 60, 69.5, 15.5] }, // 표: 1 font
+  ㅍㅗ: { cons: [23, 19.5, 53, 39], vowel: [16, 57, 69.5, 19.5] }, // 포: derived (only 1 font measured)
+  ㅍㅛ: { cons: [23, 18, 53, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 표: derived (only 1 font measured)
   ㅍㅜ: { cons: [23, 17, 52.5, 28.5], vowel: [15.5, 60.5, 70, 27] }, // 푸: 7 fonts
   ㅍㅠ: { cons: [23, 17, 52.5, 28], vowel: [15.5, 59.5, 70, 27] }, // 퓨: 7 fonts
   ㅍㅡ: { cons: [23, 19.5, 53, 33.5], vowel: [16, 75.5, 69.5, 0] }, // 프: 7 fonts
@@ -146,23 +147,23 @@ export const SYLLABLE_BOXES: Record<string, { cons: Box; vowel: Box }> = {
   ㅎㅓ: { cons: [16.5, 15, 41.5, 55.5], vowel: [62.5, 12.5, 14.5, 75] }, // 허: 6 fonts
   ㅎㅕ: { cons: [16, 15, 42.5, 56], vowel: [62.5, 12.5, 14.5, 75] }, // 혀: 7 fonts
   ㅎㅣ: { cons: [17.5, 15, 42.5, 56.5], vowel: [76.5, 12.5, 0, 75] }, // 히: 7 fonts
-  ㅎㅗ: { cons: [22, 14.5, 55.5, 42.5], vowel: [14.5, 64.5, 70.5, 11.5] }, // 호: 2 fonts
-  ㅎㅛ: { cons: [22, 14.5, 55.5, 42.5], vowel: [14.5, 64.5, 70.5, 11.5] }, // 효: 2 fonts
+  ㅎㅗ: { cons: [20, 19.5, 58, 39], vowel: [16, 57, 69.5, 19.5] }, // 호: derived (only 0 fonts measured)
+  ㅎㅛ: { cons: [20, 18, 58, 36.5], vowel: [16, 58, 69.5, 18.5] }, // 효: derived (only 2 fonts measured)
   ㅎㅜ: { cons: [20, 12, 58, 39.5], vowel: [15.5, 64, 70, 23] }, // 후: 7 fonts
   ㅎㅠ: { cons: [20, 12, 58, 39.5], vowel: [15, 64, 70, 23.5] }, // 휴: 7 fonts
   ㅎㅡ: { cons: [20, 14, 58, 45], vowel: [16, 77, 69.5, 0] }, // 흐: 7 fonts
 }
 
-/** For a syllable with no measurement: the median over the measured consonants, per vowel. */
+/** Per vowel: the median over its well-measured syllables. */
 export const VOWEL_BOXES: Record<string, { cons: Box; vowel: Box }> = {
-  ㅏ: { cons: [17, 20, 39.5, 48.5], vowel: [72.5, 12.5, 13, 75] },
-  ㅑ: { cons: [17, 20, 40, 48.5], vowel: [72.5, 12.5, 12.5, 75] },
-  ㅓ: { cons: [18.5, 20.5, 38, 47.5], vowel: [59.5, 12.5, 17, 75] },
-  ㅕ: { cons: [18.5, 20, 38, 47.5], vowel: [59.5, 12.5, 16.5, 75] },
-  ㅣ: { cons: [18.5, 20, 41.5, 48.5], vowel: [76, 12.5, 0, 75] },
-  ㅗ: { cons: [26, 19.5, 47.5, 31.5], vowel: [16, 59, 69.5, 16] },
-  ㅛ: { cons: [24, 19.5, 50, 32], vowel: [16, 59.5, 69.5, 15.5] },
-  ㅜ: { cons: [24.5, 16, 50.5, 28.5], vowel: [15.5, 59, 70, 28] },
-  ㅠ: { cons: [24.5, 16, 50.5, 28.5], vowel: [15.5, 59, 70, 28] },
+  ㅏ: { cons: [17, 20, 39.5, 49.5], vowel: [72.5, 12.5, 13, 75] },
+  ㅑ: { cons: [17, 20, 40, 49.5], vowel: [72.5, 12.5, 12.5, 75] },
+  ㅓ: { cons: [17, 20, 39, 50.5], vowel: [58.5, 12.5, 18, 75] },
+  ㅕ: { cons: [16.5, 20, 40.5, 49.5], vowel: [59.5, 12.5, 16.5, 75] },
+  ㅣ: { cons: [18.5, 20, 41.5, 49.5], vowel: [76, 12.5, 0, 75] },
+  ㅗ: { cons: [20, 19.5, 59, 39], vowel: [16, 57, 69.5, 19.5] },
+  ㅛ: { cons: [21.5, 18, 55, 36.5], vowel: [16, 58, 69.5, 18.5] },
   ㅡ: { cons: [24, 19, 50.5, 36.5], vowel: [16, 75.5, 69.5, 0] },
+  ㅜ: { cons: [24.5, 16, 50, 28.5], vowel: [15.5, 59.5, 70, 27.5] },
+  ㅠ: { cons: [24.5, 15.5, 50, 28.5], vowel: [15.5, 59.5, 70, 28] },
 }

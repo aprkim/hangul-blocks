@@ -189,6 +189,25 @@ function gap(a: Stroke[], b: Stroke[]): number {
 
 const laidOut = new Map<string, { cons: Stroke[] | null; vowel: Stroke[] | null }>()
 
+/**
+ * ㅇ keeps its roundness: fitted straight into a tall or wide box it turns into a long oval.
+ * Printed type draws it a little tall beside a vowel (아) and a little wide above one (오), so its
+ * width-to-height ratio is held to that range and it is centered in its box.
+ */
+const ROUND_RATIO: Record<VowelLayout, [number, number]> = { side: [0.78, 1], stack: [1, 1.6] }
+function round([x, y, w, h]: Box, layout: VowelLayout): Box {
+  const [lo, hi] = ROUND_RATIO[layout]
+  if (w / h < lo) {
+    const nh = w / lo
+    return [x, y + (h - nh) / 2, w, nh]
+  }
+  if (w / h > hi) {
+    const nw = h * hi
+    return [x + (w - nw) / 2, y, nw, h]
+  }
+  return [x, y, w, h]
+}
+
 /** The consonant and vowel strokes of a syllable on the 100 x 100 frame (either may be missing). */
 export function layoutSyllable(
   cons: string | null,
@@ -210,7 +229,7 @@ export function layoutSyllable(
     // Fonts let some pairs touch (머, 텨). Here the consonant gives way until the gap is clear,
     // trying the gentlest change first: slide away from the vowel, then get narrower or (beside
     // a vowel) a little taller so the vowel's arm clears its bottom stroke, or shorter above one.
-    const [x, y, w, h] = box.cons
+    const [x, y, w, h] = cons === 'ㅇ' ? round(box.cons, layout) : box.cons
     const side = layout === 'side'
     const tries: { box: Box; cost: number }[] = []
     for (const d of [0, 2, 4, 6])
