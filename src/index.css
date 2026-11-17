@@ -1254,18 +1254,31 @@ body {
 .play-placed {
   transition: font-size 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
 }
-.play-placed.is-selected {
-  outline: 3px dashed var(--color-ink);
-  outline-offset: 6px;
-  border-radius: 14px;
+/* The ring hugs the sticker itself (the button around it is taller than a letter tile). */
+.play-placed > span {
+  display: inline-block;
 }
+.play-placed.is-selected > span {
+  outline: 3px dashed var(--color-ink);
+  outline-offset: 5px;
+  border-radius: 0.2em;
+}
+.play-placed.is-selected > .sticker-jamo {
+  border-radius: 0.32em;
+}
+/* Sits just below the selected sticker (or above it, near the bottom), kept inside the scene. */
 .play-size {
+  --base: clamp(36px, 15cqmin, 110px);
   position: absolute;
-  z-index: 2;
-  top: 12px;
-  left: 12px;
+  z-index: 3;
   display: flex;
   gap: 10px;
+  left: clamp(90px, var(--x, 50%), calc(100% - 90px));
+  translate: -50% calc(var(--base) * var(--s, 1) * 0.56 + 16px);
+  pointer-events: auto;
+}
+.play-size.is-above {
+  translate: -50% calc(-100% - var(--base) * var(--s, 1) * 0.56 - 16px);
 }
 .play-size-btn {
   width: clamp(48px, 9dvh, 72px);

@@ -167,28 +167,6 @@ export function ScenePlay() {
         }}
       >
         <SceneArt scene={scene} className="play-art" />
-        {sel && (
-          <div className="play-size" role="group" aria-label="sticker size">
-            <button
-              type="button"
-              aria-label="smaller"
-              className="play-size-btn"
-              disabled={(sel.s ?? 1) <= STICKER_SIZES[0]}
-              onPointerDown={size(-1)}
-            >
-              <SizeIcon big={false} />
-            </button>
-            <button
-              type="button"
-              aria-label="bigger"
-              className="play-size-btn"
-              disabled={(sel.s ?? 1) >= STICKER_SIZES[STICKER_SIZES.length - 1]}
-              onPointerDown={size(1)}
-            >
-              <SizeIcon big />
-            </button>
-          </div>
-        )}
         {(placed.length > 0 || canUndo) && (
           <button
             type="button"
@@ -231,6 +209,35 @@ export function ScenePlay() {
             </button>
           )
         })}
+        {/* Smaller / bigger, right beside the sticker they change (below it, or above it near
+            the bottom of the scene). Hidden while a sticker is being carried. */}
+        {sel && !drag?.moved && (
+          <div
+            className={`play-size ${sel.y > 0.6 ? 'is-above' : ''}`}
+            role="group"
+            aria-label="sticker size"
+            style={{ ['--x' as string]: `${sel.x * 100}%`, top: `${sel.y * 100}%`, ['--s' as string]: sel.s ?? 1 }}
+          >
+            <button
+              type="button"
+              aria-label="smaller"
+              className="play-size-btn"
+              disabled={(sel.s ?? 1) <= STICKER_SIZES[0]}
+              onPointerDown={size(-1)}
+            >
+              <SizeIcon big={false} />
+            </button>
+            <button
+              type="button"
+              aria-label="bigger"
+              className="play-size-btn"
+              disabled={(sel.s ?? 1) >= STICKER_SIZES[STICKER_SIZES.length - 1]}
+              onPointerDown={size(1)}
+            >
+              <SizeIcon big />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="play-bar">
