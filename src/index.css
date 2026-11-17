@@ -148,15 +148,10 @@ body {
   white-space: nowrap;
   color: var(--color-muted);
 }
-/* The syllable the child just built: ink, bold, 5px ink underline. (Red means "consonant" only.) */
+/* The syllable the child just built: ink and bold against the muted rest of the word. (Red means "consonant" only.) */
 .word-text b {
   color: var(--color-ink);
   font-weight: 800;
-  text-decoration: underline;
-  text-decoration-color: var(--color-ink);
-  text-decoration-thickness: 5px;
-  text-underline-offset: 0.14em;
-  text-decoration-skip-ink: none;
 }
 
 /* No room beside the frame (phone held upright): below the frame instead. */
