@@ -1052,7 +1052,7 @@ body {
 .play-ghost {
   position: absolute;
   translate: -50% -50%;
-  font-size: clamp(36px, 15cqmin, 110px);
+  font-size: calc(clamp(36px, 15cqmin, 110px) * var(--s, 1));
   line-height: 1;
   touch-action: none;
   filter: drop-shadow(0 3px 0 rgb(0 0 0 / 0.12));
@@ -1253,4 +1253,40 @@ body {
 }
 .play-clear.is-undo {
   animation: next-ready 1.2s ease-in-out infinite;
+}
+
+/* The sticker last touched: a dashed ring, and bigger / smaller buttons at the scene's top left. */
+.play-placed {
+  transition: font-size 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.play-placed.is-selected {
+  outline: 3px dashed var(--color-ink);
+  outline-offset: 6px;
+  border-radius: 14px;
+}
+.play-size {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 10px;
+}
+.play-size-btn {
+  width: clamp(48px, 9dvh, 72px);
+  height: clamp(48px, 9dvh, 72px);
+  border-radius: 20px;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.play-size-btn svg {
+  width: 72% !important;
+  height: 72% !important;
+}
+.play-size-btn:disabled {
+  opacity: 0.35;
 }

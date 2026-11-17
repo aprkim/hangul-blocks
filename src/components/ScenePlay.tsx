@@ -7,7 +7,9 @@ import {
   moveSticker,
   placeSticker,
   removeSticker,
+  resizeSticker,
   restoreScene,
+  STICKER_SIZES,
   stickerInfo,
   useScenes,
   type Placed,
@@ -16,7 +18,7 @@ import {
 } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { useProgress } from '../progress'
-import { SweepIcon, UndoIcon } from './Icons'
+import { SizeIcon, SweepIcon, UndoIcon } from './Icons'
 import { SceneArt } from './SceneArt'
 import { StickerFace } from './StickerFace'
 
@@ -60,6 +62,8 @@ export function ScenePlay() {
   // Clearing is immediate (a confirm dialog means nothing to a child who can't read); for a
   // few seconds an undo button brings everything back.
   const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)
+  // The sticker last touched gets a dashed ring and the bigger / smaller buttons.
+  const [selected, setSelected] = useState<number | null>(null)
   useEffect(() => {
     if (!cleared) return
     const t = window.setTimeout(() => setCleared(null), UNDO_MS)
@@ -117,32 +121,74 @@ export function ScenePlay() {
       // A tap: say the word.
       tapFeedback()
       say(d.info)
-      if (d.key !== null) el.animate(BOUNCE, { duration: 320 })
+      if (d.key !== null) {
+        setSelected(d.key)
+        el.animate(BOUNCE, { duration: 320 })
+      }
       return
     }
     const at = onScene(e.clientX, e.clientY)
     if (d.key === null) {
       if (at) {
         tapFeedback()
-        placeSticker(scene, d.info.id, at.fx, at.fy)
+        setSelected(placeSticker(scene, d.info.id, at.fx, at.fy))
         say(d.info)
       }
     } else if (at) {
       moveSticker(scene, d.key, at.fx, at.fy)
+      setSelected(d.key)
     } else {
       // Dragged off the scene: taken away.
       chime('soft')
       removeSticker(scene, d.key)
+      if (selected === d.key) setSelected(null)
     }
   }
 
   const placed = scenes[scene]
   const canUndo = cleared?.scene === scene
+  const sel = placed.find((pl) => pl.key === selected) ?? null
+  const size = (step: 1 | -1) => (e: React.PointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!sel) return
+    tapFeedback()
+    resizeSticker(scene, sel.key, step)
+  }
 
   return (
     <div className="play">
-      <div ref={sceneRef} className="play-scene">
+      <div
+        ref={sceneRef}
+        className="play-scene"
+        onPointerDown={(e) => {
+          // Touching the empty scene puts the size buttons away.
+          if (e.target === e.currentTarget || (e.target as Element).closest('.play-art')) setSelected(null)
+        }}
+      >
         <SceneArt scene={scene} className="play-art" />
+        {sel && (
+          <div className="play-size" role="group" aria-label="sticker size">
+            <button
+              type="button"
+              aria-label="smaller"
+              className="play-size-btn"
+              disabled={(sel.s ?? 1) <= STICKER_SIZES[0]}
+              onPointerDown={size(-1)}
+            >
+              <SizeIcon big={false} />
+            </button>
+            <button
+              type="button"
+              aria-label="bigger"
+              className="play-size-btn"
+              disabled={(sel.s ?? 1) >= STICKER_SIZES[STICKER_SIZES.length - 1]}
+              onPointerDown={size(1)}
+            >
+              <SizeIcon big />
+            </button>
+          </div>
+        )}
         {(placed.length > 0 || canUndo) && (
           <button
             type="button"
@@ -174,8 +220,8 @@ export function ScenePlay() {
               key={pl.key}
               type="button"
               aria-label={info.label}
-              className={`play-placed ${moving ? 'is-moving' : ''}`}
-              style={{ left: `${pl.x * 100}%`, top: `${pl.y * 100}%` }}
+              className={`play-placed ${moving ? 'is-moving' : ''} ${pl.key === selected ? 'is-selected' : ''}`}
+              style={{ left: `${pl.x * 100}%`, top: `${pl.y * 100}%`, ['--s' as string]: pl.s ?? 1 }}
               onPointerDown={(e) => begin(e, info, pl.key)}
               onPointerMove={move}
               onPointerUp={(e) => end(e, e.currentTarget)}
@@ -201,6 +247,7 @@ export function ScenePlay() {
                 e.preventDefault()
                 tapFeedback()
                 setScene(s)
+                setSelected(null)
               }}
             >
               <SceneArt scene={s} className="h-full w-full" />

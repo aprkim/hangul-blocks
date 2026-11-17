@@ -83,8 +83,11 @@ export const ALL_JAMO_STICKERS = JAMO_INFO
 
 export const SCENES = ['home', 'park', 'sea', 'space'] as const
 export type SceneId = (typeof SCENES)[number]
-/** A sticker on a scene: position as fractions of the scene (center of the sticker). */
-export type Placed = { key: number; id: StickerId; x: number; y: number }
+/** A sticker on a scene: position as fractions of the scene (center of the sticker), size factor. */
+export type Placed = { key: number; id: StickerId; x: number; y: number; s?: number }
+
+/** The sizes a placed sticker can take, smallest to biggest (1 is where it starts). */
+export const STICKER_SIZES = [0.5, 0.7, 1, 1.4, 1.9, 2.5]
 type ScenesState = Record<SceneId, Placed[]>
 
 /** So a scene never fills up with hundreds of stickers. */
@@ -93,13 +96,28 @@ export const SCENE_LIMIT = 40
 const scenes = store<ScenesState>('soriblocks.scenes.v1', { home: [], park: [], sea: [], space: [] })
 export const useScenes = scenes.use
 
-export function placeSticker(scene: SceneId, id: StickerId, x: number, y: number) {
+export function placeSticker(scene: SceneId, id: StickerId, x: number, y: number): number {
   const s = scenes.get()
   const list = s[scene]
   const key = list.reduce((m, p) => Math.max(m, p.key), 0) + 1
   // Over the limit, the oldest sticker makes room.
   const next = [...list, { key, id, x, y }].slice(-SCENE_LIMIT)
   scenes.set({ ...s, [scene]: next })
+  return key
+}
+
+/** One size step bigger (+1) or smaller (-1). */
+export function resizeSticker(scene: SceneId, key: number, step: 1 | -1) {
+  const s = scenes.get()
+  scenes.set({
+    ...s,
+    [scene]: s[scene].map((p) => {
+      if (p.key !== key) return p
+      const i = STICKER_SIZES.indexOf(p.s ?? 1)
+      const next = STICKER_SIZES[Math.max(0, Math.min(STICKER_SIZES.length - 1, (i < 0 ? 2 : i) + step))]
+      return { ...p, s: next }
+    }),
+  })
 }
 
 export function moveSticker(scene: SceneId, key: number, x: number, y: number) {

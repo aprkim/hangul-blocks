@@ -204,3 +204,24 @@ export function UndoIcon() {
     </svg>
   )
 }
+
+/** Sticker size: a small dot beside a big circle, with the one meant filled in. */
+export function SizeIcon({ big }: { big: boolean }) {
+  return (
+    <svg {...box}>
+      {big ? (
+        <>
+          <circle cx="11" cy="31" r="4" stroke={GUIDE} strokeWidth={3} />
+          <circle cx="30" cy="22" r="13" fill={BLUE} />
+          <path d="M30 15v14M23 22h14" stroke={ON_TILE} strokeWidth={4} />
+        </>
+      ) : (
+        <>
+          <circle cx="15" cy="24" r="6" fill={RED} />
+          <path d="M11 24h8" stroke={ON_TILE} strokeWidth={3} />
+          <circle cx="33" cy="24" r="10" stroke={GUIDE} strokeWidth={3} />
+        </>
+      )}
+    </svg>
+  )
+}
