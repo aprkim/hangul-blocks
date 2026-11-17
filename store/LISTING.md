@@ -5,6 +5,16 @@
 > 설명·키워드 등에는 이모지와 특수 기호(■, •, →)를 쓰지 말 것. App Store Connect가 'invalid characters'로 거부한다.
 
 App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의 각 칸에 붙여넣는다.
+
+**1.2.1부터 스크린샷은 문구가 들어간 `store/captioned/ko/`(한국어), `store/captioned/en/`(영어)를 쓴다.** 파일 이름의 번호(1~6) 순서대로 올린다.
+| 칸 | 파일 |
+|---|---|
+| iPad 13" | `ipad-13-*` |
+| iPhone (medium display, 6.3") | `iphone-6.3-*` (6.9", 6.5" 칸이 보이면 `iphone-6.9-*`, `iphone-6.5-*`) |
+| Google Play 휴대전화 | `play-phone-1920x1080-*` |
+| Google Play 7인치 / 10인치 태블릿 | `play-tablet7-1920x1080-*` / `play-tablet10-2560x1440-*` |
+
+**앱 미리보기 영상 (iPad 13"):** `store/preview/preview-ipad-1600x1200.mp4` (약 22초, 소리 포함). iPad 13" 칸의 "앱 미리보기"에 올린다. 영어 쪽도 같은 영상(아이 화면에는 글자가 없다).
 스크린샷은 `store/screenshots/` (기기별 6장: 소리, 가, 고, 글자 길, 가 쓰기, 스티커북). 순서대로 올린다.
 
 ---
