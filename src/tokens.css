@@ -72,3 +72,24 @@
   --color-page: var(--theme-blush-page);
   --color-card-shadow: var(--theme-blush-shadow);
 }
+
+/* Play scenes (sticker play): flat illustration colors. Plain custom properties (not @theme)
+   because they are only referenced from SVG at run time, which the CSS build cannot see. */
+:root {
+  --color-scene-sky: #bfe3f5;
+  --color-scene-sun: #ffd166;
+  --color-scene-grass: #8ccf7e;
+  --color-scene-grass-dark: #5fae55;
+  --color-scene-tree: #9b6a43;
+  --color-scene-wall: #fbe7cf;
+  --color-scene-floor: #d9a066;
+  --color-scene-floor-dark: #c48a52;
+  --color-scene-rug: #f2b8b0;
+  --color-scene-sea: #4aa3df;
+  --color-scene-sea-dark: #2f86c4;
+  --color-scene-sand: #f3dca6;
+  --color-scene-night: #1f2a4d;
+  --color-scene-night-light: #34437a;
+  --color-scene-planet: #f29e6d;
+  --color-scene-white: #ffffff;
+}

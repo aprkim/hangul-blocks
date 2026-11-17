@@ -1,0 +1,200 @@
+import { useRef, useState } from 'react'
+import { chime, play } from '../audio'
+import {
+  SCENES,
+  earnedStickers,
+  moveSticker,
+  placeSticker,
+  removeSticker,
+  stickerInfo,
+  useScenes,
+  type SceneId,
+  type StickerInfo,
+} from '../keepsakes'
+import { tapFeedback } from '../native'
+import { useProgress } from '../progress'
+import { SceneArt } from './SceneArt'
+import { StickerFace } from './StickerFace'
+
+// Sticker play: drag earned stickers from the tray onto a scene (home, park, sea, space), move
+// them around, drag them off to take them away. Tapping a sticker says its word, so playing is
+// also hearing the words again. Positions are kept on the device.
+
+const BOUNCE: Keyframe[] = [
+  { transform: 'translate(-50%, -50%) scale(1)' },
+  { transform: 'translate(-50%, -50%) scale(1.25)', offset: 0.4 },
+  { transform: 'translate(-50%, -50%) scale(1)' },
+]
+const TAP_SLOP = 8
+
+type Drag = {
+  pointer: number
+  info: StickerInfo
+  /** Placed sticker being moved (its key), or null when it comes from the tray. */
+  key: number | null
+  x: number
+  y: number
+  startX: number
+  startY: number
+  moved: boolean
+}
+
+function say(info: StickerInfo) {
+  if (info.sound) play(info.sound)
+  else chime('star')
+}
+
+export function ScenePlay() {
+  const p = useProgress()
+  const scenes = useScenes()
+  const [scene, setScene] = useState<SceneId>('home')
+  const [drag, setDrag] = useState<Drag | null>(null)
+  const sceneRef = useRef<HTMLDivElement>(null)
+  const earned = earnedStickers(p)
+
+  /** Where a point falls on the scene, as fractions, or null when it is off the scene. */
+  const onScene = (x: number, y: number) => {
+    const r = sceneRef.current?.getBoundingClientRect()
+    if (!r || x < r.left || x > r.right || y < r.top || y > r.bottom) return null
+    return { fx: (x - r.left) / r.width, fy: (y - r.top) / r.height }
+  }
+
+  const begin = (e: React.PointerEvent, info: StickerInfo, key: number | null) => {
+    if (drag) return
+    // Placed stickers follow the finger at once. In the tray the finger may be scrolling it
+    // sideways, so a tray sticker is picked up only once the finger heads up (see move).
+    if (key !== null) e.preventDefault()
+    // Hold on to the finger even once it leaves the little sticker. (In the tray the browser may
+    // still take a sideways move as scrolling, which ends with pointercancel.)
+    ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
+    setDrag({ pointer: e.pointerId, info, key, x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY, moved: false })
+  }
+
+  const move = (e: React.PointerEvent) => {
+    if (!drag || drag.pointer !== e.pointerId) return
+    const dx = e.clientX - drag.startX
+    const dy = e.clientY - drag.startY
+    let moved = drag.moved
+    if (!moved && drag.key === null) {
+      // From the tray: a nearly flat move scrolls the tray (when it has more than fits);
+      // anything heading up towards the scene, even at a slant, picks the sticker up.
+      const tray = (e.currentTarget as Element).closest('.play-tray')
+      const scrolls = !!tray && tray.scrollWidth > tray.clientWidth + 2
+      if (Math.hypot(dx, dy) > TAP_SLOP) {
+        if (scrolls && Math.abs(dy) < Math.abs(dx) * 0.45) {
+          ;(e.currentTarget as Element).releasePointerCapture(e.pointerId)
+          setDrag(null) // scrolling the tray
+          return
+        }
+        moved = true
+      }
+    } else if (!moved) {
+      moved = Math.hypot(dx, dy) > TAP_SLOP
+    }
+    setDrag({ ...drag, x: e.clientX, y: e.clientY, moved })
+  }
+
+  const end = (e: React.PointerEvent, el: HTMLElement) => {
+    if (!drag || drag.pointer !== e.pointerId) return
+    const d = drag
+    setDrag(null)
+    if (e.type === 'pointercancel' && !d.moved) return
+    if (!d.moved) {
+      // A tap: say the word.
+      tapFeedback()
+      say(d.info)
+      if (d.key !== null) el.animate(BOUNCE, { duration: 320 })
+      return
+    }
+    const at = onScene(e.clientX, e.clientY)
+    if (d.key === null) {
+      if (at) {
+        tapFeedback()
+        placeSticker(scene, d.info.id, at.fx, at.fy)
+        say(d.info)
+      }
+    } else if (at) {
+      moveSticker(scene, d.key, at.fx, at.fy)
+    } else {
+      // Dragged off the scene: taken away.
+      chime('soft')
+      removeSticker(scene, d.key)
+    }
+  }
+
+  const placed = scenes[scene]
+
+  return (
+    <div className="play">
+      <div ref={sceneRef} className="play-scene">
+        <SceneArt scene={scene} className="play-art" />
+        {placed.map((pl) => {
+          const info = stickerInfo(pl.id)
+          if (!info) return null
+          const moving = drag?.key === pl.key && drag.moved
+          return (
+            <button
+              key={pl.key}
+              type="button"
+              aria-label={info.label}
+              className={`play-placed ${moving ? 'is-moving' : ''}`}
+              style={{ left: `${pl.x * 100}%`, top: `${pl.y * 100}%` }}
+              onPointerDown={(e) => begin(e, info, pl.key)}
+              onPointerMove={move}
+              onPointerUp={(e) => end(e, e.currentTarget)}
+              onPointerCancel={(e) => end(e, e.currentTarget)}
+            >
+              <StickerFace info={info} />
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="play-bar">
+        <div className="play-scenes" role="tablist" aria-label="scenes">
+          {SCENES.map((s) => (
+            <button
+              key={s}
+              type="button"
+              role="tab"
+              aria-selected={s === scene}
+              aria-label={s}
+              className={`play-scene-pick ${s === scene ? 'is-current' : ''}`}
+              onPointerDown={(e) => {
+                e.preventDefault()
+                tapFeedback()
+                setScene(s)
+              }}
+            >
+              <SceneArt scene={s} className="h-full w-full" />
+            </button>
+          ))}
+        </div>
+        <div className="play-tray" data-scroll>
+          {earned.length === 0 && <span className="play-empty" aria-hidden />}
+          {earned.map((info) => (
+            <button
+              key={info.id}
+              type="button"
+              aria-label={info.label}
+              className="play-tray-item"
+              onPointerDown={(e) => begin(e, info, null)}
+              onPointerMove={move}
+              onPointerUp={(e) => end(e, e.currentTarget)}
+              onPointerCancel={(e) => end(e, e.currentTarget)}
+            >
+              <StickerFace info={info} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* What the finger is carrying. */}
+      {drag?.moved && (
+        <div className="play-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden>
+          <StickerFace info={drag.info} />
+        </div>
+      )}
+    </div>
+  )
+}

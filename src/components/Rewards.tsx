@@ -4,7 +4,11 @@ import { confetti } from '../effects'
 import { successFeedback, tapFeedback } from '../native'
 import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
-import { CloseIcon, GiftIcon, STAR_PATH, StarShape } from './Icons'
+import { ALL_JAMO_STICKERS } from '../keepsakes'
+import { Fridge } from './Fridge'
+import { BookIcon, CloseIcon, FridgeIcon, GiftIcon, SceneIcon, STAR_PATH, StarShape } from './Icons'
+import { ScenePlay } from './ScenePlay'
+import { StickerFace } from './StickerFace'
 
 // Rewards on the Write tab: the star jar (top right, beside settings), the gift that a full jar
 // gives, and the sticker book (opened by tapping the jar). Pictures only, no numbers.
@@ -136,10 +140,41 @@ export function GiftReveal() {
  * word, or its animal friend), and the treasures from full jars. Ones still to find show as a
  * faint silhouette: something to look forward to, not something missing.
  */
+type Room = 'book' | 'play' | 'fridge'
+const ROOMS: { id: Room; icon: () => React.JSX.Element; label: string }[] = [
+  { id: 'book', icon: BookIcon, label: 'sticker book' },
+  { id: 'play', icon: SceneIcon, label: 'sticker play' },
+  { id: 'fridge', icon: FridgeIcon, label: 'my letters' },
+]
+
+/**
+ * Opened by tapping the star jar. Three rooms, switched by the picture buttons at the top left:
+ * the sticker book (what has been collected, silhouettes for what is still to find), sticker
+ * play (put stickers on scenes), and the fridge (the child's own handwriting).
+ */
 export function StickerBook({ onClose }: { onClose: () => void }) {
-  const p = useProgress()
+  const [room, setRoom] = useState<Room>('book')
   return (
-    <div className="book-overlay" role="dialog" aria-label="sticker book">
+    <div className="book-overlay" role="dialog" aria-label="stickers">
+      <div className="room-tabs" role="tablist">
+        {ROOMS.map(({ id, icon: Icon, label }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-label={label}
+            aria-selected={room === id}
+            className={`room-tab ${room === id ? 'is-current' : ''}`}
+            onPointerDown={(e) => {
+              e.preventDefault()
+              tapFeedback()
+              setRoom(id)
+            }}
+          >
+            <Icon />
+          </button>
+        ))}
+      </div>
       <button
         type="button"
         className="book-close"
@@ -152,40 +187,68 @@ export function StickerBook({ onClose }: { onClose: () => void }) {
       >
         <CloseIcon />
       </button>
-      <div className="book-scroll" data-scroll>
-        <div className="book-page">
-          <div className="book-grid letters">
-            {reachableSyllables(p).map(({ char, cons, vowel }) => {
-              const card = cardFor(cons, vowel)
-              const have = timesWritten(p, char) > 0
-              return (
-                <Sticker
-                  key={char}
-                  have={have}
-                  emoji={card.emoji}
-                  label={card.before + card.syllable + card.after}
-                  onTap={() => (have ? play(card.sound) : chime('soft'))}
-                >
-                  {have && (
-                    <span className="sticker-word">
-                      {card.before}
-                      <b>{card.syllable}</b>
-                      {card.kind === 'word' ? card.after : ''}
-                    </span>
-                  )}
-                </Sticker>
-              )
-            })}
-          </div>
-          <div className="book-divider" aria-hidden>
-            <StarShape className="h-full" />
-          </div>
-          <div className="book-grid treasures">
-            {TREASURES.map((t) => {
-              const have = p.treasures.includes(t)
-              return <Sticker key={t} have={have} emoji={t} label={t} onTap={() => chime(have ? 'star' : 'soft')} />
-            })}
-          </div>
+      {room === 'book' && <BookPage />}
+      {room === 'play' && (
+        <div className="room-body">
+          <ScenePlay />
+        </div>
+      )}
+      {room === 'fridge' && (
+        <div className="room-body">
+          <Fridge />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function BookPage() {
+  const p = useProgress()
+  return (
+    <div className="book-scroll" data-scroll>
+      <div className="book-page">
+        {/* Every jamo written gives its own sticker: the first stickers a child earns. */}
+        <div className="book-grid jamo">
+          {ALL_JAMO_STICKERS.map((j) => {
+            const have = timesWritten(p, j.face) > 0
+            return (
+              <Sticker key={j.id} have={have} emoji="" label={j.label} onTap={() => (have && j.sound ? play(j.sound) : chime('soft'))}>
+                <StickerFace info={j} />
+              </Sticker>
+            )
+          })}
+        </div>
+        <div className="book-grid letters">
+          {reachableSyllables(p).map(({ char, cons, vowel }) => {
+            const card = cardFor(cons, vowel)
+            const have = timesWritten(p, char) > 0
+            return (
+              <Sticker
+                key={char}
+                have={have}
+                emoji={card.emoji}
+                label={card.before + card.syllable + card.after}
+                onTap={() => (have ? play(card.sound) : chime('soft'))}
+              >
+                {have && (
+                  <span className="sticker-word">
+                    {card.before}
+                    <b>{card.syllable}</b>
+                    {card.kind === 'word' ? card.after : ''}
+                  </span>
+                )}
+              </Sticker>
+            )
+          })}
+        </div>
+        <div className="book-divider" aria-hidden>
+          <StarShape className="h-full" />
+        </div>
+        <div className="book-grid treasures">
+          {TREASURES.map((t) => {
+            const have = p.treasures.includes(t)
+            return <Sticker key={t} have={have} emoji={t} label={t} onTap={() => chime(have ? 'star' : 'soft')} />
+          })}
         </div>
       </div>
     </div>
@@ -218,7 +281,7 @@ function Sticker({
         onTap()
       }}
     >
-      <span className="sticker-emoji">{emoji}</span>
+      {emoji && <span className="sticker-emoji">{emoji}</span>}
       {children}
     </button>
   )

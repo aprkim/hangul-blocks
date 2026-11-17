@@ -18,6 +18,7 @@ import {
   writtenInSet,
 } from '../progress'
 import { STROKES, strokePath, syllableStrokes, traceMatches, type Pt, type Stroke } from '../strokes'
+import { recordWriting } from '../keepsakes'
 import { cardFor, type Card } from '../words'
 import { ArrowIcon, GiftIcon, MapIcon, StarShape } from './Icons'
 import { Syllable } from './JamoStrokes'
@@ -283,6 +284,8 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   const stickerRef = useRef<HTMLButtonElement>(null)
   const drawing = useRef<{ id: number; pts: Pt[] } | null>(null)
   const timers = useRef<number[]>([])
+  /** The child's own accepted strokes, kept for the handwriting fridge. */
+  const accepted = useRef<Pt[][]>([])
 
   const strokes = target.strokes
   const complete = done >= strokes.length
@@ -300,6 +303,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   }, [card])
 
   function restart() {
+    accepted.current = []
     setDone(0)
     setInk([])
     setCard(null)
@@ -338,6 +342,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   }
 
   function finish() {
+    recordWriting(target.char, strokes.map((s) => s.part), accepted.current)
     play(target.sound)
     successFeedback()
     cardRef.current?.animate(POP, { duration: 480, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
@@ -364,6 +369,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
     drawing.current = null
     setInk([])
     if (traceMatches(strokes[done].stroke, d.pts)) {
+      accepted.current[done] = d.pts
       const next = done + 1
       setDone(next)
       if (next >= strokes.length) finish()

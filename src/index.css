@@ -940,3 +940,294 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* ---------- Reward room: tabs (book / play / fridge) ---------- */
+.room-tabs {
+  position: fixed;
+  z-index: 46;
+  top: calc(env(safe-area-inset-top) + var(--settings-gap));
+  left: calc(env(safe-area-inset-left) + var(--settings-gap));
+  display: flex;
+  gap: var(--settings-gap);
+}
+.room-tab {
+  width: var(--settings);
+  height: var(--settings);
+  border-radius: 22px;
+  background: var(--color-card);
+  box-shadow: 0 6px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  opacity: 0.55;
+  transition: opacity 0.15s, translate 0.15s;
+}
+.room-tab svg {
+  width: 72% !important;
+  height: 72% !important;
+}
+.room-tab.is-current {
+  opacity: 1;
+  translate: 0 4px;
+  box-shadow: 0 2px 0 var(--color-card-shadow), inset 0 0 0 3px var(--color-ink);
+}
+/* Everything below the band of tab buttons. */
+.room-body {
+  position: absolute;
+  inset: calc(env(safe-area-inset-top) + var(--settings) + 2 * var(--settings-gap)) 0 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Jamo stickers: a little letter tile. */
+.sticker-jamo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 0.32em;
+  color: var(--color-on-tile);
+  font-weight: 800;
+  line-height: 1;
+}
+.sticker-jamo.is-consonant {
+  background: var(--color-consonant);
+  box-shadow: 0 0.12em 0 var(--color-consonant-dark);
+}
+.sticker-jamo.is-vowel {
+  background: var(--color-vowel);
+  box-shadow: 0 0.12em 0 var(--color-vowel-dark);
+}
+.sticker-pic {
+  line-height: 1;
+}
+.book-grid.jamo {
+  grid-template-columns: repeat(12, calc(var(--sticker) * 0.82));
+}
+.book-grid.jamo .sticker {
+  width: calc(var(--sticker) * 0.82);
+  height: calc(var(--sticker) * 0.82);
+  font-size: calc(var(--sticker) * 0.34);
+}
+.sticker.is-hidden .sticker-jamo {
+  filter: grayscale(1);
+  opacity: 0.18;
+  box-shadow: none;
+}
+@media (max-width: 700px) {
+  .book-grid.jamo {
+    grid-template-columns: repeat(6, calc(var(--sticker) * 0.82));
+  }
+}
+
+/* ---------- Sticker play ---------- */
+.play {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: max(1.5vh, 10px);
+  padding: 0 2.5vh max(2vh, 12px);
+  --tray-item: clamp(52px, 11dvh, 92px);
+}
+.play-scene {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  container-type: size;
+  box-shadow: 0 8px 0 var(--color-card-shadow);
+  touch-action: none;
+}
+.play-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.play-placed,
+.play-ghost {
+  position: absolute;
+  translate: -50% -50%;
+  font-size: clamp(36px, 15cqmin, 110px);
+  line-height: 1;
+  touch-action: none;
+  filter: drop-shadow(0 3px 0 rgb(0 0 0 / 0.12));
+}
+.play-placed.is-moving {
+  opacity: 0;
+}
+.play-ghost {
+  position: fixed;
+  z-index: 80;
+  pointer-events: none;
+  font-size: clamp(40px, 13dvh, 110px);
+  scale: 1.12;
+}
+.play-placed .sticker-jamo,
+.play-ghost .sticker-jamo {
+  font-size: 0.55em;
+}
+.play-bar {
+  display: flex;
+  align-items: center;
+  gap: max(1.5vh, 10px);
+  height: var(--tray-item);
+  flex: none;
+}
+.play-scenes {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.play-scene-pick {
+  width: calc(var(--tray-item) * 0.9);
+  height: calc(var(--tray-item) * 0.9);
+  border-radius: 16px;
+  overflow: hidden;
+  opacity: 0.6;
+  touch-action: none;
+  box-shadow: 0 4px 0 var(--color-card-shadow);
+}
+.play-scene-pick.is-current {
+  opacity: 1;
+  box-shadow: inset 0 0 0 3px var(--color-ink), 0 4px 0 var(--color-card-shadow);
+}
+.play-scene-pick svg {
+  display: block;
+}
+.play-tray {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: var(--color-card);
+  touch-action: pan-x;
+}
+.play-tray-item {
+  flex: none;
+  width: calc(var(--tray-item) * 0.8);
+  height: calc(var(--tray-item) * 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--tray-item) * 0.55);
+  touch-action: pan-x;
+}
+.play-tray-item .sticker-jamo {
+  font-size: 0.6em;
+}
+.play-empty {
+  flex: 1;
+  height: 60%;
+  border-radius: 14px;
+  border: 3px dashed var(--color-card-shadow);
+}
+/* Phones held upright: scene picker above the tray. */
+@media (max-aspect-ratio: 1/1) {
+  .play-bar {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+  .play-scenes {
+    justify-content: center;
+  }
+  .play-tray {
+    height: var(--tray-item);
+  }
+}
+
+/* ---------- Fridge (the child's handwriting) ---------- */
+.fridge {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding: 1vh 2.5vh 4vh;
+}
+.fridge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(88px, 15vmin, 150px), 1fr));
+  gap: max(2.5vh, 16px);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.fridge-paper {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--color-card);
+  box-shadow: 0 6px 14px -6px var(--color-drop-shadow), 0 2px 0 var(--color-card-shadow);
+  padding: 10%;
+  touch-action: pan-y;
+}
+.fridge-paper svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.fridge-magnet {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  translate: -50% 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.15);
+}
+.fridge-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+}
+.fridge-empty svg {
+  width: min(30vmin, 220px) !important;
+  height: min(30vmin, 220px) !important;
+}
+.fridge-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  touch-action: none;
+}
+.fridge-zoom-card {
+  position: relative;
+  width: min(70vmin, 520px);
+  height: min(70vmin, 520px);
+  border-radius: 10px;
+  background: var(--color-card);
+  padding: 7%;
+  box-shadow: 0 20px 50px -20px var(--color-drop-shadow);
+}
+.fridge-zoom-latest {
+  width: 100%;
+  height: 100%;
+}
+.fridge-zoom-first {
+  position: absolute;
+  right: 4%;
+  bottom: 4%;
+  width: 24%;
+  height: 24%;
+  border-radius: 6px;
+  background: var(--color-page);
+  padding: 3%;
+  opacity: 0.85;
+}

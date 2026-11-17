@@ -149,3 +149,37 @@ export function GiftIcon({ open = false }: { open?: boolean }) {
     </svg>
   )
 }
+
+/** Sticker book: a little book with a star sticker on its cover. */
+export function BookIcon() {
+  return (
+    <svg {...box}>
+      <rect x="9" y="6" width="30" height="36" rx="5" fill={RED} />
+      <path d="M15 6v36" stroke="var(--color-consonant-dark)" strokeWidth={3} />
+      <path d="M27 14.5l2.3 4.8 5.2.6-3.9 3.6 1 5.2-4.6-2.6-4.6 2.6 1-5.2-3.9-3.6 5.2-.6z" fill={STAR} stroke={STAR_DARK} strokeWidth={1.2} />
+    </svg>
+  )
+}
+
+/** Play scenes: a hill under a sun, with a sticker on it. */
+export function SceneIcon() {
+  return (
+    <svg {...box}>
+      <rect x="4" y="8" width="40" height="32" rx="7" fill="var(--color-scene-sky)" />
+      <circle cx="34" cy="17" r="5" fill="var(--color-scene-sun)" />
+      <path d="M4 33c8-9 18-9 26-3 5-3 10-3 14 0v3a7 7 0 0 1-7 7H11a7 7 0 0 1-7-7z" fill="var(--color-scene-grass)" />
+      <rect x="13" y="20" width="10" height="10" rx="3" fill={BLUE} />
+    </svg>
+  )
+}
+
+/** The child's handwriting on the fridge: a paper with a red ㄱ held by a magnet. */
+export function FridgeIcon() {
+  return (
+    <svg {...box}>
+      <rect x="9" y="9" width="30" height="34" rx="3" fill="var(--color-card)" stroke={CARD_SHADOW} strokeWidth={2.5} transform="rotate(-5 24 26)" />
+      <path d="M16 20h13v13" stroke={RED} strokeWidth={4.5} transform="rotate(-5 24 26)" />
+      <circle cx="24" cy="8" r="5" fill={BLUE} />
+    </svg>
+  )
+}

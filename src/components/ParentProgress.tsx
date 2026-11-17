@@ -13,10 +13,70 @@ import {
 } from '../progress'
 import { t } from '../i18n'
 import { SET_COUNT } from '../jamo'
+import { resetKeepsakes, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
+import { isNativeApp, shareFileNative } from '../native'
+
+/** The child's latest handwriting of every letter, as one picture on the page color (for grandma). */
+async function handwritingImage(h: Record<string, { latest: Writing }>, chars: string[]): Promise<File | null> {
+  const cols = Math.min(6, chars.length)
+  const rows = Math.ceil(chars.length / cols)
+  const cell = 220
+  const pad = 24
+  const canvas = document.createElement('canvas')
+  canvas.width = cols * cell + pad * 2
+  canvas.height = rows * cell + pad * 2
+  const g = canvas.getContext('2d')
+  if (!g) return null
+  const css = getComputedStyle(document.documentElement)
+  const color = (v: string) => css.getPropertyValue(v).trim()
+  g.fillStyle = color('--color-page')
+  g.fillRect(0, 0, canvas.width, canvas.height)
+  chars.forEach((c, i) => {
+    const x0 = pad + (i % cols) * cell
+    const y0 = pad + Math.floor(i / cols) * cell
+    g.fillStyle = color('--color-card')
+    g.beginPath()
+    g.roundRect(x0 + 10, y0 + 10, cell - 20, cell - 20, 14)
+    g.fill()
+    const w = h[c].latest
+    const k = (cell - 60) / 100
+    g.lineWidth = 7 * k
+    g.lineCap = 'round'
+    g.lineJoin = 'round'
+    w.strokes.forEach((flat, si) => {
+      g.strokeStyle = color(w.parts[si] === 'c' ? '--color-consonant' : '--color-vowel')
+      g.beginPath()
+      for (let j = 0; j < flat.length; j += 2) {
+        const px = x0 + 30 + flat[j] * k
+        const py = y0 + 30 + flat[j + 1] * k
+        if (j) g.lineTo(px, py)
+        else g.moveTo(px, py)
+      }
+      g.stroke()
+    })
+  })
+  const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'))
+  return blob ? new File([blob], 'soriblocks-handwriting.png', { type: 'image/png' }) : null
+}
 
 /** Parents' view of the Write tab (behind the grown-up question): numbers live here, not on the child's screens. */
 export function ParentProgress() {
   const p = useProgress()
+  const h = useHandwriting()
+  const written = writtenOrder(h)
+  const saveHandwriting = async () => {
+    const file = await handwritingImage(h, written)
+    if (!file) return
+    if (isNativeApp) {
+      await shareFileNative(file).catch(() => {})
+      return
+    }
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(file)
+    a.download = file.name
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000)
+  }
   const sylDone = letterStickers(p).length
   const chip = (c: string) => {
     const n = timesWritten(p, c)
@@ -56,10 +116,18 @@ export function ParentProgress() {
             {t('모든 글자 바로 열기', 'Open all letters now')}
           </button>
         )}
+        {written.length > 0 && (
+          <button type="button" onClick={saveHandwriting} className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold">
+            {t(`아이 글씨 그림으로 저장 (${written.length})`, `Save handwriting as a picture (${written.length})`)}
+          </button>
+        )}
         <button
           type="button"
           onClick={() => {
-            if (confirm(t('쓰기 기록(별, 스티커)을 모두 지울까요?', 'Erase all writing progress (stars and stickers)?'))) resetProgress()
+            if (confirm(t('쓰기 기록(별, 스티커, 놀이판, 아이 글씨)을 모두 지울까요?', 'Erase all writing progress (stars, stickers, play scenes, handwriting)?'))) {
+              resetProgress()
+              resetKeepsakes()
+            }
           }}
           className="rounded-full bg-page px-4 py-2 text-[15px] font-semibold"
         >

@@ -132,9 +132,12 @@ const each = <T,>(words: Record<string, Word>, f: (c: Consonant, v: Vowel, w: Wo
     }),
   )
 
-/** Every word sound, bundled or still to be recorded (the player skips files that are missing). */
+/**
+ * Word sounds to load at startup: the bundled ones. The later sets' words have no files yet;
+ * one a parent records is loaded when it is saved (audio.setLocalRecording).
+ */
 export function wordSoundNames(): string[] {
-  return [...each(WORDS, wordSound), ...each(MORE_WORDS, wordSound)]
+  return each(WORDS, wordSound)
 }
 
 const recordItem = (c: Consonant, v: Vowel, w: Word) => ({ name: wordSound(c, v), shown: w.word, say: w.word })
