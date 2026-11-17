@@ -67,12 +67,15 @@ export function stickerInfo(id: StickerId): StickerInfo | null {
   return { id, kind: 'word', face: card.emoji, sound: card.sound, label: card.before + card.syllable + card.after }
 }
 
-/** Every sticker the child has earned, in a stable order: jamo, picture words, treasures. */
+/**
+ * The play tray, pictures first: treasures, then picture words, then the letters themselves.
+ * A new child has only letters, so they show; once pictures come, the letters move to the end.
+ */
 export function earnedStickers(p: Progress): StickerInfo[] {
   return [
-    ...JAMO_INFO.filter((j) => timesWritten(p, j.face) > 0),
-    ...SYLLABLES.filter((s) => timesWritten(p, s.char) > 0).map((s) => stickerInfo(`s:${s.char}`)!),
     ...TREASURES.filter((t) => p.treasures.includes(t)).map((t) => stickerInfo(`t:${t}`)!),
+    ...SYLLABLES.filter((s) => timesWritten(p, s.char) > 0).map((s) => stickerInfo(`s:${s.char}`)!),
+    ...JAMO_INFO.filter((j) => timesWritten(p, j.face) > 0),
   ]
 }
 
