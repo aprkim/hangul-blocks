@@ -105,15 +105,27 @@ https://soriblocks.lihallc.com
 ```
 쓰기가 더 즐거워졌어요
 
-- 별 병: 글자를 하나 쓸 때마다 별이 하나씩 모여요. 10개가 모이면 보물 스티커 선물!
-- 글자 길: 쓴 글자에는 별이 붙어요. 자음과 모음 24개를 다 쓰면 선물 상자가 열려요.
-- 글자 쓰기: 가, 고, 나, 무 같은 글자 40개를 획순대로 써요. 다 쓰면 그림 단어가 나와요.
-- 새 글자 세트: 글자를 20개 쓰면 선물 상자에서 새 자음이 나와요. ㄱㄴㅁㅂ 다음에 ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ. 만들기에서는 자음 14개를 모두 쓸 수 있어요.
-- 스티커북: 쓴 글자의 그림 단어와 보물 스티커를 모아요.
-- 글자 모양을 다듬었어요. 자음과 모음의 자리와 크기를 학교용 글꼴에 맞췄어요.
-- 부모님 화면에서 아이가 쓴 기록을 볼 수 있어요.
-- 오른쪽 위 설정 버튼에서 바탕색과 부모님 녹음 화면을 열어요.
-- 부모님 화면이 영어도 지원해요.
+- 별 병: 글자를 하나 쓸 때마다 별이 모이고, 10개가 모이면 보물 스티커 선물!
+- 스티커 놀이판: 모은 스티커를 집, 공원, 바다, 우주에 붙이며 놀아요. 누르면 단어를 말해 줘요.
+- 냉장고: 아이가 직접 쓴 글씨가 그대로 붙어요. 처음 쓴 글씨와 비교해 볼 수 있어요.
+- 글자 쓰기: 가, 고, 나, 무 같은 글자를 획순대로 써요. 글자를 20개 쓰면 새 자음 세트가 열려요.
+- 만들기에서 자음 14개를 모두 쓸 수 있어요.
+- 글자 모양을 학교용 글꼴에 맞춰 다듬었어요.
+- 글씨를 쓰다 손바닥이 닿아도 다른 화면이 열리지 않아요.
+- 부모님 화면을 새로 만들었어요: 아이 기록, 우리 가족 목소리 녹음, 영어 지원.
+```
+
+```
+Writing just got more fun
+
+- Star jar: every letter written adds a star. Ten stars bring a treasure sticker.
+- Sticker play: put stickers on a home, park, sea or space scene. Tap one to hear its word.
+- The fridge: your child's own handwriting, kept beside their very first try.
+- Syllable writing: trace 가, 고, 나, 무 and more. Every 20 syllables opens a new consonant set.
+- All 14 consonants on the Build screen.
+- Letter shapes refined to match the fonts Korean schools use.
+- A resting palm no longer opens other screens while writing.
+- A new parents' page: progress, family voice recordings, and English support.
 ```
 
 ## 1.1 새 기능 (What's New)
@@ -227,6 +239,31 @@ Tap consonants and vowels to hear their sounds, snap them together into syllable
 자음과 모음을 눌러 소리를 듣고, 합쳐서 글자를 만들고, 손가락으로 따라 써요. 글자를 쓸 때마다 별이 모이고, 스티커를 받아요.
 </ko-KR>
 ```
+
+**출시 노트 (1.2, versionCode 2): Play는 언어당 500자**
+```
+<en-US>
+Writing just got more fun!
+- Star jar: every letter written adds a star; ten bring a treasure sticker.
+- Sticker play: put stickers on home, park, sea and space scenes. Tap one to hear its word.
+- The fridge: your child's own handwriting, beside their first try.
+- Trace syllables like 가, 고, 나, 무. Every 20 opens a new consonant set.
+- A resting palm no longer opens other screens while writing.
+- New parents' page with progress and family voice recordings.
+</en-US>
+<ko-KR>
+쓰기가 더 즐거워졌어요!
+- 별 병: 글자를 쓸 때마다 별이 모이고, 10개면 보물 스티커 선물
+- 스티커 놀이판: 집, 공원, 바다, 우주에 스티커를 붙이고, 누르면 단어를 말해 줘요
+- 냉장고: 아이가 쓴 글씨를 처음 쓴 글씨와 나란히 보여 줘요
+- 가, 고, 나, 무 같은 글자 쓰기. 20개마다 새 자음 세트가 열려요
+- 글씨를 쓰다 손바닥이 닿아도 다른 화면이 열리지 않아요
+- 새 부모님 화면: 아이 기록, 우리 가족 목소리 녹음
+</ko-KR>
+```
+
+**앱 이름 (30자 이내):** `소리블록 - 유아 한글떼기` / `Sori Blocks - Hangul for Kids`
+**그림 (자막 버전):** `store/captioned/{ko,en}/play-phone-*`, `play-tablet7-*`, `play-tablet10-*`
 
 태그: Education, Early childhood education (+ Language learning 이 있으면). 그림은 `store/android/`.
 
