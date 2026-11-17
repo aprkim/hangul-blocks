@@ -14,7 +14,16 @@ import {
 import { t } from '../i18n'
 import { SET_COUNT } from '../jamo'
 import { resetKeepsakes, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
+import { Capacitor } from '@capacitor/core'
 import { isNativeApp, shareFileNative } from '../native'
+
+/** Where to leave a rating: the store's review page for this platform (web: the App Store page). */
+const REVIEW_URL =
+  Capacitor.getPlatform() === 'android'
+    ? 'market://details?id=com.lihallc.soriblocks'
+    : Capacitor.getPlatform() === 'ios'
+      ? 'itms-apps://itunes.apple.com/app/id6833827598?action=write-review'
+      : 'https://apps.apple.com/app/id6833827598?action=write-review'
 
 /** The child's latest handwriting of every letter, as one picture on the page color (for grandma). */
 async function handwritingImage(h: Record<string, { latest: Writing }>, chars: string[]): Promise<File | null> {
@@ -146,6 +155,17 @@ export function ParentSettings() {
         >
           {p.syllablesOpen && p.setsOpen >= SET_COUNT ? t('모두 열림', 'All open') : t('열기', 'Open')}
         </button>
+      </div>
+      <div className="parent-row">
+        <div>
+          <b>{t('앱 평가하기', 'Rate the app')}</b>
+          <p className="parent-sub">
+            {t('소리블록이 도움이 됐다면 별점과 한 줄 리뷰를 남겨 주세요. 다른 가족이 앱을 찾는 데 큰 도움이 돼요.', 'If Sori Blocks helps, a rating and a line of review help other families find it.')}
+          </p>
+        </div>
+        <a className="parent-btn" href={REVIEW_URL} target="_blank" rel="noreferrer">
+          {t('평가하기', 'Rate')}
+        </a>
       </div>
       <div className="parent-row">
         <div>

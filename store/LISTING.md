@@ -1,5 +1,7 @@
 # App Store 등록 문구 (복사해서 붙여넣기)
 
+> 검색은 이름 + 부제 + 키워드 칸만 본다(설명은 안 봄). 이름·부제에 이미 있는 단어는 키워드에 다시 넣지 않는다(칸 낭비).
+> Mac: Pricing and Availability → "iPhone and iPad Apps on Apple Silicon Macs" 체크 해제 (Mac에서 확인 안 된 앱이라는 표시가 페이지에 뜨지 않게).
 > 설명·키워드 등에는 이모지와 특수 기호(■, •, →)를 쓰지 말 것. App Store Connect가 'invalid characters'로 거부한다.
 
 App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의 각 칸에 붙여넣는다.
@@ -9,14 +11,14 @@ App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의
 
 ## 한국어 (기본)
 
-**이름** (30자 이내)
+**이름** (30자 이내) · 1.2.1부터. 홈 화면 아이콘 이름은 그대로 "소리블록"
 ```
-소리블록
+소리블록 - 유아 한글떼기
 ```
 
 **부제** (30자 이내)
 ```
-소리로 조립하는 한글
+소리로 배우는 자음 모음 따라쓰기
 ```
 
 **프로모션 텍스트** (170자 이내, 심사 없이 언제든 수정 가능)
@@ -68,7 +70,7 @@ App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의
 
 **키워드** (100자 이내, 쉼표로 구분, 띄어쓰기 없이)
 ```
-한글,한글공부,유아,한글떼기,자음,모음,따라쓰기,획순,파닉스,유치원,아이,학습,낱자,글자,소리
+한글공부,한글놀이,한글카드,낱말카드,받침,획순,파닉스,유치원,어린이집,가나다,기역니은,글자,읽기,쓰기,학습,교육
 ```
 
 **지원 URL**
@@ -120,14 +122,14 @@ https://soriblocks.lihallc.com
 
 ## English (U.S.) 현지화
 
-**Name**
+**Name** (from 1.2.1)
 ```
-Sori Blocks
+Sori Blocks - Hangul for Kids
 ```
 
 **Subtitle**
 ```
-Build Korean letters by sound
+Learn Korean letters by sound
 ```
 
 **Promotional text**
@@ -186,7 +188,7 @@ Writing just got more fun
 
 **Keywords**
 ```
-korean,hangul,kids,toddler,phonics,alphabet,tracing,learn korean,preschool,heritage,bilingual,abc
+toddler,phonics,alphabet,tracing,preschool,heritage,bilingual,abc,handwriting,reading,kindergarten
 ```
 
 ---
