@@ -13,7 +13,8 @@
     "android:sync": "npm run build:app && npx cap sync android",
     "build:app": "npm run build && node scripts/app-dist.mjs",
     "android:setup": "bash scripts/android-setup.sh",
-    "android:aab": "bash scripts/android-aab.sh"
+    "android:aab": "bash scripts/android-aab.sh",
+    "android:device": "bash scripts/android-device.sh"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
