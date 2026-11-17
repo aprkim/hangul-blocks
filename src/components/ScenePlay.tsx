@@ -1,18 +1,22 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import {
   SCENES,
+  clearScene,
   earnedStickers,
   moveSticker,
   placeSticker,
   removeSticker,
+  restoreScene,
   stickerInfo,
   useScenes,
+  type Placed,
   type SceneId,
   type StickerInfo,
 } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { useProgress } from '../progress'
+import { SweepIcon, UndoIcon } from './Icons'
 import { SceneArt } from './SceneArt'
 import { StickerFace } from './StickerFace'
 
@@ -26,6 +30,8 @@ const BOUNCE: Keyframe[] = [
   { transform: 'translate(-50%, -50%) scale(1)' },
 ]
 const TAP_SLOP = 8
+/** How long "undo" stays after clearing a scene. */
+const UNDO_MS = 6000
 
 type Drag = {
   pointer: number
@@ -51,6 +57,14 @@ export function ScenePlay() {
   const [drag, setDrag] = useState<Drag | null>(null)
   const sceneRef = useRef<HTMLDivElement>(null)
   const earned = earnedStickers(p)
+  // Clearing is immediate (a confirm dialog means nothing to a child who can't read); for a
+  // few seconds an undo button brings everything back.
+  const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)
+  useEffect(() => {
+    if (!cleared) return
+    const t = window.setTimeout(() => setCleared(null), UNDO_MS)
+    return () => window.clearTimeout(t)
+  }, [cleared])
 
   /** Where a point falls on the scene, as fractions, or null when it is off the scene. */
   const onScene = (x: number, y: number) => {
@@ -123,11 +137,34 @@ export function ScenePlay() {
   }
 
   const placed = scenes[scene]
+  const canUndo = cleared?.scene === scene
 
   return (
     <div className="play">
       <div ref={sceneRef} className="play-scene">
         <SceneArt scene={scene} className="play-art" />
+        {(placed.length > 0 || canUndo) && (
+          <button
+            type="button"
+            aria-label={canUndo ? 'undo' : 'clear'}
+            className={`play-clear ${canUndo ? 'is-undo' : ''}`}
+            onPointerDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              tapFeedback()
+              if (canUndo && cleared) {
+                restoreScene(scene, cleared.placed)
+                setCleared(null)
+                chime('star')
+              } else {
+                setCleared({ scene, placed: clearScene(scene) })
+                chime('soft')
+              }
+            }}
+          >
+            {canUndo ? <UndoIcon /> : <SweepIcon />}
+          </button>
+        )}
         {placed.map((pl) => {
           const info = stickerInfo(pl.id)
           if (!info) return null

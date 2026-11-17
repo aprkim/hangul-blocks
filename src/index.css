@@ -1231,3 +1231,26 @@ body {
   padding: 3%;
   opacity: 0.85;
 }
+/* Clear the scene (a broom); right after clearing it becomes undo for a few seconds. */
+.play-clear {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  width: clamp(48px, 9dvh, 72px);
+  height: clamp(48px, 9dvh, 72px);
+  border-radius: 20px;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.play-clear svg {
+  width: 70% !important;
+  height: 70% !important;
+}
+.play-clear.is-undo {
+  animation: next-ready 1.2s ease-in-out infinite;
+}

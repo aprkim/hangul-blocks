@@ -183,3 +183,24 @@ export function FridgeIcon() {
     </svg>
   )
 }
+
+/** Clear a play scene: a little broom sweeping. */
+export function SweepIcon() {
+  return (
+    <svg {...box}>
+      <path d="M33 6 22 25" stroke={INK} strokeWidth={4.5} />
+      <path d="M14 23l14 8-5 12c-5 1-12-3-15-7z" fill={STAR} stroke={STAR_DARK} strokeWidth={2} />
+      <path d="M13 36l4 2M16 31l5 3" stroke={STAR_DARK} strokeWidth={2} />
+    </svg>
+  )
+}
+
+/** Undo: an arrow curling back. */
+export function UndoIcon() {
+  return (
+    <svg {...box}>
+      <path d="M14 20h16a10 10 0 0 1 0 20H20" stroke={INK} strokeWidth={5} />
+      <path d="M21 11l-9 9 9 9" stroke={INK} strokeWidth={5} />
+    </svg>
+  )
+}

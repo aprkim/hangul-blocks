@@ -166,3 +166,17 @@ export function soundOf(char: string): string | undefined {
 export function writtenOrder(h: Record<string, unknown>): string[] {
   return [...JAMO_INFO.map((j) => j.face), ...SYLLABLES.map((s) => s.char)].filter((c) => c in h)
 }
+
+/** Take every sticker off a scene; returns what was there, so it can be put back. */
+export function clearScene(scene: SceneId): Placed[] {
+  const s = scenes.get()
+  const was = s[scene]
+  scenes.set({ ...s, [scene]: [] })
+  return was
+}
+
+/** Put a cleared scene back (undo). */
+export function restoreScene(scene: SceneId, placed: Placed[]) {
+  const s = scenes.get()
+  scenes.set({ ...s, [scene]: placed })
+}
