@@ -463,7 +463,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       <div className="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-4 pb-10">
         <header className="parent-header">
           <button type="button" onClick={onExit} className="parent-back">
-            <span aria-hidden>←</span> {t('게임으로', 'Back to game')}
+            <span aria-hidden>←</span> {t('아이 화면으로', "Back to kids' screen")}
           </button>
           <h1>{t('부모님', 'Parents')}</h1>
         </header>
@@ -475,8 +475,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <h2>{t('우리 가족 목소리', "Your family's voice")}</h2>
           <p className="parent-sub">
             {t(
-              '녹음하면 게임 속 소리가 그 목소리로 바뀌어요. 원하는 소리만 골라서 녹음해도 돼요.',
-              'Record a sound and the game plays it in your voice. Record as many or as few as you like.',
+              '녹음하면 앱 속 소리가 그 목소리로 바뀌어요. 원하는 소리만 골라서 녹음해도 돼요.',
+              'Record a sound and the app plays it in your voice. Record as many or as few as you like.',
             )}
           </p>
 
@@ -511,7 +511,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
               {t('」 라고 말해 주세요', '”, please')}
             </div>
             {!isDone(item.name) && (
-              <div className="rec-need">{t('아직 소리가 없어요. 녹음하면 게임에 나와요.', 'No sound yet: record it and it appears in the game.')}</div>
+              <div className="rec-need">{t('아직 소리가 없어요. 녹음하면 앱에 나와요.', 'No sound yet: record it and it appears in the app.')}</div>
             )}
 
             <button
