@@ -14,8 +14,25 @@ if (standalone || new URLSearchParams(location.search).has('record')) {
   location.replace('/play/' + location.search)
 }
 
-const badge = document.querySelector<HTMLAnchorElement>('[data-app-store]')
-if (badge) {
-  if (APP_STORE_ID) badge.href = `https://apps.apple.com/kr/app/id${APP_STORE_ID}`
-  else badge.hidden = true
+/** Flip to true once 소리블록 is live on Google Play (the link 404s until then). */
+const PLAY_LIVE = false
+
+const appStore = document.querySelector<HTMLAnchorElement>('[data-app-store]')
+if (appStore) {
+  if (APP_STORE_ID) appStore.href = `https://apps.apple.com/kr/app/id${APP_STORE_ID}`
+  else appStore.hidden = true
 }
+const play = document.querySelector<HTMLAnchorElement>('[data-play-store]')
+if (play) {
+  play.hidden = !PLAY_LIVE
+  // On Android, the Play badge comes first.
+  if (PLAY_LIVE && /android/i.test(navigator.userAgent)) play.parentElement?.prepend(play)
+}
+
+// The badge images come from Apple's and Google's own servers. If one can't load (blocked or
+// offline), show a plain button instead of a broken image.
+document.querySelectorAll<HTMLImageElement>('.store-badge img').forEach((img) => {
+  const fail = () => img.closest('.store-badge')?.classList.add('is-fallback')
+  if (img.complete && img.naturalWidth === 0) fail()
+  else img.addEventListener('error', fail)
+})

@@ -17,10 +17,38 @@ body.landing {
   border-radius: 24px;
   box-shadow: 0 8px 0 var(--color-card-shadow), 0 18px 36px -18px var(--color-drop-shadow);
 }
+.store-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
 .store-badge img {
   display: block;
   height: 56px;
   width: auto;
+}
+/* Google's badge image has transparent padding around it: a taller image lines it up. */
+.store-badge.is-play img {
+  height: 83px;
+  margin: -13.5px -10px;
+}
+.store-fallback {
+  display: none;
+}
+.store-badge.is-fallback img {
+  display: none;
+}
+.store-badge.is-fallback .store-fallback {
+  display: inline-block;
+  padding: 14px 22px;
+  border-radius: 12px;
+  background: var(--color-ink);
+  color: var(--color-on-tile);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
 }
 .try-web {
   font-size: 16px;

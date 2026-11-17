@@ -33,14 +33,31 @@
           "모양 = 소리"를 스스로 발견해요. 만 3~6세에게 추천해요.
         </p>
         <div class="mt-2 flex flex-col items-center gap-4">
-          <a class="store-badge" data-app-store href="https://apps.apple.com/kr/app/id6833827598" aria-label="App Store에서 다운로드하기">
-            <img
-              src="https://tools.applemarketingtools.com/api/badges/download-on-the-app-store/black/ko-kr?size=250x83"
-              alt="App Store에서 다운로드하기"
-              height="56"
-            />
-          </a>
-          <!-- Google Play badge: add after the Android launch -->
+          <div class="store-badges">
+            <a class="store-badge" data-app-store href="https://apps.apple.com/kr/app/id6833827598" aria-label="App Store에서 다운로드하기">
+              <img
+                src="https://tools.applemarketingtools.com/api/badges/download-on-the-app-store/black/ko-kr?size=250x83"
+                alt="App Store에서 다운로드하기"
+                height="56"
+              />
+              <span class="store-fallback">App Store에서 받기</span>
+            </a>
+            <!-- Shown once the app is live on Google Play (PLAY_LIVE in src/landing.ts). -->
+            <a
+              class="store-badge is-play"
+              data-play-store
+              hidden
+              href="https://play.google.com/store/apps/details?id=com.lihallc.soriblocks"
+              aria-label="Google Play에서 다운로드하기"
+            >
+              <img
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/ko_badge_web_generic.png"
+                alt="Google Play에서 다운로드하기"
+                height="83"
+              />
+              <span class="store-fallback">Google Play에서 받기</span>
+            </a>
+          </div>
           <a class="try-web" href="/play/">웹에서 바로 해보기 · Try it on the web →</a>
         </div>
       </header>
