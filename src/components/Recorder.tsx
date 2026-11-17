@@ -463,7 +463,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       <div className="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-4 pb-10">
         <header className="parent-header">
           <button type="button" onClick={onExit} className="parent-back">
-            <span aria-hidden>←</span> {t('아이 화면으로', "Back to kids' screen")}
+            <span aria-hidden>←</span> {t('아이 화면으로', 'Back')}
           </button>
           <h1>{t('부모님', 'Parents')}</h1>
         </header>
