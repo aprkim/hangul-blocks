@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { chime, hasSound, play } from '../audio'
 import { currentChild, nameSound, useChildren, type Child } from '../children'
-import { fullStrokes } from '../hangul'
+import { fullStrokes, nameSyllableSound } from '../hangul'
 import { confetti, flyStar } from '../effects'
 import { CHART_VOWELS, CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
@@ -86,7 +86,8 @@ function nameTargets(child: Child | null): Target[] {
       char,
       group: 'name' as const,
       strokes: fullStrokes(char) ?? [],
-      sound: syl?.sound ?? '',
+      // Basic syllables have their own sound; others (김, 윤) are heard once the family records them.
+      sound: syl?.sound ?? nameSyllableSound(char),
       name: { child, last: i === chars.length - 1 },
     }
   })
@@ -367,7 +368,8 @@ function Tracer({
   const isSyl = target.group !== 'jamo'
   const [nameCard, setNameCard] = useState(false)
   const sayIt = () => {
-    if (target.sound) play(target.sound)
+    // A name syllable nobody has recorded yet stays quiet (the star's chime still plays).
+    if (target.sound && (!target.sound.startsWith('name-syl-') || hasSound(target.sound))) play(target.sound)
   }
 
   // Say the letter's sound when it appears.

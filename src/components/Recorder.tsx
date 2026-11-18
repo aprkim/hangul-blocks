@@ -6,6 +6,7 @@ import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress, ParentSettings } from './ParentProgress'
 import { ParentChildren } from './ParentChildren'
 import { nameSound, useChildren } from '../children'
+import { nameSyllableSound, unvoicedSyllables } from '../hangul'
 import {
   deleteRecording,
   encodeMp3,
@@ -99,7 +100,24 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const uiGroups = useMemo<UiGroup[]>(
     () =>
       kids.list.length
-        ? [{ id: 'names', label: t('아이 이름', 'Names'), items: kids.list.map((c) => ({ name: nameSound(c), shown: c.name, say: c.name })) }, ...UI_GROUPS]
+        ? [
+            {
+              id: 'names',
+              label: t('아이 이름', 'Names'),
+              // Each name, then any of its syllables the app has no sound for (김, 윤): heard
+              // one by one while the child traces them, and the whole name at the end.
+              items: (() => {
+                const seen = new Set<string>()
+                return kids.list.flatMap((c) => [
+                  { name: nameSound(c), shown: c.name, say: c.name },
+                  ...unvoicedSyllables(c.name)
+                    .filter((ch) => !seen.has(ch) && (seen.add(ch), true))
+                    .map((ch) => ({ name: nameSyllableSound(ch), shown: ch, say: ch })),
+                ])
+              })(),
+            },
+            ...UI_GROUPS,
+          ]
         : UI_GROUPS,
     [kids.list],
   )
@@ -484,7 +502,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         <ParentChildren
           onRecordName={(c) => {
             setGroupId('names')
-            setIndex(Math.max(0, kids.list.findIndex((k) => k.id === c.id)))
+            const names = uiGroups.find((g) => g.id === 'names')?.items ?? []
+            setIndex(Math.max(0, names.findIndex((i) => i.name === nameSound(c))))
             setNote('')
             voiceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
           }}

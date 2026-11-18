@@ -185,5 +185,20 @@ export function fullStrokes(ch: string): FullStroke[] | null {
   return out
 }
 
+/** One of the 140 basic syllables (가..히), which come with their own sound. */
+export function isBasicSyllable(ch: string): boolean {
+  const p = decompose(ch)
+  return !!p && !p.jong && BASIC_CONS.includes(p.cho) && BASIC_VOWELS.includes(p.jung)
+}
+
+/**
+ * The family's recording of a name syllable the app has no sound for (김, 윤...), shared by
+ * every child whose name has it.
+ */
+export const nameSyllableSound = (ch: string) => `name-syl-${ch}`
+
+/** A name's syllables that need a family recording to be heard, in order, without repeats. */
+export const unvoicedSyllables = (name: string) => [...new Set([...name].filter((ch) => !isBasicSyllable(ch)))]
+
 /** A name the app can write: 1 to 5 Hangul syllables. */
 export const writableName = (name: string) => /^[가-힣]{1,5}$/.test(name)
