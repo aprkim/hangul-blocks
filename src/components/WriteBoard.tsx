@@ -428,7 +428,8 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
       timers.current.push(
         window.setTimeout(() => {
           setCard(sticker)
-          play(sticker.sound)
+          // A picture word is said (가 → 가방); an animal friend would only repeat the syllable.
+          if (sticker.kind === 'word') play(sticker.sound)
         }, 750),
       )
     }

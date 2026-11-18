@@ -77,11 +77,13 @@ export function AssemblyBoard() {
       timer.current = window.setTimeout(() => {
         setComposed(true)
         setRound((r) => r + 1)
-        // Every syllable gets something: its picture word, or an animal friend saying it.
+        // Every syllable gets something: its picture word (가 → 가방, said out loud), or an
+        // animal friend. The friend pops up quietly: saying the same syllable again right after
+        // sounded like a glitch. Tapping the friend says it.
         const next = cardFor(nextCons, nextVowel)
         wordTimer.current = window.setTimeout(() => {
           setCard(next)
-          play(next.sound)
+          if (next.kind === 'word') play(next.sound)
         }, WORD_DELAY_MS)
       }, moved ? MOVE_MS : 160)
     } else if (nextCons) {
