@@ -35,6 +35,8 @@ function Editor({
   const [name, setName] = useState(child?.name ?? '')
   const [animal, setAnimal] = useState<Animal>(child?.animal ?? ANIMALS.find((a) => !taken.has(a)) ?? ANIMALS[0])
   const value = clean(name)
+  // Korean is typed in pieces (ㄹ, 리, 리ㅎ, 리하): judge the name once the parent is done typing.
+  const [touched, setTouched] = useState(false)
   const valid = NAME_RE.test(value)
   return (
     <div className="kid-editor">
@@ -48,9 +50,10 @@ function Editor({
           lang="ko"
           autoFocus
           onChange={(e) => setName(e.target.value)}
+          onBlur={() => setTouched(true)}
         />
       </label>
-      {name && !valid && (
+      {touched && name && !valid && (
         <p className="parent-sub is-warn">{t('한글 1~5글자로 적어 주세요.', 'Please type 1 to 5 Hangul syllables.')}</p>
       )}
       <div className="kid-animals" role="radiogroup" aria-label={t('동물', 'Animal')}>
