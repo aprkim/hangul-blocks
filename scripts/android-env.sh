@@ -11,6 +11,8 @@ if ! command -v java >/dev/null 2>&1; then
 fi
 : "${ANDROID_HOME:=$HOME/Library/Android/sdk}"
 export ANDROID_HOME
+# adb (phone install and logs) lives here; put it on PATH for anyone who sources this file.
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
 if [ ! -d "$ANDROID_HOME" ]; then
   echo "Android SDK를 찾지 못했어요 ($ANDROID_HOME). Android Studio를 한 번 열어 SDK 설치를 끝내 주세요." >&2
   exit 1
