@@ -129,6 +129,8 @@ export function WriteBoard() {
         <Tracer
           key={`${view.group}${target.char}`}
           target={target}
+          // Not past the end of what is open (the arrow would wrap around to the start).
+          autoNext={view.index < list.length - 1}
           onNav={(d) => setView({ ...view, index: (view.index + d + list.length) % list.length })}
           onBack={() => {
             setLastChar(target.char)
@@ -320,7 +322,22 @@ function GiftGate({ ready, dots, onOpen }: { ready: boolean; dots: string[]; onO
 
 // ---------- tracing ----------
 
-function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) => void; onBack: () => void }) {
+/** After a letter's celebration, the next letter comes by itself after this long... */
+const AUTO_NEXT_MS = 2500
+/** ...or this long when a picture word popped out (time to see it and hear the word). */
+const AUTO_NEXT_WORD_MS = 4200
+
+function Tracer({
+  target,
+  autoNext,
+  onNav,
+  onBack,
+}: {
+  target: Target
+  autoNext: boolean
+  onNav: (d: number) => void
+  onBack: () => void
+}) {
   const [done, setDone] = useState(0) // strokes finished
   const [ink, setInk] = useState<Pt[]>([])
   const [miss, setMiss] = useState(0) // bumps to restart the guide animation after a miss
@@ -330,6 +347,11 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   const stickerRef = useRef<HTMLButtonElement>(null)
   const drawing = useRef<{ id: number; pts: Pt[] } | null>(null)
   const timers = useRef<number[]>([])
+  // Moving on by itself once a letter is done. Any touch on the letter or its sticker means the
+  // child wants to stay (hear it again, write it again), so it is called off.
+  const autoTimer = useRef<number | undefined>(undefined)
+  const cancelAuto = () => window.clearTimeout(autoTimer.current)
+  useEffect(() => cancelAuto, [])
   /** The child's own accepted strokes, kept for the handwriting fridge. */
   const accepted = useRef<Pt[][]>([])
   // Back to the road on a clean tap only, never while writing (touchGuard).
@@ -360,6 +382,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
   }, [card])
 
   function restart() {
+    cancelAuto()
     accepted.current = []
     setDone(0)
     setInk([])
@@ -423,6 +446,10 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
       )
     }
     const sticker = target.syl ? cardFor(target.syl.cons, target.syl.vowel) : null
+    // The last syllable of a name keeps its moment (the name card and the family's voice).
+    if (autoNext && !target.name?.last) {
+      autoTimer.current = window.setTimeout(() => onNav(1), sticker?.kind === 'word' ? AUTO_NEXT_WORD_MS : AUTO_NEXT_MS)
+    }
     if (sticker) {
       // The syllable's picture word pops out and goes in the sticker book.
       timers.current.push(
@@ -533,6 +560,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
               aria-label={card.before + card.syllable + card.after}
               onPointerDown={(e) => {
                 e.preventDefault()
+                cancelAuto()
                 play(card.sound)
                 stickerRef.current?.animate(WORD_POP, { duration: 420 })
               }}
