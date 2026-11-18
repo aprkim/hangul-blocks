@@ -100,7 +100,7 @@ https://soriblocks.lihallc.com
 
 ---
 
-## 1.2 새 기능 (What's New)
+## 1.2.1 새 기능 (What's New)
 
 ```
 쓰기가 더 즐거워졌어요
@@ -240,7 +240,7 @@ Tap consonants and vowels to hear their sounds, snap them together into syllable
 </ko-KR>
 ```
 
-**출시 노트 (1.2, versionCode 2): Play는 언어당 500자**
+**출시 노트 (1.2.1, versionCode 2): Play는 언어당 500자**
 ```
 <en-US>
 Writing just got more fun!
