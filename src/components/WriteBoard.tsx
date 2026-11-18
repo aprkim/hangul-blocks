@@ -3,7 +3,7 @@ import { chime, hasSound, play } from '../audio'
 import { currentChild, nameSound, useChildren, type Child } from '../children'
 import { fullStrokes } from '../hangul'
 import { confetti, flyStar } from '../effects'
-import { CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
+import { CHART_VOWELS, CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
 import {
   JAMO_CHARS,
@@ -53,7 +53,7 @@ const JAMO: Target[] = [
     strokes: STROKES[c.char].map((stroke) => ({ stroke, part: 'consonant' as Part })),
     sound: consonantSound(c),
   })),
-  ...VOWELS.map((v) => ({
+  ...CHART_VOWELS.map((v) => ({
     char: v.char,
     group: 'jamo' as const,
     strokes: STROKES[v.char].map((stroke) => ({ stroke, part: 'vowel' as Part })),

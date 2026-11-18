@@ -3,17 +3,17 @@
 
 import { useSyncExternalStore } from 'react'
 import { childKey, onChildSwitch } from './children'
-import { CONSONANTS, SET_COUNT, VOWELS, composeSyllable, type Consonant, type Vowel } from './jamo'
+import { CHART_VOWELS, CONSONANTS, SET_COUNT, composeSyllable, type Consonant, type Vowel } from './jamo'
 
 /** Stars that fill the jar; a full jar gives a treasure sticker. */
 export const JAR_SIZE = 10
 
 /** The 24 basic jamo, in the Write tab's order. */
-export const JAMO_CHARS = [...CONSONANTS.map((c) => c.char), ...VOWELS.map((v) => v.char)]
+export const JAMO_CHARS = [...CONSONANTS.map((c) => c.char), ...CHART_VOWELS.map((v) => v.char)]
 
 /** Every syllable that can be built and written (each is a sticker), with its set (1..4). */
 export const SYLLABLES: { char: string; cons: Consonant; vowel: Vowel; set: number }[] = CONSONANTS.flatMap((cons) =>
-  VOWELS.map((vowel) => ({ char: composeSyllable(cons, vowel), cons, vowel, set: cons.set })),
+  CHART_VOWELS.map((vowel) => ({ char: composeSyllable(cons, vowel), cons, vowel, set: cons.set })),
 ).sort((x, y) => x.set - y.set)
 export const SYLLABLE_CHARS = SYLLABLES.map((s) => s.char)
 export const syllablesOfSet = (set: number) => SYLLABLES.filter((s) => s.set === set)

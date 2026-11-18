@@ -58,6 +58,13 @@ export const VOWELS: Vowel[] = [
   { char: 'ㅡ', roman: 'eu', jung: 18, layout: 'stack' },
 ]
 
+/**
+ * The vowels in the order of the 가나다 chart children learn (가 갸 거 겨 고 교 구 규 그 기): ㅣ
+ * comes last. Lists of letters use this order; the Sound and Build boards keep VOWELS, which
+ * groups vowels by shape (beside the consonant, then under it).
+ */
+export const CHART_VOWELS: Vowel[] = [...VOWELS.filter((v) => v.char !== 'ㅣ'), VOWELS.find((v) => v.char === 'ㅣ')!]
+
 /** The syllable sets, in the order they open: ㄱㄴㅁㅂ, ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ. */
 export const SETS: Consonant[][] = [1, 2, 3, 4].map((n) => CONSONANTS.filter((c) => c.set === n))
 export const SET_COUNT = SETS.length
@@ -101,7 +108,7 @@ const IEUNG = CONSONANTS.find((c) => c.roman === 'ng')!
 
 function syllableItems(cs: Consonant[]): RecordItem[] {
   return cs.flatMap((c) =>
-    VOWELS.map((v) => {
+    CHART_VOWELS.map((v) => {
       const s = composeSyllable(c, v)
       return { name: syllableSound(c, v), shown: s, say: s }
     }),
@@ -114,7 +121,7 @@ export const RECORD_GROUPS: RecordGroup[] = [
     label: t('1차 · 자모 소리', '1 · Letter sounds'),
     items: [
       ...CONSONANTS.map((c) => ({ name: consonantSound(c), shown: c.char, say: composeSyllable(c, EU) })),
-      ...VOWELS.map((v) => ({ name: vowelSound(v), shown: v.char, say: composeSyllable(IEUNG, v) })),
+      ...CHART_VOWELS.map((v) => ({ name: vowelSound(v), shown: v.char, say: composeSyllable(IEUNG, v) })),
     ],
   },
   {

@@ -7,7 +7,7 @@
 import { hasSound } from './audio'
 import {
   CONSONANTS,
-  VOWELS,
+  CHART_VOWELS,
   composeSyllable,
   type Consonant,
   type RecordGroup,
@@ -126,7 +126,7 @@ export function wordFor(c: Consonant, v: Vowel): Word | undefined {
 
 const each = <T,>(words: Record<string, Word>, f: (c: Consonant, v: Vowel, w: Word) => T): T[] =>
   CONSONANTS.flatMap((c) =>
-    VOWELS.flatMap((v) => {
+    CHART_VOWELS.flatMap((v) => {
       const w = words[composeSyllable(c, v)]
       return w ? [f(c, v, w)] : []
     }),

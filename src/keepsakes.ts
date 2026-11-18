@@ -4,7 +4,7 @@
 
 import { useSyncExternalStore } from 'react'
 import { childKey, onChildSwitch } from './children'
-import { CONSONANTS, VOWELS, consonantSound, syllableSound, vowelSound } from './jamo'
+import { CHART_VOWELS, CONSONANTS, consonantSound, syllableSound, vowelSound } from './jamo'
 import { SYLLABLES, TREASURES, timesWritten, type Progress } from './progress'
 import type { Pt } from './strokes'
 import { cardFor } from './words'
@@ -63,7 +63,7 @@ export type StickerInfo = {
 
 const JAMO_INFO: StickerInfo[] = [
   ...CONSONANTS.map((c) => ({ id: `j:${c.char}`, kind: 'jamo' as const, face: c.char, part: 'consonant' as const, sound: consonantSound(c), label: c.char })),
-  ...VOWELS.map((v) => ({ id: `j:${v.char}`, kind: 'jamo' as const, face: v.char, part: 'vowel' as const, sound: vowelSound(v), label: v.char })),
+  ...CHART_VOWELS.map((v) => ({ id: `j:${v.char}`, kind: 'jamo' as const, face: v.char, part: 'vowel' as const, sound: vowelSound(v), label: v.char })),
 ]
 
 export function stickerInfo(id: StickerId): StickerInfo | null {
