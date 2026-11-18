@@ -139,7 +139,7 @@ export const SLOT: Record<VowelLayout, { cons: number[]; vowel: number[] }> = {
  * Consonants whose shape changes by position, in a unit box (0..1). Each variant has the same
  * number of points so one can morph into the other when the vowel changes.
  */
-const SHAPES: Record<string, { side: Stroke[]; stack: Stroke[] }> = {
+export const SHAPES: Record<string, { side: Stroke[]; stack: Stroke[] }> = {
   // Kept straight in every position, like the ㄱ the child traced alone (a curved 가 stem was
   // harder for 4-year-olds). Side: a tall stem; stack (고): wide with a short stem.
   ㄱ: {
@@ -157,7 +157,7 @@ function curve(a: Pt, c: Pt, b: Pt): Pt[] {
   })
 }
 
-function bbox(strokes: Stroke[]): Box {
+export function bbox(strokes: Stroke[]): Box {
   const xs = strokes.flat().map((p) => p[0])
   const ys = strokes.flat().map((p) => p[1])
   const x = Math.min(...xs)
@@ -166,7 +166,7 @@ function bbox(strokes: Stroke[]): Box {
 }
 
 /** Stretch strokes so their bounding box fills `to` (a zero-size side stays centered). */
-function fit(strokes: Stroke[], to: Box, from: Box = bbox(strokes)): Stroke[] {
+export function fit(strokes: Stroke[], to: Box, from: Box = bbox(strokes)): Stroke[] {
   const [fx, fy, fw, fh] = from
   const [tx, ty, tw, th] = to
   const mx = (x: number) => (fw ? tx + ((x - fx) / fw) * tw : tx + tw / 2)
@@ -178,9 +178,9 @@ function fit(strokes: Stroke[], to: Box, from: Box = bbox(strokes)): Stroke[] {
  * The two parts of a syllable never touch (two pieces joining is what the child is learning),
  * and a finger must be able to tell their strokes apart: at least this far, centerline to centerline.
  */
-const MIN_GAP = 13
+export const MIN_GAP = 13
 
-function gap(a: Stroke[], b: Stroke[]): number {
+export function gap(a: Stroke[], b: Stroke[]): number {
   let m = Infinity
   const pb = b.flatMap((s) => sample(s, 1.5))
   for (const s of a) for (const p of sample(s, 1.5)) for (const q of pb) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1]))
@@ -195,7 +195,7 @@ const laidOut = new Map<string, { cons: Stroke[] | null; vowel: Stroke[] | null 
  * width-to-height ratio is held to that range and it is centered in its box.
  */
 const ROUND_RATIO: Record<VowelLayout, [number, number]> = { side: [0.78, 1], stack: [1, 1.6] }
-function round([x, y, w, h]: Box, layout: VowelLayout): Box {
+export function round([x, y, w, h]: Box, layout: VowelLayout): Box {
   const [lo, hi] = ROUND_RATIO[layout]
   if (w / h < lo) {
     const nh = w / lo
