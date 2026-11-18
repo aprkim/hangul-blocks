@@ -56,11 +56,13 @@ function html(c, slide, lang, img) {
   const side = c.w / c.h > 1.8 // very wide phone canvases: words left, screen right
   const [title, sub] = slide[lang]
   const u = Math.min(c.w, c.h * 1.33) / 100 // type unit
+  // Wide canvases: the screen's right margin matches the space above and below it (82% tall).
+  const edge = Math.round(c.h * 0.09)
   return `<!doctype html><html><head><meta charset="utf-8"><style>${font(800)}${font(600)}
   *{box-sizing:border-box;margin:0}
   body{width:${c.w}px;height:${c.h}px;overflow:hidden;background:${slide.bg};color:${slide.fg};font-family:P;word-break:keep-all}
   .wrap{position:absolute;inset:0;display:flex;${side ? 'flex-direction:row;align-items:center' : 'flex-direction:column;align-items:center'};
-    padding:${side ? `0 ${u * 4}px 0 ${u * 5}px` : `${u * 5}px ${u * 4}px 0`};gap:${u * (side ? 4 : 3.2)}px}
+    padding:${side ? `0 ${edge}px` : `${u * 5}px ${u * 4}px 0`};gap:${u * (side ? 4 : 3.2)}px}
   .words{${side ? `flex:0 0 36%` : 'text-align:center'}}
   h1{font-weight:800;font-size:${u * (side ? 8 : 7.6)}px;line-height:1.15;letter-spacing:-0.02em}
   p{font-weight:600;font-size:${u * (side ? 3.8 : 3.8)}px;line-height:1.35;margin-top:${u * 1.4}px;opacity:.9}
