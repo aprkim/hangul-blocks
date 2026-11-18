@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { chime, play } from '../audio'
+import { chime, hasSound, play } from '../audio'
+import { currentChild, nameSound, useChildren, type Child } from '../children'
+import { fullStrokes } from '../hangul'
 import { confetti, flyStar } from '../effects'
 import { CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { successFeedback, tapFeedback } from '../native'
@@ -32,14 +34,16 @@ import { Tile } from './Tile'
 // no wrong answer: a trace that misses simply fades and the guide shows the stroke again.
 // Every letter written to the end drops a star into the jar.
 
-type Part = 'consonant' | 'vowel'
+type Part = 'consonant' | 'vowel' | 'final'
 type Target = {
   char: string
-  group: 'jamo' | 'syllable'
+  group: 'jamo' | 'syllable' | 'name'
   strokes: { stroke: Stroke; part: Part }[]
   sound: string
   /** Syllables only: its parts. Its sticker is the picture word (or animal friend) they make. */
   syl?: { cons: Consonant; vowel: Vowel }
+  /** Name syllables only: whose name, and whether this is its last syllable. */
+  name?: { child: Child; last: boolean }
 }
 
 const JAMO: Target[] = [
@@ -66,7 +70,27 @@ const SYLS: Target[] = SYLLABLES.map(({ char, cons, vowel }) => ({
   syl: { cons, vowel },
 }))
 
-const COLOR: Record<Part, string> = { consonant: 'var(--color-consonant)', vowel: 'var(--color-vowel)' }
+const COLOR: Record<Part, string> = { consonant: 'var(--color-consonant)', vowel: 'var(--color-vowel)', final: 'var(--color-consonant)' }
+
+/**
+ * The child's own name, one syllable per stop, always open (it's theirs). Any syllable can be
+ * written (김, 윤, 예...); a basic one says its sound, and the last one says the whole name in
+ * the family's voice when it was recorded.
+ */
+function nameTargets(child: Child | null): Target[] {
+  if (!child) return []
+  const chars = [...child.name]
+  return chars.map((char, i) => {
+    const syl = SYLS.find((t) => t.char === char)
+    return {
+      char,
+      group: 'name' as const,
+      strokes: fullStrokes(char) ?? [],
+      sound: syl?.sound ?? '',
+      name: { child, last: i === chars.length - 1 },
+    }
+  })
+}
 
 const POP: Keyframe[] = [
   { transform: 'scale(1)' },
@@ -85,7 +109,7 @@ const WIGGLE: Keyframe[] = [
   { transform: 'rotate(0)' },
 ]
 
-type View = { group: 'jamo' | 'syllable'; index: number }
+type View = { group: 'jamo' | 'syllable' | 'name'; index: number }
 
 export function WriteBoard() {
   const [view, setView] = useState<View | null>(null)
@@ -93,15 +117,17 @@ export function WriteBoard() {
   const [book, setBook] = useState(false)
 
   const p = useProgress()
-  // Arrows move within what is open: the jamo, or the syllables of the open sets.
-  const list = view?.group === 'syllable' ? SYLS.slice(0, reachableSyllables(p).length) : JAMO
+  const child = currentChild(useChildren())
+  const names = nameTargets(child)
+  // Arrows move within what is open: the name, the jamo, or the syllables of the open sets.
+  const list = view?.group === 'name' ? names : view?.group === 'syllable' ? SYLS.slice(0, reachableSyllables(p).length) : JAMO
   const target = view ? list[view.index] : null
 
   return (
     <>
       {target && view ? (
         <Tracer
-          key={target.char}
+          key={`${view.group}${target.char}`}
           target={target}
           onNav={(d) => setView({ ...view, index: (view.index + d + list.length) % list.length })}
           onBack={() => {
@@ -147,6 +173,8 @@ function useNarrow() {
 
 function Road({ focus, onPick }: { focus: string | null; onPick: (g: View['group'], i: number) => void }) {
   const p = useProgress()
+  const child = currentChild(useChildren())
+  const names = nameTargets(child)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   // Coming back from a letter: keep it in view.
@@ -170,6 +198,17 @@ function Road({ focus, onPick }: { focus: string | null; onPick: (g: View['group
   return (
     <div ref={scrollRef} className="write-road" data-scroll>
       <div className="road-inner">
+        {/* My name first: the child's animal, then their name to write. */}
+        {child && names.length > 0 && (
+          <div className="road-row road-name" key="name">
+            <span className="road-name-animal" aria-hidden>
+              {child.animal}
+            </span>
+            {names.map((t, i) => (
+              <RoadStop key={`n${i}`} target={t} done={timesWritten(p, t.char) > 0} onPick={() => onPick('name', i)} />
+            ))}
+          </div>
+        )}
         {chunk(consonants, narrow ? 5 : 7).map((ts, r, a) => row(ts, 'jamo', r * a[0].length, `c${r}`))}
         {chunk(vowels, narrow ? 5 : VOWELS.length).map((ts, r, a) => row(ts, 'jamo', CONSONANTS.length + r * a[0].length, `v${r}`))}
         {p.syllablesOpen ? (
@@ -208,8 +247,8 @@ function Road({ focus, onPick }: { focus: string | null; onPick: (g: View['group
 }
 
 function RoadStop({ target, done, onPick }: { target: Target; done: boolean; onPick: () => void }) {
-  const kind = target.group === 'syllable' ? 'syllable' : target.strokes[0].part
-  const syl = SYLLABLES.find((s) => s.char === target.char)
+  const kind = target.group === 'name' ? 'name' : target.group === 'syllable' ? 'syllable' : target.strokes[0].part
+  const syl = target.group === 'name' ? null : SYLLABLES.find((s) => s.char === target.char)
   return (
     <button
       type="button"
@@ -221,6 +260,12 @@ function RoadStop({ target, done, onPick }: { target: Target; done: boolean; onP
       {syl ? (
         <svg viewBox="0 0 100 100" className="road-syl" aria-hidden>
           <Syllable cons={syl.cons.char} vowel={syl.vowel.char} layout={syl.vowel.layout} />
+        </svg>
+      ) : target.group === 'name' ? (
+        <svg viewBox="0 0 100 100" className="road-syl" aria-hidden>
+          {target.strokes.map((s, i) => (
+            <path key={i} d={strokePath(s.stroke)} className="syl-stroke" strokeWidth={8} style={{ stroke: COLOR[s.part] }} />
+          ))}
         </svg>
       ) : (
         <span className="road-glyph">{target.char}</span>
@@ -297,11 +342,15 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
 
   const strokes = target.strokes
   const complete = done >= strokes.length
-  const isSyl = target.group === 'syllable'
+  const isSyl = target.group !== 'jamo'
+  const [nameCard, setNameCard] = useState(false)
+  const sayIt = () => {
+    if (target.sound) play(target.sound)
+  }
 
   // Say the letter's sound when it appears.
   useEffect(() => {
-    play(target.sound)
+    sayIt()
     const ts = timers.current
     return () => ts.forEach((t) => window.clearTimeout(t))
   }, [target.sound])
@@ -315,8 +364,9 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
     setDone(0)
     setInk([])
     setCard(null)
+    setNameCard(false)
     drawing.current = null
-    play(target.sound)
+    sayIt()
   }
 
   function toGrid(e: React.PointerEvent): Pt {
@@ -352,7 +402,7 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
 
   function finish() {
     recordWriting(target.char, strokes.map((s) => s.part), accepted.current)
-    play(target.sound)
+    sayIt()
     successFeedback()
     cardRef.current?.animate(POP, { duration: 480, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
     const rect = cardRef.current?.getBoundingClientRect()
@@ -360,6 +410,18 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
     if (rect) flyStar(rect, () => addStar(char))
     else addStar(char)
     // Worked out now, not at startup: a word shows only once it has a sound (see words.ts).
+    // The last syllable of my name: the whole name, in the family's voice if recorded.
+    if (target.name?.last) {
+      const who = target.name.child
+      timers.current.push(
+        window.setTimeout(() => {
+          setNameCard(true)
+          if (hasSound(nameSound(who))) play(nameSound(who))
+          else chime('fanfare')
+          confetti(cardRef.current?.getBoundingClientRect())
+        }, 650),
+      )
+    }
     const sticker = target.syl ? cardFor(target.syl.cons, target.syl.vowel) : null
     if (sticker) {
       // The syllable's picture word pops out and goes in the sticker book.
@@ -444,6 +506,24 @@ function Tracer({ target, onNav, onBack }: { target: Target; onNav: (d: number) 
               <path d={strokePath(ink)} className="stroke-ink" style={{ stroke: COLOR[current?.part ?? 'consonant'] }} />
             )}
           </svg>
+          {nameCard && target.name && (
+            <button
+              type="button"
+              className="word-card write-sticker name-card"
+              aria-label={target.name.child.name}
+              onPointerDown={(e) => {
+                e.preventDefault()
+                const who = target.name!.child
+                if (hasSound(nameSound(who))) play(nameSound(who))
+                else chime('star')
+              }}
+            >
+              <span className="word-emoji">{target.name.child.animal}</span>
+              <span className="word-text">
+                <b>{target.name.child.name}</b>
+              </span>
+            </button>
+          )}
           {card && (
             <button
               ref={stickerRef}

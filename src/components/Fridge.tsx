@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
-import { play } from '../audio'
+import { chime, hasSound, play } from '../audio'
+import { currentChild, nameSound, useChildren } from '../children'
 import { soundOf, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { FridgeIcon } from './Icons'
@@ -37,6 +38,11 @@ export function Handwriting({ w, weight = 7 }: { w: Writing; weight?: number }) 
 export function Fridge() {
   const h = useHandwriting()
   const chars = writtenOrder(h)
+  const child = currentChild(useChildren())
+  // Once every syllable of the child's name has been written: their name, in their own hand,
+  // on its own long paper at the top.
+  const nameChars = child ? [...child.name] : []
+  const nameDone = nameChars.length > 0 && nameChars.every((c) => h[c])
   const [open, setOpen] = useState<string | null>(null)
   const bigRef = useRef<HTMLDivElement>(null)
 
@@ -48,7 +54,7 @@ export function Fridge() {
     requestAnimationFrame(() => bigRef.current?.animate(POP, { duration: 260, easing: 'cubic-bezier(.2,.8,.3,1.2)' }))
   }
 
-  if (chars.length === 0) {
+  if (chars.length === 0 && !nameDone) {
     return (
       <div className="fridge-empty" aria-hidden>
         <FridgeIcon />
@@ -60,6 +66,25 @@ export function Fridge() {
 
   return (
     <div className="fridge" data-scroll>
+      {nameDone && child && (
+        <button
+          type="button"
+          aria-label={child.name}
+          className="fridge-paper fridge-name"
+          onClick={() => {
+            tapFeedback()
+            if (hasSound(nameSound(child))) play(nameSound(child))
+            else chime('star')
+          }}
+        >
+          <i className="fridge-name-animal">{child.animal}</i>
+          {nameChars.map((c, i) => (
+            <svg key={i} viewBox="0 0 100 100" aria-hidden>
+              <Handwriting w={h[c].latest} />
+            </svg>
+          ))}
+        </button>
+      )}
       <div className="fridge-grid">
         {chars.map((c, i) => (
           <button

@@ -174,8 +174,8 @@ function compact(pts: readonly Pt[]): number[] {
 }
 
 /** A letter was written to the end: keep the child's own strokes (the first time stays forever). */
-export function recordWriting(char: string, parts: ('consonant' | 'vowel')[], strokes: readonly (readonly Pt[])[]) {
-  const w: Writing = { parts: parts.map((p) => (p === 'consonant' ? 'c' : 'v')), strokes: strokes.map(compact), at: Date.now() }
+export function recordWriting(char: string, parts: ('consonant' | 'vowel' | 'final')[], strokes: readonly (readonly Pt[])[]) {
+  const w: Writing = { parts: parts.map((p) => (p === 'vowel' ? 'v' : 'c')), strokes: strokes.map(compact), at: Date.now() }
   const h = handwriting.get()
   handwriting.set({ ...h, [char]: { first: h[char]?.first ?? w, latest: w } })
 }
@@ -194,9 +194,11 @@ export function soundOf(char: string): string | undefined {
   return s ? syllableSound(s.cons, s.vowel) : undefined
 }
 
-/** Letters in the fridge, in road order (jamo, then syllables). */
+/** Letters in the fridge, in road order (jamo, then syllables), then any others (from names). */
 export function writtenOrder(h: Record<string, unknown>): string[] {
-  return [...JAMO_INFO.map((j) => j.face), ...SYLLABLES.map((s) => s.char)].filter((c) => c in h)
+  const known = [...JAMO_INFO.map((j) => j.face), ...SYLLABLES.map((s) => s.char)]
+  const set = new Set(known)
+  return [...known.filter((c) => c in h), ...Object.keys(h).filter((c) => !set.has(c))]
 }
 
 /** Take every sticker off a scene; returns what was there, so it can be put back. */

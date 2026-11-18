@@ -1762,3 +1762,61 @@ body {
 .settings-kid.is-current {
   box-shadow: 0 0 0 4px var(--color-ink);
 }
+
+/* ---------- My name: on the Write road and the fridge ---------- */
+.road-name {
+  align-items: center;
+}
+.road-name::before {
+  left: calc(var(--stop) * 0.9);
+}
+.road-name-animal {
+  width: var(--stop);
+  height: var(--stop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--stop) * 0.72);
+  line-height: 1;
+  position: relative;
+}
+.road-stop.is-name {
+  border-radius: 28%;
+  box-shadow: 0 5px 0 var(--color-card-shadow), 0 0 0 4px var(--color-star);
+}
+.road-stop.is-name.is-done {
+  box-shadow: 0 5px 0 var(--color-star-dark), 0 0 0 4px var(--color-star);
+  background: #fff8e1;
+}
+.name-card .word-text b {
+  font-size: 1.25em;
+}
+.fridge-name {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 2%;
+  width: min(92%, 640px) !important;
+  aspect-ratio: auto !important;
+  margin: 0 auto 4vh;
+  padding: 3% 4% !important;
+  rotate: -1deg;
+}
+.fridge-name svg {
+  flex: 1;
+  max-width: 30%;
+  aspect-ratio: 1;
+}
+.fridge-name-animal {
+  position: absolute;
+  top: -0.45em;
+  left: 50%;
+  translate: -50% 0;
+  font-size: clamp(30px, 6vh, 56px);
+  font-style: normal;
+  line-height: 1;
+}
+.fridge-name svg {
+  width: auto;
+  height: auto;
+}
