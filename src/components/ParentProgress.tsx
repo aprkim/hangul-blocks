@@ -11,6 +11,7 @@ import {
   timesWritten,
   useProgress,
 } from '../progress'
+import { currentChild, useChildren } from '../children'
 import { t } from '../i18n'
 import { SET_COUNT } from '../jamo'
 import { resetKeepsakes, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
@@ -71,6 +72,7 @@ async function handwritingImage(h: Record<string, { latest: Writing }>, chars: s
 /** Parents' view of the Write tab (behind the grown-up question): numbers live here, not on the child's screens. */
 export function ParentProgress() {
   const p = useProgress()
+  const who = currentChild(useChildren())
   const h = useHandwriting()
   const written = writtenOrder(h)
   const saveHandwriting = async () => {
@@ -104,7 +106,7 @@ export function ParentProgress() {
   }
   return (
     <section className="parent-card">
-      <h2>{t('아이의 기록', "Your child's progress")}</h2>
+      <h2>{who ? t(`${who.name}의 기록`, `${who.name}'s progress`) : t('아이의 기록', "Your child's progress")}</h2>
       <div className="parent-stats">
         <div><b>{p.stars}</b><span>{t('별', 'Stars')}</span></div>
         <div><b>{jamoWrittenCount(p)}<small>/{JAMO_CHARS.length}</small></b><span>{t('쓴 자음·모음', 'Letters written')}</span></div>

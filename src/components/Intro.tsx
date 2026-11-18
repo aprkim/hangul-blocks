@@ -1,19 +1,23 @@
 import { useEffect, useRef } from 'react'
+import { t } from '../i18n'
 import { tapFeedback } from '../native'
 import { layoutSyllable, strokePath } from '../strokes'
 
 // A 1.3-second opening, once per launch: a red ㄱ and a blue ㅏ slide in from either side and
-// click together into 가, the idea the whole app teaches. No sound (it would need a tap first),
+// click together into 가, the idea the whole app teaches. With a child's name, "리하의 소리블록"
+// appears under it and the opening stays a little longer. No sound (it would need a tap first),
 // any tap skips it, and it is skipped entirely when the system asks for reduced motion.
 
 const TOTAL_MS = 1300
+const NAMED_MS = 2100
 const { cons: CONS, vowel: VOWEL } = layoutSyllable('ㄱ', 'ㅏ', 'side')
 
-export function Intro({ onDone }: { onDone: () => void }) {
+export function Intro({ name, onDone }: { name?: string; onDone: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const consRef = useRef<SVGGElement>(null)
   const vowelRef = useRef<SVGGElement>(null)
   const glyphRef = useRef<SVGSVGElement>(null)
+  const titleRef = useRef<HTMLDivElement>(null)
   const done = useRef(false)
 
   const finish = () => {
@@ -51,12 +55,16 @@ export function Intro({ onDone }: { onDone: () => void }) {
         [{ transform: 'scale(1)' }, { transform: 'scale(1.08)', offset: 0.4 }, { transform: 'scale(1)' }],
         { duration: 260, easing: 'ease-out' },
       )
+      titleRef.current?.animate(
+        [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 360, easing: ease, fill: 'both' },
+      )
     }, 470)
     const fade = window.setTimeout(() => {
       const a = rootRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in', fill: 'forwards' })
       if (a) a.onfinish = finish
       else finish()
-    }, TOTAL_MS - 250)
+    }, (name ? NAMED_MS : TOTAL_MS) - 250)
     return () => {
       window.clearTimeout(click)
       window.clearTimeout(fade)
@@ -86,6 +94,12 @@ export function Intro({ onDone }: { onDone: () => void }) {
           ))}
         </g>
       </svg>
+      {name && (
+        <div ref={titleRef} className="intro-title" style={{ opacity: 0 }}>
+          <span className="intro-name">{name}</span>
+          {t('의 소리블록', "'s Sori Blocks")}
+        </div>
+      )}
     </div>
   )
 }

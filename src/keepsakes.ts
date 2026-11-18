@@ -3,25 +3,30 @@
 //  - handwriting: the child's own strokes for each letter, first and most recent
 
 import { useSyncExternalStore } from 'react'
+import { childKey, onChildSwitch } from './children'
 import { CONSONANTS, VOWELS, consonantSound, syllableSound, vowelSound } from './jamo'
 import { SYLLABLES, TREASURES, timesWritten, type Progress } from './progress'
 import type { Pt } from './strokes'
 import { cardFor } from './words'
 
+/** A piece of the current child's data (see children.ts), reloaded when another child is chosen. */
 function store<T>(key: string, empty: T) {
-  let state: T = empty
-  try {
-    const raw = localStorage.getItem(key)
-    if (raw) state = { ...empty, ...(JSON.parse(raw) as T) }
-  } catch {
-    /* private mode or bad data */
+  const load = (): T => {
+    try {
+      const raw = localStorage.getItem(childKey(key))
+      if (raw) return { ...empty, ...(JSON.parse(raw) as T) }
+    } catch {
+      /* private mode or bad data */
+    }
+    return empty
   }
+  let state: T = load()
   const listeners = new Set<() => void>()
   const get = () => state
   const set = (next: T) => {
     state = next
     try {
-      localStorage.setItem(key, JSON.stringify(next))
+      localStorage.setItem(childKey(key), JSON.stringify(next))
     } catch {
       /* storage full or blocked: keep it for this visit */
     }
@@ -31,6 +36,10 @@ function store<T>(key: string, empty: T) {
     listeners.add(l)
     return () => listeners.delete(l)
   }
+  onChildSwitch(() => {
+    state = load()
+    listeners.forEach((l) => l())
+  })
   const use = () => useSyncExternalStore(subscribe, get, get)
   return { get, set, use }
 }
@@ -96,7 +105,8 @@ type ScenesState = Record<SceneId, Placed[]>
 /** So a scene never fills up with hundreds of stickers. */
 export const SCENE_LIMIT = 40
 
-const scenes = store<ScenesState>('soriblocks.scenes.v1', { home: [], park: [], sea: [], space: [] })
+export const SCENES_KEY = 'soriblocks.scenes.v1'
+const scenes = store<ScenesState>(SCENES_KEY, { home: [], park: [], sea: [], space: [] })
 export const useScenes = scenes.use
 
 export function placeSticker(scene: SceneId, id: StickerId, x: number, y: number): number {
@@ -142,7 +152,8 @@ export function removeSticker(scene: SceneId, key: number) {
 export type Writing = { parts: ('c' | 'v')[]; strokes: number[][]; at: number }
 type HandwritingState = Record<string, { first: Writing; latest: Writing }>
 
-const handwriting = store<HandwritingState>('soriblocks.handwriting.v1', {})
+export const HANDWRITING_KEY = 'soriblocks.handwriting.v1'
+const handwriting = store<HandwritingState>(HANDWRITING_KEY, {})
 export const useHandwriting = handwriting.use
 
 /** Keep points at least this far apart (on the 100 grid): plenty for drawing, small to store. */

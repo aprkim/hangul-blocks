@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { currentChild, getChildren } from './children'
+import { ChildPicker } from './components/ChildPicker'
 import { stop } from './audio'
 import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
@@ -19,6 +21,10 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(gatePassed)
   // The opening animation plays once per launch, not when a parent opens the recorder link.
   const [intro, setIntro] = useState(initial !== 'record')
+  // With more than one child on this device, "who's playing?" comes first, then the opening
+  // shows that child's name.
+  const [picking, setPicking] = useState(initial !== 'record' && getChildren().list.length > 1)
+  const [name, setName] = useState(() => currentChild()?.name)
   // Tapping the Write tab again goes back to the road.
   const [writeKey, setWriteKey] = useState(0)
   const go = (next: Screen) => {
@@ -45,8 +51,25 @@ export default function App() {
         {screen === 'write' && <WriteBoard key={writeKey} />}
       </main>
       <TabBar tab={screen} onTab={go} />
-      <Settings onParent={() => go('record')} />
-      {intro && <Intro onDone={() => setIntro(false)} />}
+      <Settings
+        onParent={() => go('record')}
+        onSwitch={(c) => {
+          // Another child: their name opens the app again, and the Write road starts fresh.
+          setName(c.name)
+          setIntro(true)
+          setWriteKey((k) => k + 1)
+        }}
+      />
+      {picking ? (
+        <ChildPicker
+          onDone={(c) => {
+            setName(c.name)
+            setPicking(false)
+          }}
+        />
+      ) : (
+        intro && <Intro name={name} onDone={() => setIntro(false)} />
+      )}
     </div>
   )
 }

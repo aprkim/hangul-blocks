@@ -929,6 +929,19 @@ body {
   height: min(46vmin, 380px);
   overflow: visible;
 }
+.intro {
+  flex-direction: column;
+  gap: 4vmin;
+}
+.intro-title {
+  font-size: clamp(26px, 6vmin, 52px);
+  font-weight: 800;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+.intro-name {
+  color: var(--color-consonant);
+}
 .intro-stroke {
   fill: none;
   stroke-width: 9;
@@ -1593,4 +1606,159 @@ body {
 }
 .rec-hint {
   margin-top: 18px;
+}
+
+/* ---------- Who's playing (more than one child) ---------- */
+.child-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-page);
+  touch-action: none;
+  padding: 4vmin;
+}
+.child-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4vmin;
+}
+.child-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5vmin;
+  width: clamp(130px, 26vmin, 230px);
+  padding: 3vmin 2vmin 2.5vmin;
+  border-radius: 32px;
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow);
+}
+.child-pick:active {
+  translate: 0 6px;
+  box-shadow: 0 2px 0 var(--color-card-shadow);
+}
+.child-pick-animal {
+  font-size: clamp(64px, 14vmin, 130px);
+  line-height: 1;
+}
+.child-pick-name {
+  font-size: clamp(22px, 4.5vmin, 38px);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+/* ---------- Parents' page: our children ---------- */
+.kid-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-card-shadow);
+}
+.kid-who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+.kid-who-animal {
+  font-size: 34px;
+  line-height: 1;
+}
+.kid-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.kid-add {
+  align-self: flex-start;
+}
+.kid-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--color-page);
+}
+.kid-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.kid-input {
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--color-card-shadow);
+  background: var(--color-card);
+  color: var(--color-ink);
+  max-width: 280px;
+}
+.kid-input:focus {
+  outline: none;
+  border-color: var(--color-vowel);
+}
+.kid-animals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.kid-animal {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 32px;
+  line-height: 1;
+  background: var(--color-card);
+}
+.kid-animal.is-current {
+  box-shadow: 0 0 0 3px var(--color-ink);
+}
+.kid-animal:disabled {
+  opacity: 0.25;
+}
+.kid-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.kid-editor .parent-btn {
+  background: var(--color-card);
+}
+.parent-btn.is-primary {
+  background: var(--color-ink) !important;
+  color: var(--color-card);
+}
+.parent-sub.is-warn {
+  color: var(--color-consonant);
+}
+/* Settings panel: who's playing */
+.settings-kids {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.settings-kid {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  font-size: 48px;
+  line-height: 1;
+  background: var(--color-page);
+  touch-action: none;
+}
+.settings-kid.is-current {
+  box-shadow: 0 0 0 4px var(--color-ink);
 }

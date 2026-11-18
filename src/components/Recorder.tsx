@@ -4,6 +4,8 @@ import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
 import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress, ParentSettings } from './ParentProgress'
+import { ParentChildren } from './ParentChildren'
+import { nameSound, useChildren } from '../children'
 import {
   deleteRecording,
   encodeMp3,
@@ -91,6 +93,17 @@ function errText(err: unknown): string {
 }
 
 export function Recorder({ onExit }: { onExit: () => void }) {
+  // The children's names come first once there are any: a name said in the family's voice is
+  // what the child hears when picking "me" and after writing their name.
+  const kids = useChildren()
+  const uiGroups = useMemo<UiGroup[]>(
+    () =>
+      kids.list.length
+        ? [{ id: 'names', label: t('아이 이름', 'Names'), items: kids.list.map((c) => ({ name: nameSound(c), shown: c.name, say: c.name })) }, ...UI_GROUPS]
+        : UI_GROUPS,
+    [kids.list],
+  )
+  const voiceRef = useRef<HTMLElement>(null)
   const [groupId, setGroupId] = useState(UI_GROUPS[0].id)
   const [index, setIndex] = useState(0)
   const [takes, setTakes] = useState<Map<string, Blob>>(new Map())
@@ -108,8 +121,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const [level, setLevel] = useState(0)
   const [elapsed, setElapsed] = useState(0)
 
-  const group = UI_GROUPS.find((g) => g.id === groupId)!
-  const item: RecordItem = group.items[index]
+  const group = uiGroups.find((g) => g.id === groupId) ?? uiGroups[0]
+  const item: RecordItem = group.items[Math.min(index, group.items.length - 1)]
   // Recorded on this device, or already uploaded to the site from any device.
   const [onSiteAll, setOnSiteAll] = useState<Set<string>>(new Set())
   useEffect(() => {
@@ -468,10 +481,19 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           <h1>{t('부모님', 'Parents')}</h1>
         </header>
 
+        <ParentChildren
+          onRecordName={(c) => {
+            setGroupId('names')
+            setIndex(Math.max(0, kids.list.findIndex((k) => k.id === c.id)))
+            setNote('')
+            voiceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }}
+        />
+
         <ParentProgress />
 
         {/* ---------- family voice (optional) ---------- */}
-        <section className="parent-card">
+        <section className="parent-card" ref={voiceRef}>
           <h2>{t('우리 가족 목소리', "Your family's voice")}</h2>
           <p className="parent-sub">
             {t(
@@ -481,7 +503,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
           </p>
 
           <div className="parent-tabs" role="tablist">
-            {UI_GROUPS.map((g) => {
+            {uiGroups.map((g) => {
               const missing = missingCount(g)
               return (
                 <button

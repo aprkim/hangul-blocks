@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { chime, hasSound, play } from '../audio'
+import { chooseChild, nameSound, useChildren, type Child } from '../children'
 import { tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
 import { THEMES, applyTheme, loadTheme, saveTheme, type ThemeId } from '../theme'
@@ -7,11 +9,13 @@ import { ParentIcon, SettingsIcon } from './Icons'
 /**
  * Top-right settings, the same on every child screen. Opens a small panel with:
  *  - the five background colors (a child may pick: applies at once and closes), and
+ *  - with more than one child on this device, their animals (switch who's playing), and
  *  - the parents' recording screen (behind the grown-up question, handled by the app).
  * Tapping outside closes. No text on the child side.
  */
-export function Settings({ onParent }: { onParent: () => void }) {
+export function Settings({ onParent, onSwitch }: { onParent: () => void; onSwitch: (c: Child) => void }) {
   const [open, setOpen] = useState(false)
+  const kids = useChildren()
   const [current, setCurrent] = useState<ThemeId>(loadTheme)
 
   function choose(id: ThemeId) {
@@ -67,6 +71,35 @@ export function Settings({ onParent }: { onParent: () => void }) {
                 />
               ))}
             </div>
+            {kids.list.length > 1 && (
+              <>
+                <div className="settings-divider" aria-hidden />
+                <div className="settings-kids" role="listbox" aria-label="who is playing">
+                  {kids.list.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      role="option"
+                      aria-selected={c.id === kids.current}
+                      aria-label={c.name}
+                      className={`settings-kid ${c.id === kids.current ? 'is-current' : ''}`}
+                      onPointerDown={(e) => {
+                        e.preventDefault()
+                        tapFeedback()
+                        setOpen(false)
+                        if (c.id === kids.current) return
+                        if (hasSound(nameSound(c))) play(nameSound(c))
+                        else chime('star')
+                        chooseChild(c.id)
+                        onSwitch(c)
+                      }}
+                    >
+                      {c.animal}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
             <div className="settings-divider" aria-hidden />
             <button
               type="button"

@@ -2,6 +2,7 @@
 // Nothing here ever goes down: stars only add up, stickers are never taken away.
 
 import { useSyncExternalStore } from 'react'
+import { childKey, onChildSwitch } from './children'
 import { CONSONANTS, SET_COUNT, VOWELS, composeSyllable, type Consonant, type Vowel } from './jamo'
 
 /** Stars that fill the jar; a full jar gives a treasure sticker. */
@@ -43,12 +44,13 @@ export type Progress = {
   setsOpen: number
 }
 
-const KEY = 'soriblocks.progress.v1'
+/** Per child (see children.ts). */
+export const PROGRESS_KEY = 'soriblocks.progress.v1'
 const EMPTY: Progress = { written: {}, stars: 0, jar: 0, treasures: [], pendingGift: null, syllablesOpen: false, setsOpen: 1 }
 
 function load(): Progress {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(childKey(PROGRESS_KEY))
     if (raw) return { ...EMPTY, ...(JSON.parse(raw) as Partial<Progress>) }
   } catch {
     /* private mode or bad data: start fresh */
@@ -62,12 +64,18 @@ const listeners = new Set<() => void>()
 function set(next: Progress) {
   state = next
   try {
-    localStorage.setItem(KEY, JSON.stringify(next))
+    localStorage.setItem(childKey(PROGRESS_KEY), JSON.stringify(next))
   } catch {
     /* storage full or blocked: keep it in memory for this visit */
   }
   for (const l of listeners) l()
 }
+
+// Another child was chosen: show their stars and letters.
+onChildSwitch(() => {
+  state = load()
+  for (const l of listeners) l()
+})
 
 export function getProgress(): Progress {
   return state
