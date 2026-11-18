@@ -8,7 +8,7 @@ const { chromium } = require('playwright')
 const fs = require('fs')
 const path = require('path')
 
-const [RAW, OUT] = process.argv.slice(2)
+const [RAW, OUT, ONLY] = process.argv.slice(2) // ONLY: make just this canvas (e.g. iphone-duo)
 const ROOT = path.resolve(__dirname, '../..')
 const font = (w) =>
   `@font-face{font-family:P;font-weight:${w};src:url(data:font/otf;base64,${fs
@@ -21,6 +21,8 @@ const CANVASES = [
   { name: 'iphone-6.9', w: 2868, h: 1320, raw: 'iphone-6.9' },
   { name: 'iphone-6.5', w: 2688, h: 1242, raw: 'iphone-6.5' },
   { name: 'iphone-6.3', w: 2622, h: 1206, raw: 'iphone-6.3' },
+  // iPhone Duo inner screen, landscape (its slot also takes the outer 2034 x 1398).
+  { name: 'iphone-duo', w: 2853, h: 2007, raw: 'ipad-13' },
   { name: 'play-phone-1920x1080', w: 1920, h: 1080, raw: 'play-phone' },
   { name: 'play-tablet7-1920x1080', w: 1920, h: 1080, raw: 'play-tablet' },
   { name: 'play-tablet10-2560x1440', w: 2560, h: 1440, raw: 'play-tablet' },
@@ -78,7 +80,7 @@ function html(c, slide, lang, img) {
   const b = await chromium.launch()
   const p = await b.newPage()
   let n = 0
-  for (const c of CANVASES) {
+  for (const c of CANVASES.filter((c) => !ONLY || c.name === ONLY)) {
     await p.setViewportSize({ width: c.w, height: c.h })
     for (const lang of ['ko', 'en']) {
       for (const [i, slide] of SLIDES.entries()) {
