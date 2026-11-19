@@ -104,7 +104,7 @@ export function Settings({ onParent, onSwitch }: { onParent: () => void; onSwitc
             <button
               type="button"
               className="settings-parent"
-              aria-label="parents: record sounds"
+              aria-label="parents"
               onPointerDown={(e) => {
                 e.preventDefault()
                 tapFeedback()

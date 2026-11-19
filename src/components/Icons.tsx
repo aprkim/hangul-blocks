@@ -90,13 +90,14 @@ export function SettingsIcon() {
 }
 
 /** Parents' recording: a microphone with a small lock (the grown-up question follows). */
+/** The grown-ups' page: a padlock (behind the grown-up question). */
 export function ParentIcon() {
   return (
     <svg {...box}>
-      <rect x="11" y="5" width="14" height="22" rx="7" fill={INK} />
-      <path d="M6 20a12 12 0 0 0 24 0M18 32v8M12 40h12" stroke={INK} strokeWidth={4} />
-      <rect x="29" y="27" width="15" height="13" rx="3" fill={RED} />
-      <path d="M32.5 27v-3a4 4 0 0 1 8 0v3" stroke={RED} strokeWidth={3} />
+      <path d="M15 21v-6a9 9 0 0 1 18 0v6" stroke={INK} strokeWidth={4.5} />
+      <rect x="9" y="20" width="30" height="23" rx="6" fill={INK} />
+      <circle cx="24" cy="29.5" r="3.4" fill={ON_TILE} />
+      <path d="M24 31v5.5" stroke={ON_TILE} strokeWidth={3.4} />
     </svg>
   )
 }
