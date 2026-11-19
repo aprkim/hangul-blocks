@@ -266,7 +266,19 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     holding.current = true
     window.clearTimeout(stopTimer.current)
     player.current?.pause()
-    setNote('')
+    // Opening the mic can wait on the browser's permission question, which is easy to miss
+    // (Safari shows it small, by the address bar): say so at once, instead of seeming dead.
+    setNote(t('마이크 켜는 중…', 'Turning on the microphone…'))
+    const waiting = window.setTimeout(
+      () =>
+        setNote(
+          t(
+            '마이크 허용을 기다리고 있어요. 화면 위쪽(주소창 근처)에 "마이크 허용" 창이 떴는지 확인하고 허용을 눌러 주세요. 그다음 다시 누른 채로 말해 주세요.',
+            'Waiting for microphone permission. Look for an "Allow microphone" prompt near the address bar, allow it, then hold and speak again.',
+          ),
+        ),
+      2500,
+    )
     const target = item
     let rec: MediaRecorder | null = null
     let source: MediaStream | null = null
@@ -286,8 +298,10 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         dropStream()
       }
     }
+    window.clearTimeout(waiting)
     if (!rec || !source) {
-      setNote(t('마이크를 쓸 수 없어요. 설정 → 소리블록(또는 Safari) → 마이크를 허용하고 다시 열어 주세요.', 'The microphone is not available. Allow it in Settings → Sori Blocks (or Safari) → Microphone, then open this screen again.'))
+      holding.current = false
+      setNote(t('마이크를 쓸 수 없어요. 앱: 설정 → 소리블록 → 마이크 켜기. Mac Safari: Safari → 설정 → 웹사이트 → 마이크 → soriblocks.lihallc.com 허용. Chrome: 주소창 왼쪽 아이콘 → 마이크 허용. 그다음 페이지를 새로고침해 주세요.', 'The microphone is not available. App: Settings → Sori Blocks → Microphone on. Mac Safari: Safari → Settings → Websites → Microphone → allow soriblocks.lihallc.com. Chrome: the icon left of the address → allow microphone. Then reload the page.'))
       return
     }
     chunks.current = []
@@ -302,6 +316,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     } catch {
       stopMeter.current = () => {}
     }
+    setNote('')
     setElapsed(0)
     setPhase('recording')
     startedAt.current = performance.now()
