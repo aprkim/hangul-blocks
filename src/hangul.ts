@@ -8,7 +8,7 @@
 
 import { FULL_BOXES, type FullBoxes } from './fullBoxes'
 import type { Box } from './syllableBoxes'
-import { MIN_GAP, SHAPES, STROKES, fit, gap, layoutSyllable, round, type Stroke } from './strokes'
+import { MIN_GAP, STROKES, consonantIn, fit, gap, layoutSyllable, round, type Stroke } from './strokes'
 
 export const CHO = [...'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ']
 export const JUNG = [...'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ']
@@ -88,11 +88,11 @@ const DERIVED: Record<string, FullBoxes> = {
   'ㅛ+': { cons: [27, 11, 46, 20], vowel: [15, 44, 70, 11], final: [30, 70, 40, 18] },
   'ㅜ+': { cons: [27, 11, 46, 21], vowel: [15, 46, 70, 10], final: [30, 70, 40, 18] },
   'ㅠ+': { cons: [27, 11, 46, 21], vowel: [15, 46, 70, 10], final: [30, 70, 40, 18] },
-  'ㅘ': { cons: [22, 17, 32, 26], flat: [16, 47, 48, 21], tall: [72.5, 12.5, 12, 75] },
+  'ㅘ': { cons: [22, 17, 32, 26], flat: [16, 54, 48, 14], tall: [72.5, 12.5, 12, 75] },
   'ㅘ+': { cons: [22.5, 15, 31, 20], flat: [16, 40, 46, 13], tall: [72.5, 12.5, 12, 47], final: [28, 69, 48, 19] },
-  'ㅚ': { cons: [23.5, 17, 33, 26], flat: [16, 47, 50, 21], tall: [77, 12.5, 0, 75] },
+  'ㅚ': { cons: [23.5, 17, 33, 26], flat: [16, 54, 50, 14], tall: [77, 12.5, 0, 75] },
   'ㅚ+': { cons: [23.5, 15, 33, 20], flat: [16, 40, 51, 13], tall: [77, 13.5, 0, 46], final: [30, 69.5, 47, 19.5] },
-  'ㅙ': { cons: [19.5, 17, 27.5, 26], flat: [15.5, 47, 36, 21], tall: [61.5, 12.5, 17, 75] },
+  'ㅙ': { cons: [19.5, 17, 27.5, 26], flat: [15.5, 54, 36, 14], tall: [61.5, 12.5, 17, 75] },
   'ㅙ+': { cons: [20, 15, 27, 20], flat: [16, 40, 36, 13], tall: [61.5, 12.5, 17, 47], final: [29.5, 69.5, 49, 19] },
   'ㅗ': { cons: [26, 19.5, 48.5, 32.5], vowel: [15, 57.5, 70, 17.5] },
 }
@@ -141,10 +141,7 @@ export function fullStrokes(ch: string): FullStroke[] | null {
   let finalBox: Box | undefined = t.final && (jong === 'ㅇ' ? round(t.final, 'stack') : t.final)
   let vowelBox = t.vowel, flatBox = t.flat, tallBox = t.tall
 
-  const consShape = (b: Box) => {
-    const shape = SHAPES[cho]?.[layout]
-    return shape ? fit(shape, b, [0, 0, 1, 1]) : fit(strokesOf(cho), b)
-  }
+  const consShape = (b: Box) => consonantIn(cho, b, layout, strokesOf(cho))
   const vowelStrokes = (): Stroke[] =>
     MIXED[jung] ? [...fit(strokesOf(MIXED[jung][0]), flatBox!), ...fit(strokesOf(MIXED[jung][1]), tallBox!)] : fit(strokesOf(jung), vowelBox!)
   const finalStrokes = () => (jong ? fit(strokesOf(jong), finalBox!) : [])

@@ -148,6 +148,48 @@ export const SHAPES: Record<string, { side: Stroke[]; stack: Stroke[] }> = {
   },
 }
 
+/**
+ * ㅎ above a vowel (호 효 후 휴 흐). Squeezed into a wide, low space as a whole, its circle went
+ * flat and its three parts ran together; fonts get away with that with thin strokes, a child's
+ * thick ones don't. So it is built part by part: it takes a little more room at the top, the
+ * dot and bar keep a clear gap, and the circle stays nearly round. Same point counts as the
+ * plain ㅎ, so it can morph between 하 and 호.
+ */
+export function hieutStack([x, y0, w, h0]: Box): Stroke[] {
+  const top = Math.min(y0, 6)
+  const y = top
+  const h = h0 + (y0 - top)
+  const cx = x + w / 2
+  const dot = 4
+  // Where room is short (화, 회), the parts sit a little closer so the circle keeps a hole.
+  const roomy = (y + h - (y + dot + 19.5)) / 2 >= 8
+  const barY = y + dot + (roomy ? 9.5 : 8.5)
+  const ringTop = barY + (roomy ? 10 : 9)
+  const ry = Math.max(5, (y + h - ringTop) / 2)
+  const rx = Math.min(ry * 1.5, w * 0.4)
+  const cy = ringTop + ry
+  const ring: Pt[] = []
+  for (let i = 0; i <= 32; i++) {
+    const t = (i / 32) * Math.PI * 2
+    ring.push([cx - rx * Math.sin(t), cy - ry * Math.cos(t)])
+  }
+  const half = Math.min(w / 2, rx * 1.45)
+  return [
+    [[cx, y], [cx, y + dot]],
+    [[cx - half, barY], [cx + half, barY]],
+    ring,
+  ]
+}
+
+/** A consonant's strokes in its space; a few consonants are shaped by position (see above). */
+export function consonantIn(cons: string, box: Box, layout: VowelLayout, strokes: Stroke[] = STROKES[cons] ?? []): Stroke[] {
+  // Only in the wide, roomy space above ㅗ ㅛ ㅜ ㅠ ㅡ; in narrow or crowded spaces (화, 훈) the
+  // usual fitted shape does better.
+  if (cons === 'ㅎ' && layout === 'stack' && box[2] > box[3] * 1.15 && box[3] >= 24) return hieutStack(box)
+  const shape = SHAPES[cons]?.[layout]
+  return shape ? fit(shape, box, [0, 0, 1, 1]) : fit(strokes, box)
+}
+
 /** A quadratic curve as 13 points (same count for every shape, so shapes can morph). */
 function curve(a: Pt, c: Pt, b: Pt): Pt[] {
   return Array.from({ length: 13 }, (_, i) => {
@@ -220,10 +262,7 @@ export function layoutSyllable(
 
   const box = boxesFor(cons, vowel, layout)
   const v = vowel ? fit(STROKES[vowel] ?? [], box.vowel) : null
-  const consIn = (to: Box): Stroke[] => {
-    const shape = SHAPES[cons!]?.[layout]
-    return shape ? fit(shape, to, [0, 0, 1, 1]) : fit(STROKES[cons!] ?? [], to)
-  }
+  const consIn = (to: Box): Stroke[] => consonantIn(cons!, to, layout)
   let c: Stroke[] | null = null
   if (cons) {
     // Fonts let some pairs touch (머, 텨). Here the consonant gives way until the gap is clear,
