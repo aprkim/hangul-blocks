@@ -22,14 +22,19 @@ import { SizeIcon, SweepIcon, UndoIcon } from './Icons'
 import { SceneArt } from './SceneArt'
 import { StickerFace } from './StickerFace'
 
-// Sticker play: drag earned stickers from the tray onto a scene (home, park, sea, space), move
+// Sticker play: tap an earned sticker in the tray to put it on the scene (or drag it there) (home, park, sea, space), move
 // them around, drag them off to take them away. Tapping a sticker says its word, so playing is
 // also hearing the words again. Positions are kept on the device.
 
 const BOUNCE: Keyframe[] = [
-  { transform: 'translate(-50%, -50%) scale(1)' },
-  { transform: 'translate(-50%, -50%) scale(1.25)', offset: 0.4 },
-  { transform: 'translate(-50%, -50%) scale(1)' },
+  { transform: 'scale(1)' },
+  { transform: 'scale(1.25)', offset: 0.4 },
+  { transform: 'scale(1)' },
+]
+const POP_IN: Keyframe[] = [
+  { transform: 'scale(0.2)', opacity: 0 },
+  { transform: 'scale(1.15)', opacity: 1, offset: 0.6 },
+  { transform: 'scale(1)', opacity: 1 },
 ]
 const TAP_SLOP = 8
 /** How long "undo" stays after clearing a scene. */
@@ -124,6 +129,18 @@ export function ScenePlay() {
       if (d.key !== null) {
         setSelected(d.key)
         el.animate(BOUNCE, { duration: 320 })
+      } else {
+        // A tap in the tray puts the sticker on the scene (dragging all the way up is hard for
+        // a small hand): near the middle, a little to one side each time so taps don't pile up,
+        // and selected, so it can be made bigger or smaller and dragged where it goes.
+        const n = scenes[scene].length
+        const angle = n * 2.4
+        const r = n ? 0.08 + (n % 4) * 0.05 : 0
+        const key = placeSticker(scene, d.info.id, 0.5 + Math.cos(angle) * r, 0.5 + Math.sin(angle) * r * 1.3)
+        setSelected(key)
+        requestAnimationFrame(() =>
+          sceneRef.current?.querySelector<HTMLElement>(`[data-key="${key}"]`)?.animate(POP_IN, { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1.3)' }),
+        )
       }
       return
     }
@@ -198,6 +215,7 @@ export function ScenePlay() {
               key={pl.key}
               type="button"
               aria-label={info.label}
+              data-key={pl.key}
               className={`play-placed ${moving ? 'is-moving' : ''} ${pl.key === selected ? 'is-selected' : ''}`}
               style={{ left: `${pl.x * 100}%`, top: `${pl.y * 100}%`, ['--s' as string]: pl.s ?? 1 }}
               onPointerDown={(e) => begin(e, info, pl.key)}
