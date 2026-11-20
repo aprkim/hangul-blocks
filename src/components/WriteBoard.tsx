@@ -487,6 +487,7 @@ function Tracer({
 
   return (
     <div className="write-trace flex h-full items-center justify-between gap-[2vh] p-[2.5vh]">
+      <DailyMeter beside />
       <button type="button" aria-label="letters" className="write-back" {...tapBack}>
         <MapIcon />
       </button>

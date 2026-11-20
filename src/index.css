@@ -1975,9 +1975,10 @@ body {
   font-size: calc(var(--settings) * 0.4);
   line-height: 1;
 }
-/* The tracing card has its own button at the top left. */
-.write-trace ~ .daily-meter {
-  display: none;
+/* On the tracing card the top left already has the road button: sit beside it. */
+.daily-meter.is-beside {
+  left: calc(env(safe-area-inset-left) + 2 * var(--settings-gap) + var(--settings));
+  top: calc(env(safe-area-inset-top) + var(--settings-gap) + var(--settings) * 0.19);
 }
 .daily-done {
   position: fixed;

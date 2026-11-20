@@ -6,27 +6,25 @@ import { confetti } from '../effects'
 import { celebrateFeedback } from '../native'
 
 /**
- * Today's goal as dots (top left of the Write road and the word puzzle): a red dot per letter
- * to write, a gold one per word to build. They fill as the child goes; all full is a moon.
+ * Today's goal as dots (top left of the Write tab and the word puzzle). Each letter written
+ * fills one red, each word built one gold; when every dot is filled it turns into a moon.
+ * `beside`: sits to the right of a button already at the top left (the tracing card's).
  */
-export function DailyMeter() {
+export function DailyMeter({ beside = false }: { beside?: boolean }) {
   const s = useDaily()
   const d = dayOf(s)
   const g = GOALS[s.goal]
   if (goalMet(s)) {
     return (
-      <div className="daily-meter is-done" aria-label="done for today">
+      <div className={`daily-meter is-done ${beside ? 'is-beside' : ''}`} aria-label="done for today">
         <span>🌙</span>
       </div>
     )
   }
   return (
-    <div className="daily-meter" aria-label="today">
-      {Array.from({ length: g.letters }, (_, i) => (
-        <i key={`l${i}`} className={`is-letter ${i < d.letters ? 'is-on' : ''}`} />
-      ))}
-      {Array.from({ length: g.words }, (_, i) => (
-        <i key={`w${i}`} className={`is-word ${i < d.words ? 'is-on' : ''}`} />
+    <div className={`daily-meter ${beside ? 'is-beside' : ''}`} aria-label="today">
+      {Array.from({ length: g }, (_, i) => (
+        <i key={i} className={i < d.letters ? 'is-letter is-on' : i < d.letters + d.words ? 'is-word is-on' : ''} />
       ))}
     </div>
   )

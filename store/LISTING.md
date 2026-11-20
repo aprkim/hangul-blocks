@@ -110,7 +110,7 @@ https://soriblocks.lihallc.com
 - 이름을 가족 목소리로 녹음하면, 다 썼을 때 그 목소리로 이름을 불러 줘요.
 - 형제자매: 아이마다 동물을 골라요. 별과 스티커, 아이 글씨는 아이마다 따로 모여요.
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리, 토마토, 하마 등 모든 자음에 그림 단어가 생겼어요.
-- 하루 분량: 글자 5개 쓰기와 낱말 3개 만들기를 마치면 "오늘 끝!" 장면이 나와요. 잠기지 않고, 부모님 화면에서 양을 고를 수 있어요.
+- 하루 분량: 글자 쓰기와 낱말 만들기를 합쳐 8번 하면 "오늘 끝!" 장면이 나와요. 잠기지 않고, 부모님 화면에서 양을 고를 수 있어요.
 - 글자를 다 쓰면 다음 글자로 저절로 넘어가요.
 - 스티커를 누르기만 해도 놀이판에 붙어요. 크기 버튼은 스티커 바로 옆에 나와요.
 - 글자 순서를 가나다표처럼 바꿨어요: 가 갸 거 겨 고 교 구 규 그 기.
@@ -126,7 +126,7 @@ Writing becomes theirs
 - Record the name in a family voice, and the app says it when the name is finished.
 - Siblings: each child picks an animal. Stars, stickers and handwriting are kept per child.
 - 57 new picture words (다람쥐, 사과, 자동차, 코끼리 and more): every consonant now has them.
-- A day's goal: after 5 letters and 3 words, an "all done for today" scene appears. Nothing is locked, and parents can choose the amount.
+- A day's goal: after 8 letters or words, an "all done for today" scene appears. Nothing is locked, and parents can choose the amount.
 - After a letter is written, the next one comes by itself.
 - Tap a sticker to put it on a play scene. The size buttons appear right beside it.
 - Letters follow the Korean chart order: 가 갸 거 겨 고 교 구 규 그 기.

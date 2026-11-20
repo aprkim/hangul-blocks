@@ -1,4 +1,4 @@
-// A day's worth: a small daily goal (a few letters written, a few words built). Reaching it
+// A day's worth: a small daily goal (letters written and words built, in any mix). Reaching it
 // shows "all done for today" once. Nothing is locked afterwards and nothing is lost by
 // skipping a day: this is a finish line for a 4-year-old, not a streak to protect.
 //
@@ -11,12 +11,11 @@ export const DAILY_KEY = 'soriblocks.daily.v1'
 const GOAL_KEY = 'soriblocks.goal.v1'
 
 export type GoalSize = 'small' | 'normal' | 'big'
-/** Letters to write and words to build in a day. */
-export const GOALS: Record<GoalSize, { letters: number; words: number }> = {
-  small: { letters: 3, words: 2 },
-  normal: { letters: 5, words: 3 },
-  big: { letters: 8, words: 5 },
-}
+/**
+ * How many things to finish in a day: each letter written to the end and each word built counts
+ * as one, in any mix (a child who only wants the word puzzle today still gets to "all done").
+ */
+export const GOALS: Record<GoalSize, number> = { small: 5, normal: 8, big: 12 }
 
 type Day = { letters: number; words: number; /** "All done" was shown. */ cheered?: boolean }
 type State = { days: Record<string, Day>; goal: GoalSize }
@@ -69,8 +68,7 @@ const EMPTY: Day = { letters: 0, words: 0 }
 export const dayOf = (s: State, key = today()): Day => s.days[key] ?? EMPTY
 export const goalMet = (s: State, key = today()) => {
   const d = dayOf(s, key)
-  const g = GOALS[s.goal]
-  return d.letters >= g.letters && d.words >= g.words
+  return d.letters + d.words >= GOALS[s.goal]
 }
 
 function bump(part: 'letters' | 'words') {
