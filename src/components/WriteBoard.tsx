@@ -143,6 +143,7 @@ export function WriteBoard() {
           target={target}
           // Not past the end of what is open (the arrow would wrap around to the start).
           autoNext={view.index < list.length - 1}
+          hold={book}
           onNav={(d) => setView({ ...view, index: (view.index + d + list.length) % list.length })}
           onBack={() => {
             setLastChar(target.char)
@@ -343,11 +344,14 @@ const AUTO_NEXT_WORD_MS = 4200
 function Tracer({
   target,
   autoNext,
+  hold,
   onNav,
   onBack,
 }: {
   target: Target
   autoNext: boolean
+  /** The sticker book is open over the card: stay on this letter, quietly. */
+  hold: boolean
   onNav: (d: number) => void
   onBack: () => void
 }) {
@@ -365,6 +369,9 @@ function Tracer({
   const autoTimer = useRef<number | undefined>(undefined)
   const cancelAuto = () => window.clearTimeout(autoTimer.current)
   useEffect(() => cancelAuto, [])
+  useEffect(() => {
+    if (hold) cancelAuto()
+  }, [hold])
   /** The child's own accepted strokes, kept for the handwriting fridge. */
   const accepted = useRef<Pt[][]>([])
   // Back to the road on a clean tap only, never while writing (touchGuard).
