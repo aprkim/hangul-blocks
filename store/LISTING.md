@@ -14,7 +14,7 @@ App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의
 | Google Play 휴대전화 | `play-phone-1920x1080-*` |
 | Google Play 7인치 / 10인치 태블릿 | `play-tablet7-1920x1080-*` / `play-tablet10-2560x1440-*` |
 
-**앱 미리보기 영상 (iPad 13"):** `store/preview/preview-ipad-1600x1200.mp4` (약 22초, 소리 포함). iPad 13" 칸의 "앱 미리보기"에 올린다. 영어 쪽도 같은 영상(아이 화면에는 글자가 없다).
+**앱 미리보기 영상 (iPad 13"):** `store/preview/preview-ipad-1600x1200.mp4` (약 29초, 소리 포함). Google Play용은 `store/preview/preview-youtube-1920x1080.mp4`를 유튜브에 올려(일부 공개, 광고 끔) 그 주소를 넣는다. iPad 13" 칸의 "앱 미리보기"에 올린다. 영어 쪽도 같은 영상(아이 화면에는 글자가 없다).
 스크린샷은 `store/screenshots/` (기기별 6장: 소리, 가, 고, 글자 길, 가 쓰기, 스티커북). 순서대로 올린다.
 
 ---
