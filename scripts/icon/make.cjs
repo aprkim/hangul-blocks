@@ -38,11 +38,14 @@ for (const [d, w, h] of [['land-mdpi', 480, 320], ['land-hdpi', 800, 480], ['lan
 add(`${A}/drawable/splash.png`, 480, 320, centered(480, 320, 0.34));
 // wide images with the name: Play feature graphic, link preview
 const font = (wght) => `@font-face{font-family:P${wght};src:url(data:font/otf;base64,${fs.readFileSync(`${ROOT}/node_modules/pretendard/dist/public/static/Pretendard-${wght}.otf`).toString('base64')})}`;
-const wide = (w, h) => {
+const wide = (w, h, title = '소리블록', sub = '소리로 조립하는 한글', size = 96) => {
   const g = Math.round(h * 0.7), u = h / 500;
-  return `<style>${font('ExtraBold')}${font('SemiBold')}</style><div style="width:${w}px;height:${h}px;background:${PAGE};display:flex;align-items:center;justify-content:center;gap:${Math.round(70 * u)}px">${glyph(g)}<div><div style="font:${Math.round(96 * u)}px PExtraBold;color:${INK};letter-spacing:-2px;line-height:1.15">소리블록</div><div style="font:${Math.round(40 * u)}px PSemiBold;color:${MUTED};margin-top:${Math.round(22 * u)}px">소리로 조립하는 한글</div></div></div>`;
+  return `<style>${font('ExtraBold')}${font('SemiBold')}</style><div style="width:${w}px;height:${h}px;background:${PAGE};display:flex;align-items:center;justify-content:center;gap:${Math.round(70 * u)}px">${glyph(g)}<div><div style="font:${Math.round(size * u)}px PExtraBold;color:${INK};letter-spacing:-2px;line-height:1.15;white-space:nowrap">${title}</div><div style="font:${Math.round(40 * u)}px PSemiBold;color:${MUTED};margin-top:${Math.round(22 * u)}px;white-space:nowrap">${sub}</div></div></div>`;
 };
-add('store/android/feature-1024x500.png', 1024, 500, wide(1024, 500));
+// Play feature graphic, one per store language.
+add('store/android/feature-1024x500.png', 1024, 500, wide(1024, 500, '소리블록', '소리로 배우는 유아 한글'));
+add('store/android/feature-ko-1024x500.png', 1024, 500, wide(1024, 500, '소리블록', '소리로 배우는 유아 한글'));
+add('store/android/feature-en-1024x500.png', 1024, 500, wide(1024, 500, 'Sori Blocks', 'Korean letters by sound', 88));
 add('public/landing/og.png', 1200, 630, wide(1200, 630));
 (async () => {
   const b = await chromium.launch();
