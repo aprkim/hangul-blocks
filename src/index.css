@@ -279,11 +279,14 @@ body {
   min-width: 0;
   touch-action: none;
 }
-/* Inactive tabs go grey, so the current one is the only one in color. */
+/* Every tab keeps its colors (grey ones looked switched off to a child); the others are just a
+   little smaller and softer than the current one. */
+.tab .icon {
+  transition: opacity 0.2s, scale 0.2s;
+}
 .tab:not(.is-active) .icon {
-  filter: grayscale(1);
-  opacity: 0.45;
-  transition: filter 0.2s, opacity 0.2s;
+  opacity: 0.6;
+  scale: 0.82;
 }
 .tabbar .tab svg {
   width: auto !important;
@@ -1950,46 +1953,70 @@ body {
   z-index: 29;
   top: calc(env(safe-area-inset-top) + var(--settings-gap));
   left: calc(env(safe-area-inset-left) + var(--settings-gap));
-  height: calc(var(--settings) * 0.62);
-  padding: 0 calc(var(--settings) * 0.22);
+  height: var(--settings);
   display: flex;
   align-items: center;
-  gap: calc(var(--settings) * 0.1);
+  gap: calc(var(--settings) * 0.08);
+  pointer-events: none;
+}
+/* The child's friend. */
+.daily-buddy {
+  width: var(--settings);
+  height: var(--settings);
+  flex: none;
+  font-size: calc(var(--settings) * 0.86);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  touch-action: none;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 3px 0 rgb(0 0 0 / 0.12));
+}
+.daily-row {
+  height: calc(var(--settings) * 0.62);
+  padding: 0 calc(var(--settings) * 0.2);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--settings) * 0.09);
   border-radius: 999px;
   background: var(--color-card);
   box-shadow: 0 4px 0 var(--color-card-shadow);
-  pointer-events: none;
 }
-.daily-meter i {
-  width: calc(var(--settings) * 0.2);
-  height: calc(var(--settings) * 0.2);
+.daily-row i {
+  width: calc(var(--settings) * 0.26);
+  height: calc(var(--settings) * 0.26);
   border-radius: 50%;
-  background: var(--color-card-shadow);
+  background: var(--color-page);
+  box-shadow: inset 0 0 0 2px var(--color-card-shadow);
 }
-.daily-meter.is-many {
-  gap: calc(var(--settings) * 0.07);
+.daily-meter.is-many .daily-row {
+  gap: calc(var(--settings) * 0.06);
 }
-.daily-meter.is-many i {
-  width: calc(var(--settings) * 0.14);
-  height: calc(var(--settings) * 0.14);
+.daily-meter.is-many .daily-row i {
+  width: calc(var(--settings) * 0.18);
+  height: calc(var(--settings) * 0.18);
 }
-.daily-meter i.is-word {
-  border-radius: 28%;
+/* A filled dot pops in. */
+.daily-row i.is-on {
+  box-shadow: none;
+  animation: daily-pop 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.5) both;
 }
-.daily-meter i.is-letter.is-on {
+.daily-row i.is-letter.is-on {
   background: var(--color-consonant);
 }
-.daily-meter i.is-word.is-on {
+.daily-row i.is-word.is-on {
   background: var(--color-star);
+  box-shadow: inset 0 0 0 2px var(--color-star-dark);
 }
-.daily-meter.is-done span {
-  font-size: calc(var(--settings) * 0.4);
+.daily-trophy-small {
+  font-size: calc(var(--settings) * 0.62);
   line-height: 1;
 }
 /* On the tracing card the top left already has the road button: sit beside it. */
 .daily-meter.is-beside {
   left: calc(env(safe-area-inset-left) + 2 * var(--settings-gap) + var(--settings));
-  top: calc(env(safe-area-inset-top) + var(--settings-gap) + var(--settings) * 0.19);
 }
 .daily-done {
   position: fixed;
@@ -2125,5 +2152,35 @@ body {
   .daily-meter.is-beside {
     left: calc(env(safe-area-inset-left) + var(--settings-gap));
     top: calc(env(safe-area-inset-top) + 2 * var(--settings-gap) + var(--settings));
+  }
+}
+
+/* ---------- The play screens' backdrop: soft shapes, so the page isn't an empty sheet ---------- */
+.play-root {
+  --blob: color-mix(in srgb, var(--color-card-shadow) 38%, transparent);
+  background-image:
+    radial-gradient(circle at 8% 22%, var(--blob) 0 6vmin, transparent calc(6vmin + 1px)),
+    radial-gradient(circle at 93% 30%, var(--blob) 0 9vmin, transparent calc(9vmin + 1px)),
+    radial-gradient(circle at 4% 78%, var(--blob) 0 10vmin, transparent calc(10vmin + 1px)),
+    radial-gradient(circle at 97% 84%, var(--blob) 0 5vmin, transparent calc(5vmin + 1px)),
+    radial-gradient(circle at 30% 4%, var(--blob) 0 3.5vmin, transparent calc(3.5vmin + 1px)),
+    radial-gradient(circle at 68% 97%, var(--blob) 0 7vmin, transparent calc(7vmin + 1px)),
+    radial-gradient(circle at 50% 52%, var(--blob) 0 2.5vmin, transparent calc(2.5vmin + 1px)),
+    radial-gradient(circle at 22% 55%, var(--blob) 0 2vmin, transparent calc(2vmin + 1px)),
+    radial-gradient(circle at 80% 60%, var(--blob) 0 3vmin, transparent calc(3vmin + 1px));
+}
+/* The narrowest phones: smaller dots, so the buddy's row stops short of the jar and the book. */
+@media (max-width: 380px) {
+  .daily-row {
+    padding: 0 calc(var(--settings) * 0.12);
+    gap: calc(var(--settings) * 0.05);
+  }
+  .daily-row i {
+    width: calc(var(--settings) * 0.16);
+    height: calc(var(--settings) * 0.16);
+  }
+  .daily-meter.is-many .daily-row i {
+    width: calc(var(--settings) * 0.12);
+    height: calc(var(--settings) * 0.12);
   }
 }

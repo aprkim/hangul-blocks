@@ -46,7 +46,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="play-root flex h-full flex-col">
       <main className="min-h-0 flex-1">
         {screen === 'jamo' && <JamoBoard onRecord={() => go('record')} />}
         {screen === 'assemble' && <AssemblyBoard />}

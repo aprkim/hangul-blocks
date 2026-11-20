@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { chime, hasSound, play } from '../audio'
+import { buddy } from '../buddy'
 import { currentChild, nameSound, useChildren, type Child } from '../children'
 import { fullStrokes, nameSyllableSound } from '../hangul'
 import { confetti, flyStar } from '../effects'
@@ -430,6 +431,7 @@ function Tracer({
   function finish() {
     recordWriting(target.char, strokes.map((s) => s.part), accepted.current)
     sayIt()
+    buddy('yay')
     celebrateFeedback()
     cardRef.current?.animate(POP, { duration: 480, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
     const rect = cardRef.current?.getBoundingClientRect()

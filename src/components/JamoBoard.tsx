@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { play } from '../audio'
 import { CONSONANTS, VOWELS, consonantSound, vowelSound } from '../jamo'
+import { DailyMeter } from './Daily'
 import { Tile } from './Tile'
 
 /** Adults open the recorder by holding the empty cell left of the vowels for 3 seconds. */
@@ -12,6 +13,7 @@ export function JamoBoard({ onRecord }: { onRecord: () => void }) {
   const release = () => window.clearTimeout(hold.current)
   return (
     <div className="jamo-board flex h-full flex-col justify-center gap-[3vh] p-[2.5vh]">
+      <DailyMeter />
       <section className="board-grid grid grid-cols-7 grid-rows-2 gap-[2vh] flex-1 min-h-0">
         {CONSONANTS.map((c) => (
           <Tile key={c.char} kind="consonant" onTap={() => play(consonantSound(c))}>

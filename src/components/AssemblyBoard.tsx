@@ -14,6 +14,8 @@ import {
 } from '../jamo'
 import { successFeedback } from '../native'
 import { cardFor, type Card } from '../words'
+import { buddy } from '../buddy'
+import { DailyMeter } from './Daily'
 import { ArrowIcon, ResetIcon } from './Icons'
 import { Syllable } from './JamoStrokes'
 import { Tile } from './Tile'
@@ -76,6 +78,7 @@ export function AssemblyBoard() {
       const moved = (vowel?.layout ?? 'side') !== nextVowel.layout
       timer.current = window.setTimeout(() => {
         setComposed(true)
+        buddy('yay')
         setRound((r) => r + 1)
         // Every syllable gets something: its picture word (가 → 가방, said out loud), or an
         // animal friend. The friend pops up quietly: saying the same syllable again right after
@@ -158,6 +161,7 @@ export function AssemblyBoard() {
         </div>
       </div>
 
+      <DailyMeter />
       {/* Trays. Consonants not yet recorded are hidden, not greyed. */}
       <div className="trays flex flex-col items-center gap-[2vh]">
         <div className="tray tray-cons">

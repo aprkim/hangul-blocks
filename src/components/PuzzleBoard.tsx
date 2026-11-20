@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { chime, play } from '../audio'
+import { buddy } from '../buddy'
 import { confetti } from '../effects'
 import { countWord } from '../daily'
 import { decompose } from '../hangul'
@@ -132,6 +133,7 @@ export function PuzzleBoard() {
       later(() => {
         slotRef.current?.animate(POP, { duration: 320 })
         successFeedback()
+        buddy('yay')
         const next = filled + 1
         setFilled(next)
         setCons(null)
@@ -142,6 +144,7 @@ export function PuzzleBoard() {
     } else {
       later(() => {
         slotRef.current?.animate(SHAKE, { duration: 380 })
+        buddy('hmm')
         // The piece that fits stays; the other steps aside.
         setCons(c === target.cons ? c : null)
         setVowel(v === target.vowel ? v : null)
@@ -154,6 +157,7 @@ export function PuzzleBoard() {
     const firstTime = !solved.includes(item.word)
     later(() => {
       setWon(true)
+      buddy('yay')
       countWord()
       celebrateFeedback()
       play(puzzleSound(item.word))
