@@ -28,7 +28,7 @@ const CANVASES = [
   { name: 'play-tablet10-2560x1440', w: 2560, h: 1440, raw: 'play-tablet' },
 ]
 
-const RED = '#D23B2E', BLUE = '#2259B8', GOLD = '#F4B400', GREEN = '#4E9E4A', INK = '#2A2520', CREAM = '#F6EEDD'
+const RED = '#D23B2E', BLUE = '#2259B8', GOLD = '#FFC93C', GREEN = '#4E9E4A', ORANGE = '#E8762B', INK = '#2A2520', CREAM = '#F6EEDD'
 
 // The story, in the order a parent sees it.
 const SLIDES = [
@@ -38,6 +38,9 @@ const SLIDES = [
   { scene: 'sound', bg: BLUE, fg: '#fff',
     ko: ['ㄱ은 ‘기역’이 아니라 ‘그’', '이름이 아니라 소리로 시작해요'],
     en: ['ㄱ says “g”', 'Sounds first, not letter names'] },
+  { scene: 'puzzle', bg: ORANGE, fg: '#fff',
+    ko: ['그림 보고 낱말 만들기', '나비, 기차, 바나나… 완성하면 스티커가 돼요'],
+    en: ['Build real words', 'See a picture, build its word, earn its sticker'] },
   { scene: 'write', bg: GOLD, fg: INK,
     ko: ['따라 쓰면 별이 쏙', '글자를 쓰면 그림 단어 스티커가 와요'],
     en: ['Trace it, earn a star', 'Every syllable written brings a picture sticker'] },
@@ -45,8 +48,8 @@ const SLIDES = [
     ko: ['스티커로 꾸미며 다시 들어요', '붙인 스티커를 누르면 단어를 말해 줘요'],
     en: ['Play with every word', 'Tap a sticker to hear its word again'] },
   { scene: 'parent', bg: INK, fg: '#fff', perLang: true,
-    ko: ['우리 가족 목소리로', '엄마, 아빠, 할머니 목소리로 바꿀 수 있어요'],
-    en: ["In your family's voice", 'Record any sound as mom, dad or grandma'] },
+    ko: ['우리 가족 목소리로', '글자 소리도, 아이 이름도 가족 목소리로 녹음해요'],
+    en: ["In your family's voice", "Record the sounds and your child's name yourself"] },
   { scene: 'road', bg: RED, fg: '#fff',
     ko: ['광고 없음 · 결제 없음', '인터넷 없이, 아이 속도대로 140글자'],
     en: ['No ads. No purchases.', 'Works offline: 140 syllables at your child’s pace'] },

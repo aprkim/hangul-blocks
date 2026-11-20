@@ -6,7 +6,7 @@
 
 App Store Connect → 소리블록 → Distribution → iOS App (새 버전) 의 각 칸에 붙여넣는다.
 
-**1.2.1부터 스크린샷은 문구가 들어간 `store/captioned/ko/`(한국어), `store/captioned/en/`(영어)를 쓴다.** 파일 이름의 번호(1~6) 순서대로 올린다.
+**1.2.1부터 스크린샷은 문구가 들어간 `store/captioned/ko/`(한국어), `store/captioned/en/`(영어)를 쓴다.** 파일 이름의 번호(1~7) 순서대로 올린다. (1 조립, 2 소리, 3 낱말 퍼즐, 4 쓰기, 5 스티커 놀이, 6 가족 목소리, 7 글자 길)
 | 칸 | 파일 |
 |---|---|
 | iPad 13" | `ipad-13-*` |
