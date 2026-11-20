@@ -38,81 +38,128 @@
     <script type="module" src="/src/landing.ts"></script>
   </head>
   <body class="landing">
-    <main class="mx-auto flex max-w-5xl flex-col gap-16 px-5 pt-14 pb-10 sm:px-8">
+    <main class="mx-auto flex max-w-6xl flex-col gap-20 px-5 pt-14 pb-10 sm:px-8">
       <!-- Hero -->
       <header class="flex flex-col items-center gap-5 text-center">
         <img src="/apple-touch-icon.png" alt="" width="104" height="104" class="hero-icon" />
-        <h1 class="text-[44px] font-extrabold leading-tight tracking-tight text-ink sm:text-[56px]">소리블록</h1>
-        <p class="text-[22px] font-semibold text-ink sm:text-[26px]">소리로 조립하는 한글</p>
-        <p class="text-[16px] text-muted">Build Korean letters by sound</p>
+        <h1 class="text-[46px] font-extrabold leading-tight tracking-tight text-ink sm:text-[64px]">소리블록</h1>
+        <p class="text-[22px] font-bold text-ink sm:text-[28px]"><span class="hl-red">ㄱ</span> + <span class="hl-blue">ㅏ</span> = 가, 소리로 배우는 유아 한글</p>
+        <p class="text-[16px] text-muted">Sori Blocks · Korean letters by sound, for ages 3 to 6</p>
         <p class="max-w-xl text-[17px] leading-relaxed text-muted">
-          한글을 아직 읽지 못하는 아이가 자음과 모음을 눌러 소리를 듣고, 합쳐서 글자를 만들고, 손가락으로 따라 쓰며
-          "모양 = 소리"를 스스로 발견해요. 만 3~6세에게 추천해요.
+          한글을 아직 읽지 못하는 아이가 자음과 모음을 눌러 소리를 듣고, 합쳐서 글자와 낱말을 만들고, 손가락으로 따라
+          써요. 광고도 결제도 없어요.
         </p>
         <div class="mt-2 flex flex-col items-center gap-4">
           <div class="store-badges">
             <a class="store-badge" data-app-store href="https://apps.apple.com/app/id6833827598" aria-label="App Store에서 다운로드하기">
               <img
-                src="https://tools.applemarketingtools.com/api/badges/download-on-the-app-store/black/ko-kr?size=250x83"
-                alt="App Store에서 다운로드하기"
+                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                data-alt-src="https://tools.applemarketingtools.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1276560000"
+                alt="Download on the App Store"
+                width="168"
                 height="56"
               />
-              <span class="store-fallback">App Store에서 받기</span>
+              <span class="store-fallback">App Store</span>
             </a>
-            <!-- Shown once the app is live on Google Play (PLAY_LIVE in src/landing.ts). -->
             <a
               class="store-badge is-play"
               data-play-store
-              hidden
               href="https://play.google.com/store/apps/details?id=com.lihallc.soriblocks"
               aria-label="Google Play에서 다운로드하기"
             >
               <img
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/ko_badge_web_generic.png"
-                alt="Google Play에서 다운로드하기"
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                alt="Get it on Google Play"
+                width="215"
                 height="83"
               />
-              <span class="store-fallback">Google Play에서 받기</span>
+              <span class="store-fallback">Google Play</span>
             </a>
           </div>
           <a class="try-web" href="/play/">웹에서 바로 해보기 · Try it on the web →</a>
         </div>
       </header>
 
-      <!-- Three screens -->
-      <section class="grid gap-8 sm:grid-cols-3" aria-label="앱 화면">
-        <figure class="feature">
-          <img src="/landing/sound.webp" alt="자음과 모음 타일이 있는 소리 화면" loading="lazy" width="1200" height="834" />
-          <figcaption>
-            <strong>소리</strong>
-            <span>ㄱ은 "기역"이 아니라 "그". 누르면 바로 그 소리가 나요.</span>
-            <em>Every letter says its sound, not its name.</em>
-          </figcaption>
+      <!-- Video -->
+      <section class="video-wrap" aria-label="소개 영상">
+        <video controls playsinline preload="none" poster="/landing/video-poster.webp" width="1920" height="1080">
+          <source src="/landing/preview.mp4" type="video/mp4" />
+        </video>
+        <p>30초로 보는 소리블록 · See it in 30 seconds</p>
+      </section>
+
+      <!-- Screens -->
+      <section aria-label="앱 화면">
+        <h2 class="section-title">이렇게 배워요 <em>How it works</em></h2>
+        <div class="shots">
+        <figure class="shot">
+          <img src="/landing/shot-1-build.webp" alt="ㄱ + ㅏ = 가. 소리를 조립하면 글자가 돼요." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>소리를 합쳐 글자를 만들어요</strong><em>Snap two sounds together into a syllable.</em></figcaption>
         </figure>
-        <figure class="feature">
-          <img src="/landing/build.webp" alt="빨간 ㄱ과 파란 ㅏ가 합쳐진 가와 가방 그림" loading="lazy" width="1200" height="834" />
-          <figcaption>
-            <strong>만들기</strong>
-            <span>ㄱ + ㅏ = 가. 빨간 자음과 파란 모음이 합쳐지는 걸 눈으로 보고, 그 소리를 들어요.</span>
-            <em>Snap a consonant and a vowel together and hear the syllable.</em>
-          </figcaption>
+        <figure class="shot">
+          <img src="/landing/shot-2-sound.webp" alt="ㄱ은 기역이 아니라 그. 이름이 아니라 소리로 시작해요." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>이름이 아니라 소리부터</strong><em>Every letter says its sound, not its name.</em></figcaption>
         </figure>
-        <figure class="feature">
-          <img src="/landing/write.webp" alt="ㄹ을 따라 쓰는 쓰기 화면" loading="lazy" width="1200" height="834" />
-          <figcaption>
-            <strong>쓰기</strong>
-            <span>시작점과 방향을 따라 손가락으로 획순대로 써요. 한 글자마다 별 하나, 별이 모이면 스티커를 받아요.</span>
-            <em>Trace each letter in stroke order and fill the star jar.</em>
-          </figcaption>
+        <figure class="shot">
+          <img src="/landing/shot-3-puzzle.webp" alt="그림을 보고 낱말을 만들어요. 나비, 기차, 바나나." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>그림 보고 낱말 만들기</strong><em>See a picture, build its word, earn its sticker.</em></figcaption>
         </figure>
+        <figure class="shot">
+          <img src="/landing/shot-4-write.webp" alt="따라 쓰면 별이 모여요." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>획순대로 따라 써요</strong><em>Trace each letter in stroke order and collect stars.</em></figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="/landing/shot-5-play.webp" alt="모은 스티커로 놀이판을 꾸며요." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>스티커로 꾸미며 다시 들어요</strong><em>Play with every word you have built.</em></figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="/landing/shot-6-parent.webp" alt="가족 목소리로 녹음하는 부모님 화면." loading="lazy" width="1200" height="900" />
+          <figcaption><strong>우리 가족 목소리로</strong><em>Record the sounds, and your child's name, yourself.</em></figcaption>
+        </figure>
+        </div>
       </section>
 
       <!-- Promises -->
-      <section class="grid gap-4 sm:grid-cols-2" aria-label="약속">
-        <div class="promise"><strong>틀린 답이 없어요</strong><span>어떤 조합도 소리가 나요. 아이가 겁내지 않고 이것저것 눌러 봐요.</span></div>
-        <div class="promise"><strong>우리 가족 목소리로</strong><span>부모님 전용 화면에서 모든 소리를 엄마, 아빠, 할머니 목소리로 바꿀 수 있어요.</span></div>
-        <div class="promise"><strong>광고·구매·데이터 수집 없음</strong><span>로그인도 없어요. 녹음은 기기 안에만 저장돼요.</span></div>
-        <div class="promise"><strong>인터넷 없이 동작</strong><span>앱을 받은 뒤에는 비행기 모드에서도 모든 기능이 돼요.</span></div>
+      <section aria-label="약속">
+        <h2 class="section-title">부모님께 드리는 약속 <em>Our promises</em></h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="promise"><strong>틀린 답이 없어요</strong><span>어떤 조합도 소리가 나요. 아이가 겁내지 않고 이것저것 눌러 봐요.</span></div>
+          <div class="promise"><strong>우리 가족 목소리로</strong><span>부모님 전용 화면에서 글자 소리와 아이 이름을 엄마, 아빠, 할머니 목소리로 녹음할 수 있어요.</span></div>
+          <div class="promise"><strong>광고·결제·데이터 수집 없음</strong><span>로그인도 없어요. 이름과 기록, 녹음은 기기 안에만 저장돼요.</span></div>
+          <div class="promise"><strong>하루 분량이 있어요</strong><span>글자와 낱말을 몇 개 하면 "오늘 목표 달성". 잠기지 않고, 인터넷 없이도 모든 기능이 돼요.</span></div>
+        </div>
+      </section>
+
+      <!-- Get it -->
+      <section class="cta" aria-label="받기">
+        <h2>오늘 첫 글자를 만들어 보세요</h2>
+        <p>무료 · iPhone, iPad, Android</p>
+        <div class="store-badges">
+            <a class="store-badge" data-app-store href="https://apps.apple.com/app/id6833827598" aria-label="App Store에서 다운로드하기">
+              <img
+                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                data-alt-src="https://tools.applemarketingtools.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1276560000"
+                alt="Download on the App Store"
+                width="168"
+                height="56"
+              />
+              <span class="store-fallback">App Store</span>
+            </a>
+            <a
+              class="store-badge is-play"
+              data-play-store
+              href="https://play.google.com/store/apps/details?id=com.lihallc.soriblocks"
+              aria-label="Google Play에서 다운로드하기"
+            >
+              <img
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                alt="Get it on Google Play"
+                width="215"
+                height="83"
+              />
+              <span class="store-fallback">Google Play</span>
+            </a>
+          </div>
       </section>
 
       <footer class="flex flex-col items-center gap-2 border-t border-card-shadow pt-6 text-center text-[14px] text-muted">

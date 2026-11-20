@@ -22,17 +22,35 @@ body.landing {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
+}
+/* Both badges are exactly this tall, whatever artwork is inside. */
+.store-badge {
+  --h: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--h);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: translate 0.15s;
+}
+.store-badge[hidden] {
+  display: none;
+}
+.store-badge:hover {
+  translate: 0 -2px;
 }
 .store-badge img {
   display: block;
-  height: 56px;
+  height: var(--h);
   width: auto;
 }
-/* Google's badge image has transparent padding around it: a taller image lines it up. */
+/* Google's badge image has clear space built in around the badge (a quarter of its height in
+   all): drawn taller and pulled in, the badge itself comes out the same height as Apple's. */
 .store-badge.is-play img {
-  height: 83px;
-  margin: -13.5px -10px;
+  height: calc(var(--h) * 1.488);
+  margin: 0 calc(var(--h) * -0.24);
 }
 .store-fallback {
   display: none;
@@ -40,15 +58,16 @@ body.landing {
 .store-badge.is-fallback img {
   display: none;
 }
-.store-badge.is-fallback .store-fallback {
-  display: inline-block;
-  padding: 14px 22px;
-  border-radius: 12px;
-  background: var(--color-ink);
-  color: var(--color-on-tile);
-  font-size: 16px;
-  font-weight: 700;
+.store-badge.is-fallback {
+  width: calc(var(--h) * 3);
+  background: #000;
+  color: #fff;
   text-decoration: none;
+}
+.store-badge.is-fallback .store-fallback {
+  display: block;
+  font-size: 19px;
+  font-weight: 700;
 }
 .try-web {
   font-size: 16px;
@@ -99,4 +118,129 @@ body.landing {
   border-radius: 20px;
   background: var(--color-card);
   box-shadow: 0 6px 0 var(--color-card-shadow);
+}
+
+.hl-red {
+  color: var(--color-consonant);
+}
+.hl-blue {
+  color: var(--color-vowel);
+}
+.section-title {
+  margin: 0 0 22px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.section-title em {
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-left: 8px;
+}
+/* The video: a big rounded screen with the app's thumbnail until it is played. */
+.video-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.video-wrap video {
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 28px;
+  background: var(--color-card);
+  box-shadow: 0 10px 0 var(--color-card-shadow), 0 30px 60px -30px var(--color-drop-shadow);
+}
+.video-wrap p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+/* The colorful screens: three across, two on tablets, a swipeable row on phones. */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.shot {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.shot img {
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  box-shadow: 0 8px 0 var(--color-card-shadow), 0 22px 40px -22px var(--color-drop-shadow);
+  transition: translate 0.2s, rotate 0.2s;
+}
+.shot:hover img {
+  translate: 0 -4px;
+  rotate: -0.6deg;
+}
+.shot figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 4px;
+}
+.shot strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+.shot em {
+  font-style: normal;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+@media (max-width: 900px) {
+  .shots {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .shots {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    margin: 0 -20px;
+    padding: 0 20px 14px;
+    scrollbar-width: none;
+  }
+  .shots::-webkit-scrollbar {
+    display: none;
+  }
+  .shot {
+    flex: 0 0 84%;
+    scroll-snap-align: center;
+  }
+}
+/* The closing invitation. */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 44px 24px 48px;
+  border-radius: 32px;
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow);
+  text-align: center;
+}
+.cta h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.cta p {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--color-muted);
 }

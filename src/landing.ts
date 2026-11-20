@@ -19,22 +19,29 @@ if (standalone || new URLSearchParams(location.search).has('record')) {
 /** 소리블록 is live on Google Play (since November 2026): show its badge. */
 const PLAY_LIVE = true
 
-const appStore = document.querySelector<HTMLAnchorElement>('[data-app-store]')
-if (appStore) {
-  if (APP_STORE_ID) appStore.href = `https://apps.apple.com/app/id${APP_STORE_ID}`
-  else appStore.hidden = true
-}
-const play = document.querySelector<HTMLAnchorElement>('[data-play-store]')
-if (play) {
-  play.hidden = !PLAY_LIVE
+document.querySelectorAll<HTMLAnchorElement>('[data-app-store]').forEach((a) => {
+  if (APP_STORE_ID) a.href = `https://apps.apple.com/app/id${APP_STORE_ID}`
+  else a.hidden = true
+})
+document.querySelectorAll<HTMLAnchorElement>('[data-play-store]').forEach((a) => {
+  a.hidden = !PLAY_LIVE
   // On Android, the Play badge comes first.
-  if (PLAY_LIVE && /android/i.test(navigator.userAgent)) play.parentElement?.prepend(play)
-}
+  if (PLAY_LIVE && /android/i.test(navigator.userAgent)) a.parentElement?.prepend(a)
+})
 
-// The badge images come from Apple's and Google's own servers. If one can't load (blocked or
-// offline), show a plain button instead of a broken image.
+// The badge images are Apple's and Google's own artwork, loaded from their servers. If one
+// can't load, try its second address; if that fails too, show a plain button of the same size
+// instead of a broken image.
 document.querySelectorAll<HTMLImageElement>('.store-badge img').forEach((img) => {
-  const fail = () => img.closest('.store-badge')?.classList.add('is-fallback')
+  const fail = () => {
+    const alt = img.dataset.altSrc
+    if (alt) {
+      delete img.dataset.altSrc
+      img.src = alt
+      return
+    }
+    img.closest('.store-badge')?.classList.add('is-fallback')
+  }
   if (img.complete && img.naturalWidth === 0) fail()
-  else img.addEventListener('error', fail)
+  img.addEventListener('error', fail)
 })
