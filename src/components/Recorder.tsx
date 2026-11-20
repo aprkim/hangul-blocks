@@ -283,6 +283,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     const target = item
     let rec: MediaRecorder | null = null
     let source: MediaStream | null = null
+    let failure: unknown = null
     for (let attempt = 0; attempt < 2 && !rec; attempt++) {
       try {
         source = await liveStream()
@@ -296,13 +297,28 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         rec = r
       } catch (err) {
         console.warn('[recorder] could not start, attempt', attempt + 1, err)
+        failure = err
         dropStream()
       }
     }
     window.clearTimeout(waiting)
     if (!rec || !source) {
       holding.current = false
-      setNote(t('마이크를 쓸 수 없어요. 앱: 설정 → 소리블록 → 마이크 켜기. iPhone·iPad Safari: 주소창 옆 아이콘 → 웹사이트 설정 → 마이크 허용 (또는 설정 → 앱 → Safari → 마이크 → 허용). Mac Safari: Safari → 설정 → 웹사이트 → 마이크 → soriblocks.lihallc.com 허용. Chrome: 주소창 왼쪽 아이콘 → 마이크 허용. 그다음 페이지를 새로고침해 주세요.', 'The microphone is not available. App: Settings → Sori Blocks → Microphone on. iPhone/iPad Safari: the icon by the address → Website Settings → Microphone → Allow (or Settings → Apps → Safari → Microphone → Allow). Mac Safari: Safari → Settings → Websites → Microphone → allow soriblocks.lihallc.com. Chrome: the icon left of the address → allow microphone. Then reload the page.'))
+      // Say what the browser said: blocked, busy, missing and "not here at all" need different fixes.
+      const name = failure instanceof Error ? failure.name : ''
+      if (name === 'NotReadableError' || name === 'AbortError') {
+        setNote(t(`다른 앱이 마이크를 쓰고 있어요 (통화, 음성 메모, 다른 탭 등). 그 앱을 닫고 다시 눌러 주세요. [${errText(failure)}]`, `Another app is using the microphone (a call, Voice Memos, another tab). Close it and try again. [${errText(failure)}]`))
+        return
+      }
+      if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        setNote(t(`마이크를 찾지 못했어요. 이어폰이나 블루투스 기기를 뺐다가 다시 해 주세요. [${errText(failure)}]`, `No microphone found. Unplug earphones or Bluetooth devices and try again. [${errText(failure)}]`))
+        return
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setNote(t('이 브라우저에서는 녹음할 수 없어요. 카카오톡·인스타그램 안의 브라우저라면 Safari나 Chrome으로 열어 주세요.', "This browser can't record. If this opened inside KakaoTalk or Instagram, open it in Safari or Chrome."))
+        return
+      }
+      setNote(t('마이크를 쓸 수 없어요. 앱: 설정 → 소리블록 → 마이크 켜기. iPhone·iPad Safari: 주소창 옆 아이콘 → 웹사이트 설정 → 마이크 허용 (또는 설정 → 앱 → Safari → 마이크 → 허용). Mac Safari: Safari → 설정 → 웹사이트 → 마이크 → soriblocks.lihallc.com 허용. Chrome: 주소창 왼쪽 아이콘 → 마이크 허용. 그다음 페이지를 새로고침해 주세요. [' + errText(failure) + ']', 'The microphone is not available. App: Settings → Sori Blocks → Microphone on. iPhone/iPad Safari: the icon by the address → Website Settings → Microphone → Allow (or Settings → Apps → Safari → Microphone → Allow). Mac Safari: Safari → Settings → Websites → Microphone → allow soriblocks.lihallc.com. Chrome: the icon left of the address → allow microphone. Then reload the page. [' + errText(failure) + ']'))
       return
     }
     chunks.current = []
