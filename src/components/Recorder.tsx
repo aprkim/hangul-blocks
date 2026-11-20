@@ -674,6 +674,18 @@ export function Recorder({ onExit }: { onExit: () => void }) {
               </button>
             ))}
           </div>
+          {/* Right where the recording happens: take the recordings out as one file. */}
+          {takes.size > 0 && (
+            <div className="parent-row">
+              <div>
+                <b>{t(`내 녹음 ${takes.size}개 내보내기`, `Export my ${takes.size} recordings`)}</b>
+                <p className="parent-sub">{t('zip 파일 하나로 저장하거나 보내요.', 'Save or send them as one zip file.')}</p>
+              </div>
+              <button type="button" onClick={download} disabled={!zipFile} className="parent-btn">
+                {zipLabel()}
+              </button>
+            </div>
+          )}
         </section>
 
         <ParentSettings />
