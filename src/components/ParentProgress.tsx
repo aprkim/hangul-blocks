@@ -173,8 +173,8 @@ export function ParentSettings() {
           <b>{t('하루 분량', "A day's goal")}</b>
           <p className="parent-sub">
             {t(
-              `글자 쓰기와 낱말 만들기를 합쳐 ${g}번. 쓰기와 낱말 퍼즐 화면 왼쪽 위의 점이 하나씩 채워지고, 다 채우면 "오늘 끝!" 장면이 나와요. 그 뒤에도 계속할 수 있고, 잠기지 않아요. (소리와 만들기 탭은 자유 놀이라 세지 않아요.)`,
-              `${g} letters written or words built, in any mix. Dots at the top left of the Write and Words tabs fill one by one; when all are filled an "all done for today" scene appears. Nothing is locked. (The Sound and Build tabs are free play and don't count.)`,
+              `글자 쓰기와 낱말 만들기를 합쳐 ${g}번. 쓰기와 낱말 퍼즐 화면 왼쪽 위의 점이 하나씩 채워지고, 다 채우면 트로피와 함께 "오늘 목표 달성!" 장면이 나와요. 그 뒤에도 계속할 수 있고, 잠기지 않아요. (소리와 만들기 탭은 자유 놀이라 세지 않아요.)`,
+              `${g} letters written or words built, in any mix. Dots at the top left of the Write and Words tabs fill one by one; when all are filled a trophy scene celebrates the day's goal. Nothing is locked. (The Sound and Build tabs are free play and don't count.)`,
             )}
           </p>
         </div>
