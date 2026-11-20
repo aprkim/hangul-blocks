@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { setLocalRecording, stop as stopGameAudio } from '../audio'
+import { setLocalRecording, setRecordingSession, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
 import { isNativeApp, shareFileNative } from '../native'
@@ -151,6 +151,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
 
   useEffect(() => {
     stopGameAudio()
+    setRecordingSession(true)
     loadRecordings().then(setTakes)
     // Plugging in or pairing a mic (e.g. Bluetooth) kills the current mic stream on iOS.
     const onDeviceChange = () => dropStream()
@@ -159,6 +160,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
       navigator.mediaDevices?.removeEventListener?.('devicechange', onDeviceChange)
       stream.current?.getTracks().forEach((t) => t.stop())
       ctx.current?.close()
+      setRecordingSession(false)
     }
   }, [])
 
@@ -206,6 +208,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     const alive = stream.current?.getAudioTracks().some((t) => t.readyState === 'live' && t.enabled)
     if (!alive) {
       dropStream()
+      setRecordingSession(true) // iOS: the mic is refused while the session is playback-only
       stream.current = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: false },
       })

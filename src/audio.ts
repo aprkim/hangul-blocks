@@ -40,14 +40,33 @@ let current: AudioBufferSourceNode | null = null
 /** The latest sound asked for; a slow load must not play over a newer tap. */
 let wanted: string | null = null
 
+const audioSession = () => (navigator as Navigator & { audioSession?: { type: string } }).audioSession
+let recordingSession = false
+
 function audioContext(): AudioContext {
   if (!ctx) {
-    // iOS: play through the silent switch, like a media app.
-    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession
-    if (session) session.type = 'playback'
+    // iOS: play through the silent switch, like a media app (unless the recorder needs the mic).
+    const session = audioSession()
+    if (session && !recordingSession) session.type = 'playback'
     ctx = new AudioContext({ latencyHint: 'interactive' })
   }
   return ctx
+}
+
+/**
+ * The parents' recorder is open (or closed again). On iOS a "playback" audio session refuses
+ * the microphone outright (Safari reports it as "not available"), so while recording the
+ * session must be play-and-record; back in the game it returns to playback.
+ */
+export function setRecordingSession(on: boolean) {
+  recordingSession = on
+  const session = audioSession()
+  if (!session) return
+  try {
+    session.type = on ? 'play-and-record' : 'playback'
+  } catch {
+    /* older iOS: leave it */
+  }
 }
 
 function warnMissing(name: string, reason?: unknown) {
