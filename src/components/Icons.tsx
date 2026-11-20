@@ -119,6 +119,29 @@ const STAR_DARK = 'var(--color-star-dark)'
 export const STAR_PATH =
   'M19.8 10.2Q24.0 4.0 28.2 10.2L29.4 11.9Q31.4 14.8 34.8 15.8L36.8 16.4Q44.0 18.5 39.4 24.5L38.1 26.1Q36.0 28.9 36.1 32.4L36.1 34.5Q36.3 42.0 29.3 39.5L27.3 38.8Q24.0 37.6 20.7 38.8L18.7 39.5Q11.7 42.0 11.9 34.5L11.9 32.4Q12.0 28.9 9.9 26.1L8.6 24.5Q4.0 18.5 11.2 16.4L13.2 15.8Q16.6 14.8 18.6 11.9Z'
 
+/**
+ * The day's trophy, drawn in the app's own flat style and colors (the emoji one clashed):
+ * a yellow cup with a white star, on a blue base.
+ */
+export function TrophyArt({ className = 'h-full w-full' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" className={className} fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {/* handles */}
+      <path d="M56 58C18 56 20 112 66 112M144 58C182 56 180 112 134 112" stroke={STAR_DARK} strokeWidth={13} />
+      {/* stem and base */}
+      <path d="M100 128V160" stroke={STAR_DARK} strokeWidth={22} strokeLinecap="butt" />
+      <rect x="56" y="154" width="88" height="28" rx="10" fill={BLUE} />
+      <rect x="78" y="162" width="44" height="12" rx="6" fill={ON_TILE} opacity={0.9} />
+      {/* cup */}
+      <path d="M48 44H152V78C152 116 128 138 100 138C72 138 48 116 48 78Z" fill={STAR} />
+      <path d="M64 56V80C64 96 70 108 80 116" stroke={ON_TILE} strokeWidth={9} opacity={0.55} />
+      <rect x="40" y="30" width="120" height="22" rx="11" fill={STAR} stroke={STAR_DARK} strokeWidth={5} />
+      {/* star */}
+      <path d={STAR_PATH} transform="translate(69 53) scale(1.3)" fill={ON_TILE} />
+    </svg>
+  )
+}
+
 /** A reward star: gold with a darker rim, round corners. */
 export function StarShape({ className = 'h-full w-full' }: { className?: string }) {
   return (

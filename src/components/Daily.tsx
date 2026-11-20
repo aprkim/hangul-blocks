@@ -5,6 +5,7 @@ import { currentChild, useChildren } from '../children'
 import { GOALS, dayOf, goalMet, markCheered, useDaily } from '../daily'
 import { confetti } from '../effects'
 import { celebrateFeedback, tapFeedback } from '../native'
+import { StarShape, TrophyArt } from './Icons'
 import { useTap } from '../touchGuard'
 
 // The buddy sits at the very top of the screen, so its happy bounce grows and sways in place
@@ -65,7 +66,9 @@ export function DailyMeter({ beside = false }: { beside?: boolean }) {
         {child?.animal ?? '🐻'}
       </button>
       {done ? (
-        <span className="daily-trophy-small">🏆</span>
+        <span className="daily-trophy-small">
+          <TrophyArt />
+        </span>
       ) : (
         <div className="daily-row">
           {Array.from({ length: g }, (_, i) => (
@@ -119,11 +122,13 @@ export function DailyDone() {
             <i key={i} style={{ animationDelay: `${0.25 + i * 0.07}s` }} />
           ))}
         </div>
-        <span className="daily-trophy">🏆</span>
+        <span className="daily-trophy">
+          <TrophyArt />
+        </span>
         <span className="daily-animal">{child?.animal ?? '🐻'}</span>
-        <span className="daily-spark s1">⭐</span>
-        <span className="daily-spark s2">⭐</span>
-        <span className="daily-spark s3">⭐</span>
+        <span className="daily-spark s1"><StarShape /></span>
+        <span className="daily-spark s2"><StarShape /></span>
+        <span className="daily-spark s3"><StarShape /></span>
       </div>
     </div>
   )
