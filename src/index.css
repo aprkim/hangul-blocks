@@ -1971,7 +1971,10 @@ body {
   justify-content: center;
   pointer-events: auto;
   touch-action: none;
-  transform-origin: 50% 90%;
+  /* Grows down and to the right, so it never leaves the top-left corner of the screen. */
+  transform-origin: 15% 5%;
+  position: relative;
+  z-index: 1;
   filter: drop-shadow(0 3px 0 rgb(0 0 0 / 0.12));
 }
 .daily-row {

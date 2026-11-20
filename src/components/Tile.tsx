@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from 'react'
+import { buddy } from '../buddy'
 import { tapFeedback } from '../native'
 import { chromeLocked } from '../touchGuard'
 
@@ -40,6 +41,7 @@ export function Tile({ kind, onTap, children, selected, className = '', label }:
         if (chromeLocked()) return
         ref.current?.animate(BOUNCE, { duration: 320, easing: 'ease-out' })
         tapFeedback()
+        if (kind !== 'control') buddy('tap')
         onTap()
       }}
       className={`tile ${KIND_CLASS[kind]} ${selected ? 'is-selected' : ''} ${className}`}
