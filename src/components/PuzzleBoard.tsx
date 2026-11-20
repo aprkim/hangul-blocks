@@ -7,6 +7,7 @@ import { CONSONANTS, VOWELS, composeSyllable, consonantSound, syllableSound, vow
 import { solvePuzzle, usePuzzle } from '../keepsakes'
 import { celebrateFeedback, successFeedback, tapFeedback } from '../native'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
+import { layoutSyllable, strokePath } from '../strokes'
 import { useTap } from '../touchGuard'
 import { DailyMeter } from './Daily'
 import { ArrowIcon, BookIcon } from './Icons'
@@ -52,6 +53,22 @@ function trayFor<T extends { char: string }>(all: T[], needed: T[], seed: number
   // Walk the others from a spot that differs per word; every step is a new piece, so this ends.
   for (let i = 0; i < rest.length && picked.size < TRAY; i++) picked.add(rest[(seed * 7 + i) % rest.length])
   return all.filter((x) => picked.has(x))
+}
+
+/**
+ * The pieces picked so far, drawn where they will sit in this box's syllable. A consonant alone
+ * is placed as it sits beside this box's vowel (and a vowel as it sits by this box's consonant),
+ * so the right piece lands exactly on its faint guide instead of a little off it.
+ */
+function Picked({ cons, vowel, target }: { cons: Consonant | null; vowel: Vowel | null; target: Part }) {
+  const v = vowel ?? target.vowel
+  const placed = layoutSyllable((cons ?? target.cons).char, v.char, v.layout)
+  return (
+    <>
+      {cons && placed.cons?.map((st, i) => <path key={`c${i}`} d={strokePath(st)} className="syl-stroke" style={{ stroke: 'var(--color-consonant)', strokeWidth: 8 }} />)}
+      {vowel && placed.vowel?.map((st, i) => <path key={`v${i}`} d={strokePath(st)} className="syl-stroke" style={{ stroke: 'var(--color-vowel)', strokeWidth: 8 }} />)}
+    </>
+  )
 }
 
 export function PuzzleBoard() {
@@ -198,7 +215,7 @@ export function PuzzleBoard() {
                   {i < filled && <Syllable cons={p.cons.char} vowel={p.vowel.char} layout={p.vowel.layout} />}
                   {i === filled && (cons || vowel) && (
                     <g className="puzzle-pick">
-                      <Syllable cons={cons?.char ?? null} vowel={vowel?.char ?? null} layout={(vowel ?? p.vowel).layout} />
+                      <Picked cons={cons} vowel={vowel} target={p} />
                     </g>
                   )}
                 </svg>
