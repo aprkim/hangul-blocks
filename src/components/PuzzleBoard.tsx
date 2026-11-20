@@ -4,7 +4,7 @@ import { confetti } from '../effects'
 import { decompose } from '../hangul'
 import { CONSONANTS, VOWELS, composeSyllable, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { solvePuzzle, usePuzzle } from '../keepsakes'
-import { successFeedback, tapFeedback } from '../native'
+import { celebrateFeedback, successFeedback, tapFeedback } from '../native'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
 import { useTap } from '../touchGuard'
 import { ArrowIcon, BookIcon } from './Icons'
@@ -135,6 +135,7 @@ export function PuzzleBoard() {
     const firstTime = !solved.includes(item.word)
     later(() => {
       setWon(true)
+      celebrateFeedback()
       play(puzzleSound(item.word))
       if (firstTime) {
         solvePuzzle(item.word)

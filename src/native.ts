@@ -4,7 +4,7 @@
 import { Capacitor } from '@capacitor/core'
 import { Directory, Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics'
 import { SplashScreen } from '@capacitor/splash-screen'
 import { StatusBar } from '@capacitor/status-bar'
 
@@ -18,6 +18,14 @@ export function tapFeedback() {
 /** A slightly stronger bump when a syllable is completed. */
 export function successFeedback() {
   if (isNativeApp) void Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {})
+}
+
+/**
+ * Something was finished (a letter written to the end, a word built, a gift opened): the
+ * "success" pattern, a quick double beat, felt on phones. iPads have no vibration motor.
+ */
+export function celebrateFeedback() {
+  if (isNativeApp) void Haptics.notification({ type: NotificationType.Success }).catch(() => {})
 }
 
 export async function initNative() {

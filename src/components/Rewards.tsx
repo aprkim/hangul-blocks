@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { confetti } from '../effects'
-import { successFeedback, tapFeedback } from '../native'
+import { celebrateFeedback, tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
 import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
@@ -115,7 +115,7 @@ export function GiftReveal() {
         if (!opened) {
           setOpened(true)
           chime('fanfare')
-          successFeedback()
+          celebrateFeedback()
           confetti(boxRef.current?.getBoundingClientRect())
         } else {
           tapFeedback()

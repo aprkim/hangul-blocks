@@ -4,7 +4,7 @@ import { currentChild, nameSound, useChildren, type Child } from '../children'
 import { fullStrokes, nameSyllableSound } from '../hangul'
 import { confetti, flyStar } from '../effects'
 import { CHART_VOWELS, CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
-import { successFeedback, tapFeedback } from '../native'
+import { celebrateFeedback, tapFeedback } from '../native'
 import {
   JAMO_CHARS,
   SET_GOAL,
@@ -301,7 +301,7 @@ function GiftGate({ ready, dots, onOpen }: { ready: boolean; dots: string[]; onO
             ref.current?.animate(WIGGLE, { duration: 420 })
             return
           }
-          successFeedback()
+          celebrateFeedback()
           chime('fanfare')
           confetti(ref.current?.getBoundingClientRect())
           const first = onOpen()
@@ -428,7 +428,7 @@ function Tracer({
   function finish() {
     recordWriting(target.char, strokes.map((s) => s.part), accepted.current)
     sayIt()
-    successFeedback()
+    celebrateFeedback()
     cardRef.current?.animate(POP, { duration: 480, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
     const rect = cardRef.current?.getBoundingClientRect()
     const char = target.char
