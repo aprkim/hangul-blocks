@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { currentChild, getChildren } from './children'
 import { ChildPicker } from './components/ChildPicker'
+import { DailyDone } from './components/Daily'
 import { stop } from './audio'
 import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
@@ -53,6 +54,7 @@ export default function App() {
         {screen === 'write' && <WriteBoard key={writeKey} />}
       </main>
       <TabBar tab={screen} onTab={go} />
+      <DailyDone />
       <Settings
         onParent={() => go('record')}
         onSwitch={(c) => {

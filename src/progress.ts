@@ -3,6 +3,7 @@
 
 import { useSyncExternalStore } from 'react'
 import { childKey, onChildSwitch } from './children'
+import { countLetter, resetDaily } from './daily'
 import { CHART_VOWELS, CONSONANTS, SET_COUNT, composeSyllable, type Consonant, type Vowel } from './jamo'
 
 /** Stars that fill the jar; a full jar gives a treasure sticker. */
@@ -107,6 +108,7 @@ export const reachableSyllables = (p: Progress) => SYLLABLES.filter((s) => s.set
  * Returns true when that star filled the jar (a gift is now waiting).
  */
 export function addStar(char: string): boolean {
+  countLetter()
   const p = state
   const written = { ...p.written, [char]: timesWritten(p, char) + 1 }
   const jar = p.jar + 1
@@ -146,4 +148,5 @@ export function openAllSets() {
 /** Parents: start over. */
 export function resetProgress() {
   set(EMPTY)
+  resetDaily()
 }

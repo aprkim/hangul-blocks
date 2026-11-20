@@ -100,7 +100,7 @@ https://soriblocks.lihallc.com
 
 ---
 
-## 1.3 새 기능 (What's New)
+## 1.4 새 기능 (What's New)
 
 ```
 쓰기가 내 것이 됐어요
@@ -110,6 +110,7 @@ https://soriblocks.lihallc.com
 - 이름을 가족 목소리로 녹음하면, 다 썼을 때 그 목소리로 이름을 불러 줘요.
 - 형제자매: 아이마다 동물을 골라요. 별과 스티커, 아이 글씨는 아이마다 따로 모여요.
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리, 토마토, 하마 등 모든 자음에 그림 단어가 생겼어요.
+- 하루 분량: 글자 5개 쓰기와 낱말 3개 만들기를 마치면 "오늘 끝!" 장면이 나와요. 잠기지 않고, 부모님 화면에서 양을 고를 수 있어요.
 - 글자를 다 쓰면 다음 글자로 저절로 넘어가요.
 - 스티커를 누르기만 해도 놀이판에 붙어요. 크기 버튼은 스티커 바로 옆에 나와요.
 - 글자 순서를 가나다표처럼 바꿨어요: 가 갸 거 겨 고 교 구 규 그 기.
@@ -125,6 +126,7 @@ Writing becomes theirs
 - Record the name in a family voice, and the app says it when the name is finished.
 - Siblings: each child picks an animal. Stars, stickers and handwriting are kept per child.
 - 57 new picture words (다람쥐, 사과, 자동차, 코끼리 and more): every consonant now has them.
+- A day's goal: after 5 letters and 3 words, an "all done for today" scene appears. Nothing is locked, and parents can choose the amount.
 - After a letter is written, the next one comes by itself.
 - Tap a sticker to put it on a play scene. The size buttons appear right beside it.
 - Letters follow the Korean chart order: 가 갸 거 겨 고 교 구 규 그 기.
@@ -294,7 +296,7 @@ Writing just got more fun!
 </ko-KR>
 ```
 
-**출시 노트 (1.3, versionCode 2): 첫 출시 다음에 올릴 버전**
+**출시 노트 (1.4, versionCode 2): 첫 출시 다음에 올릴 버전**
 ```
 <en-US>
 Writing becomes theirs!
@@ -304,7 +306,7 @@ Writing becomes theirs!
 - Siblings each pick an animal and keep their own stars and stickers.
 - 57 new picture words.
 - Star jar, sticker play scenes and a fridge of your child's handwriting.
-- After a letter is written, the next one comes by itself.
+- A small daily goal with an "all done for today" scene. Nothing is locked.
 </en-US>
 <ko-KR>
 쓰기가 내 것이 됐어요!
@@ -314,7 +316,7 @@ Writing becomes theirs!
 - 형제자매는 동물을 골라 별과 스티커를 따로 모아요
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리…
 - 별 병, 스티커 놀이판, 아이 글씨 냉장고
-- 글자를 다 쓰면 다음 글자로 저절로 넘어가요
+- 하루 분량을 마치면 "오늘 끝!" 장면이 나와요 (잠기지 않아요)
 </ko-KR>
 ```
 
@@ -332,7 +334,7 @@ This is a Korean letter-sound app for young children. Four tabs at the bottom: S
 
 Parents-only screen: tap the settings button (top right), tap the padlock button, then answer the multiplication question (parental gate). There a parent can add a child's name and animal (optional; with two or more children the app asks "who's playing?" at launch), record the sounds in their own voice, and see the child's writing record. The microphone is used only on that screen. Names, progress and recordings stay on the device; nothing is sent anywhere.
 
-New in 1.3: with a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
+New in 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words an "all done for today" picture appears once a day (nothing is locked). With a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
 
 Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 

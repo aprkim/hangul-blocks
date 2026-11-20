@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { confetti } from '../effects'
+import { countWord } from '../daily'
 import { decompose } from '../hangul'
 import { CONSONANTS, VOWELS, composeSyllable, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
 import { solvePuzzle, usePuzzle } from '../keepsakes'
 import { celebrateFeedback, successFeedback, tapFeedback } from '../native'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
 import { useTap } from '../touchGuard'
+import { DailyMeter } from './Daily'
 import { ArrowIcon, BookIcon } from './Icons'
 import { Syllable } from './JamoStrokes'
 import { StickerBook } from './Rewards'
@@ -135,6 +137,7 @@ export function PuzzleBoard() {
     const firstTime = !solved.includes(item.word)
     later(() => {
       setWon(true)
+      countWord()
       celebrateFeedback()
       play(puzzleSound(item.word))
       if (firstTime) {
@@ -243,6 +246,7 @@ export function PuzzleBoard() {
         </div>
       </div>
 
+      <DailyMeter />
       {/* The sticker book and play scenes, where built words go. */}
       <button type="button" aria-label="stickers" className="puzzle-book" {...tapBook}>
         <BookIcon />

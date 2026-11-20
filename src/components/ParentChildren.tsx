@@ -15,6 +15,7 @@ import {
 import { setLocalRecording } from '../audio'
 import { t } from '../i18n'
 import { deleteRecording } from '../recordings'
+import { DAILY_KEY } from '../daily'
 import { HANDWRITING_KEY, PUZZLE_KEY, SCENES_KEY } from '../keepsakes'
 import { PROGRESS_KEY } from '../progress'
 
@@ -135,7 +136,7 @@ export function ParentChildren({ onRecordName }: { onRecordName: (c: Child) => v
                 onClick={() => {
                   if (confirm(t(`${c.name}의 이름과 별, 스티커, 아이 글씨를 지울까요?`, `Remove ${c.name} with their stars, stickers and handwriting?`)))
                   {
-                    removeChild(c.id, [PROGRESS_KEY, SCENES_KEY, HANDWRITING_KEY, PUZZLE_KEY])
+                    removeChild(c.id, [PROGRESS_KEY, SCENES_KEY, HANDWRITING_KEY, PUZZLE_KEY, DAILY_KEY])
                     setLocalRecording(nameSound(c), null)
                     void deleteRecording(nameSound(c)).catch(() => {})
                   }

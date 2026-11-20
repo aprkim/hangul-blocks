@@ -23,6 +23,7 @@ import { STROKES, strokePath, syllableStrokes, traceMatches, type Pt, type Strok
 import { recordWriting } from '../keepsakes'
 import { setWriting, useTap } from '../touchGuard'
 import { cardFor, type Card } from '../words'
+import { DailyMeter } from './Daily'
 import { ArrowIcon, GiftIcon, MapIcon, StarShape } from './Icons'
 import { Syllable } from './JamoStrokes'
 import { GiftReveal, StarJar, StickerBook } from './Rewards'
@@ -200,6 +201,7 @@ function Road({ focus, onPick }: { focus: string | null; onPick: (g: View['group
 
   return (
     <div ref={scrollRef} className="write-road" data-scroll>
+      <DailyMeter />
       <div className="road-inner">
         {/* My name first: the child's animal, then their name to write. */}
         {child && names.length > 0 && (

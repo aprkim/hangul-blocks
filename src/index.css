@@ -1939,3 +1939,139 @@ body {
     height: calc(var(--tile) * 0.8) !important;
   }
 }
+
+/* ---------- A day's goal ---------- */
+.daily-meter {
+  position: fixed;
+  z-index: 29;
+  top: calc(env(safe-area-inset-top) + var(--settings-gap));
+  left: calc(env(safe-area-inset-left) + var(--settings-gap));
+  height: calc(var(--settings) * 0.62);
+  padding: 0 calc(var(--settings) * 0.22);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--settings) * 0.1);
+  border-radius: 999px;
+  background: var(--color-card);
+  box-shadow: 0 4px 0 var(--color-card-shadow);
+  pointer-events: none;
+}
+.daily-meter i {
+  width: calc(var(--settings) * 0.2);
+  height: calc(var(--settings) * 0.2);
+  border-radius: 50%;
+  background: var(--color-card-shadow);
+}
+.daily-meter i.is-word {
+  border-radius: 28%;
+}
+.daily-meter i.is-letter.is-on {
+  background: var(--color-consonant);
+}
+.daily-meter i.is-word.is-on {
+  background: var(--color-star);
+}
+.daily-meter.is-done span {
+  font-size: calc(var(--settings) * 0.4);
+  line-height: 1;
+}
+/* The tracing card has its own button at the top left. */
+.write-trace ~ .daily-meter {
+  display: none;
+}
+.daily-done {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(20 24 48 / 0.72);
+  touch-action: none;
+  animation: daily-in 0.5s ease-out;
+}
+.daily-night {
+  position: relative;
+  width: min(70vmin, 520px);
+  height: min(70vmin, 520px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #2c3566, #161a36);
+  box-shadow: 0 0 0 10px rgb(255 255 255 / 0.12);
+}
+.daily-night span {
+  position: absolute;
+  line-height: 1;
+}
+.daily-moon {
+  top: 10%;
+  right: 16%;
+  font-size: min(16vmin, 120px);
+}
+.daily-star {
+  font-size: min(5vmin, 38px);
+  animation: daily-twinkle 1.8s ease-in-out infinite;
+}
+.daily-star.s1 { top: 18%; left: 20%; }
+.daily-star.s2 { top: 36%; left: 44%; animation-delay: 0.6s; }
+.daily-star.s3 { top: 12%; left: 52%; animation-delay: 1.1s; }
+.daily-animal {
+  left: 50%;
+  bottom: 14%;
+  translate: -50% 0;
+  font-size: min(30vmin, 220px);
+  animation: daily-breathe 3s ease-in-out infinite;
+}
+.daily-zzz {
+  right: 18%;
+  bottom: 42%;
+  font-size: min(9vmin, 66px);
+  animation: daily-twinkle 2.4s ease-in-out infinite;
+}
+@keyframes daily-in {
+  from { opacity: 0; }
+}
+@keyframes daily-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+@keyframes daily-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+/* Parents' page: the last seven days, and a three-way choice. */
+.parent-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.parent-week > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+.parent-week i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-page);
+  box-sizing: border-box;
+}
+.parent-week .is-played i {
+  border: 3px solid var(--color-vowel);
+}
+.parent-week .is-done i {
+  background: var(--color-star);
+}
+.parent-week > p {
+  grid-column: 1 / -1;
+  text-align: left;
+}
+.parent-choice {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}

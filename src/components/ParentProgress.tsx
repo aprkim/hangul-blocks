@@ -12,7 +12,8 @@ import {
   useProgress,
 } from '../progress'
 import { currentChild, useChildren } from '../children'
-import { t } from '../i18n'
+import { GOALS, dayOf, goalMet, setGoal, today, useDaily, type GoalSize } from '../daily'
+import { lang, t } from '../i18n'
 import { SET_COUNT } from '../jamo'
 import { resetKeepsakes, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
 import { Capacitor } from '@capacitor/core'
@@ -104,6 +105,15 @@ export function ParentProgress() {
       </span>
     )
   }
+  // The last seven days: the day's goal reached, played a little, or not opened.
+  const daily = useDaily()
+  const week = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    const key = today(d)
+    const day = dayOf(daily, key)
+    return { key, label: d.toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { weekday: 'narrow' }), done: goalMet(daily, key), played: day.letters + day.words > 0 }
+  })
   return (
     <section className="parent-card">
       <h2>{who ? t(`${who.name}의 기록`, `${who.name}'s progress`) : t('아이의 기록', "Your child's progress")}</h2>
@@ -112,6 +122,15 @@ export function ParentProgress() {
         <div><b>{jamoWrittenCount(p)}<small>/{JAMO_CHARS.length}</small></b><span>{t('쓴 자음·모음', 'Letters written')}</span></div>
         <div><b>{sylDone}<small>/{SYLLABLE_CHARS.length}</small></b><span>{t('쓴 글자', 'Syllables written')}</span></div>
         <div><b>{p.treasures.length}<small>/{TREASURES.length}</small></b><span>{t('보물 스티커', 'Treasures')}</span></div>
+      </div>
+      <div className="parent-week" aria-label={t('이번 주', 'This week')}>
+        {week.map((d) => (
+          <div key={d.key} className={d.done ? 'is-done' : d.played ? 'is-played' : ''}>
+            <i />
+            <span>{d.label}</span>
+          </div>
+        ))}
+        <p className="parent-sub">{t('최근 7일: 금색 = 하루 분량을 다 했어요, 파란 테두리 = 조금 했어요. 빠진 날이 있어도 잃는 것은 없어요.', "Last 7 days: gold = the day's goal was reached, blue ring = played a little. Nothing is lost on a day off.")}</p>
       </div>
       <p className="parent-sub">{t('글자를 쓴 횟수 (파란색 = 써 봤어요)', 'Times each letter was written (blue = written)')}</p>
       <div className="flex flex-wrap gap-1.5">{JAMO_CHARS.map(chip)}</div>
@@ -136,9 +155,34 @@ export function ParentProgress() {
 /** Settings that change the child's progress: open everything now, or start over. */
 export function ParentSettings() {
   const p = useProgress()
+  const daily = useDaily()
+  const sizes: { id: GoalSize; label: string }[] = [
+    { id: 'small', label: t('조금', 'Small') },
+    { id: 'normal', label: t('보통', 'Normal') },
+    { id: 'big', label: t('많이', 'Big') },
+  ]
+  const g = GOALS[daily.goal]
   return (
     <section className="parent-card">
       <h2>{t('설정', 'Settings')}</h2>
+      <div className="parent-row">
+        <div>
+          <b>{t('하루 분량', "A day's goal")}</b>
+          <p className="parent-sub">
+            {t(
+              `글자 ${g.letters}개 쓰기와 낱말 ${g.words}개 만들기. 다 하면 "오늘 끝!" 장면이 나와요. 그 뒤에도 계속할 수 있고, 잠기지 않아요.`,
+              `Write ${g.letters} letters and build ${g.words} words. Then an "all done for today" scene appears. Nothing is locked: your child can keep playing.`,
+            )}
+          </p>
+        </div>
+        <div className="parent-choice" role="radiogroup">
+          {sizes.map((z) => (
+            <button key={z.id} type="button" role="radio" aria-checked={daily.goal === z.id} className={`parent-btn ${daily.goal === z.id ? 'is-primary' : ''}`} onClick={() => setGoal(z.id)}>
+              {z.label}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="parent-row">
         <div>
           <b>{t('모든 글자 바로 열기', 'Open all letters now')}</b>
