@@ -100,7 +100,7 @@ https://soriblocks.lihallc.com
 
 ---
 
-## 1.3 새 기능 (What's New)
+## 1.4 새 기능 (What's New)
 
 ```
 쓰기가 내 것이 됐어요
@@ -296,7 +296,7 @@ Writing just got more fun!
 </ko-KR>
 ```
 
-**출시 노트 (1.3, versionCode 2): 첫 출시 다음에 올릴 버전**
+**출시 노트 (1.4, versionCode 2): 첫 출시 다음에 올릴 버전**
 ```
 <en-US>
 Writing becomes theirs!
@@ -334,7 +334,7 @@ This is a Korean letter-sound app for young children. Four tabs at the bottom: S
 
 Parents-only screen: tap the settings button (top right), tap the padlock button, then answer the multiplication question (parental gate). There a parent can add a child's name and animal (optional; with two or more children the app asks "who's playing?" at launch), record the sounds in their own voice, and see the child's writing record. The microphone is used only on that screen. Names, progress and recordings stay on the device; nothing is sent anywhere.
 
-New in 1.3: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). With a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
+New in 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). With a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
 
 Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 
