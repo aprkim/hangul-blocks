@@ -43,19 +43,19 @@ export const STROKES: Record<string, Stroke[]> = {
   ],
   ㅅ: [
     [[50, 16], [18, 82]],
-    [[35.5, 46], [82, 82]], // the right leg starts on the left stroke, at its middle
+    [[40.5, 35.5], [82, 82]], // the right leg starts on the left stroke, a third of the way down (as in school print)
   ],
   ㅇ: [circle(50, 50, 30)],
   ㅈ: [
     [[22, 20], [78, 20]],
     [[50, 20], [18, 84]],
-    [[35, 50], [82, 84]],
+    [[40.5, 39], [82, 84]],
   ],
   ㅊ: [
     [[50, 8], [50, 20]],
     [[22, 28], [78, 28]],
     [[50, 28], [18, 88]],
-    [[35, 56], [82, 88]],
+    [[40.5, 46], [82, 88]],
   ],
   ㅋ: [
     [[22, 18], [78, 18], [78, 84]],
