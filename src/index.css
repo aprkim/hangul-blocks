@@ -1857,21 +1857,26 @@ body {
 }
 .puzzle-pic.is-won {
   background: var(--color-card);
-  box-shadow: 0 8px 0 var(--color-star-dark), 0 0 0 5px var(--color-star);
+  box-shadow: 0 0 0 5px var(--color-star), 0 8px 0 5px var(--color-star-dark);
 }
 .puzzle-slot {
   padding: 6%;
 }
+/* The ring is listed first so it is drawn whole, on top of the ledge under the box (listed the
+   other way round, the ledge covered the ring's bottom edge). */
 .puzzle-slot.is-now {
-  box-shadow: 0 8px 0 var(--color-card-shadow), 0 0 0 5px var(--color-ink);
+  box-shadow: 0 0 0 5px var(--color-ink), 0 8px 0 5px var(--color-card-shadow);
 }
 .puzzle-slot.is-done {
-  box-shadow: 0 8px 0 var(--color-star-dark), 0 0 0 5px var(--color-star);
+  box-shadow: 0 0 0 5px var(--color-star), 0 8px 0 5px var(--color-star-dark);
 }
 /* The syllable to build, faint (one color, like the tracing guide). */
+/* Faded as one shape, so strokes that cross (ㅂ, ㅁ) don't show darker joints. */
+.puzzle-guide {
+  opacity: 0.55;
+}
 .puzzle-guide .syl-stroke {
   stroke: var(--color-guide-strong) !important;
-  opacity: 0.55;
 }
 /* Short screens (a phone on its side): smaller boxes, so the trays keep clear of the tabs. */
 @media (max-height: 520px) {
