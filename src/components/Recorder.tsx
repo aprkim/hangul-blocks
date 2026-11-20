@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { setLocalRecording, setRecordingSession, stop as stopGameAudio } from '../audio'
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
+import { PUZZLE_RECORD_GROUP } from '../puzzleWords'
 import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress, ParentSettings } from './ParentProgress'
 import { ParentChildren } from './ParentChildren'
@@ -36,7 +37,7 @@ const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
-const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP]
+const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP, PUZZLE_RECORD_GROUP]
 
 /** What parents see: three kinds of sound, not the production batches. */
 type UiGroup = { id: string; label: string; items: RecordItem[] }
@@ -44,6 +45,8 @@ const UI_GROUPS: UiGroup[] = [
   { id: 'jamo', label: t('자음·모음', 'Letters'), items: JAMO_GROUPS[0].items },
   { id: 'syllables', label: t('글자', 'Syllables'), items: JAMO_GROUPS.slice(1).flatMap((g) => g.items) },
   { id: 'words', label: t('그림 단어', 'Picture words'), items: [...WORD_RECORD_GROUP.items, ...MORE_WORD_RECORD_GROUP.items] },
+  // Words for the word puzzle that no picture word covers yet.
+  { id: 'puzzle', label: t('낱말 퍼즐', 'Word puzzle'), items: PUZZLE_RECORD_GROUP.items },
 ]
 
 /** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */
