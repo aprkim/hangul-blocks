@@ -23,7 +23,9 @@ const A = 'android/app/src/main/res', I = 'ios/App/App/Assets.xcassets';
 const jobs = [];
 const add = (file, w, h, html, transparent = false) => jobs.push({ file, w, h, html, transparent });
 // square icons
-for (const [f, s] of [['resources/icon-1024.png', 1024], [`${I}/AppIcon.appiconset/AppIcon-512@2x.png`, 1024], ['store/android/play-icon-512.png', 512], ['public/apple-touch-icon.png', 180], ['public/favicon.png', 64]]) add(f, s, s, centered(s, s, 0.62));
+for (const [f, s] of [['resources/icon-1024.png', 1024], [`${I}/AppIcon.appiconset/AppIcon-512@2x.png`, 1024], ['store/android/play-icon-512.png', 512], ['public/apple-touch-icon.png', 180]]) add(f, s, s, centered(s, s, 0.62));
+// The browser-tab icon: the same square with its corners rounded (browsers show it as it is).
+add('public/favicon.png', 128, 128, `<div style="width:128px;height:128px;border-radius:24%;overflow:hidden">${centered(128, 128, 0.62)}</div>`, true);
 // Android launcher: legacy square, round, adaptive foreground (108dp, art inside the middle 66dp)
 for (const [d, s] of [['mdpi', 48], ['hdpi', 72], ['xhdpi', 96], ['xxhdpi', 144], ['xxxhdpi', 192]]) {
   add(`${A}/mipmap-${d}/ic_launcher.png`, s, s, centered(s, s, 0.62));
