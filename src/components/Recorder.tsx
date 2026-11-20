@@ -45,8 +45,7 @@ const UI_GROUPS: UiGroup[] = [
   { id: 'jamo', label: t('자음·모음', 'Letters'), items: JAMO_GROUPS[0].items },
   { id: 'syllables', label: t('글자', 'Syllables'), items: JAMO_GROUPS.slice(1).flatMap((g) => g.items) },
   { id: 'words', label: t('그림 단어', 'Picture words'), items: [...WORD_RECORD_GROUP.items, ...MORE_WORD_RECORD_GROUP.items] },
-  // Words for the word puzzle that no picture word covers yet.
-  { id: 'puzzle', label: t('낱말 퍼즐', 'Word puzzle'), items: PUZZLE_RECORD_GROUP.items },
+  // The word puzzle's own words (PUZZLE_RECORD_GROUP) get a tab here when the puzzle ships (1.4).
 ]
 
 /** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */

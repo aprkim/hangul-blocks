@@ -100,6 +100,36 @@ https://soriblocks.lihallc.com
 
 ---
 
+## 1.3 새 기능 (What's New)
+
+```
+쓰기가 내 것이 됐어요
+
+- 내 이름: 부모님 화면에서 아이 이름을 등록하면 앱이 "리하의 소리블록"으로 열려요. 쓰기 맨 위에서 내 이름을 한 글자씩 따라 써요. 받침 있는 이름도 돼요.
+- 이름을 가족 목소리로 녹음하면, 다 썼을 때 그 목소리로 이름을 불러 줘요.
+- 형제자매: 아이마다 동물을 골라요. 별과 스티커, 아이 글씨는 아이마다 따로 모여요.
+- 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리, 토마토, 하마 등 모든 자음에 그림 단어가 생겼어요.
+- 글자를 다 쓰면 다음 글자로 저절로 넘어가요.
+- 스티커를 누르기만 해도 놀이판에 붙어요. 크기 버튼은 스티커 바로 옆에 나와요.
+- 글자 순서를 가나다표처럼 바꿨어요: 가 갸 거 겨 고 교 구 규 그 기.
+- 호, 후, 흐 같은 글자의 ㅎ 모양을 다듬었어요.
+- 아이폰과 아이패드에서 녹음이 안 되던 문제를 고쳤어요.
+```
+
+```
+Writing becomes theirs
+
+- My name: add your child's name on the parents' page and the app opens as "리하's Sori Blocks". The name sits at the top of the Write tab to trace, syllable by syllable, final consonants included.
+- Record the name in a family voice, and the app says it when the name is finished.
+- Siblings: each child picks an animal. Stars, stickers and handwriting are kept per child.
+- 57 new picture words (다람쥐, 사과, 자동차, 코끼리 and more): every consonant now has them.
+- After a letter is written, the next one comes by itself.
+- Tap a sticker to put it on a play scene. The size buttons appear right beside it.
+- Letters follow the Korean chart order: 가 갸 거 겨 고 교 구 규 그 기.
+- Cleaner ㅎ in 호, 후 and 흐.
+- Fixed: recording did not work on iPhone and iPad.
+```
+
 ## 1.2.1 새 기능 (What's New)
 
 ```
@@ -262,6 +292,28 @@ Writing just got more fun!
 </ko-KR>
 ```
 
+**출시 노트 (1.3, versionCode 2): 첫 출시 다음에 올릴 버전**
+```
+<en-US>
+Writing becomes theirs!
+- My name: add your child's name and the app opens as theirs. They trace it syllable by syllable.
+- Record the name in a family voice; the app says it when it is written.
+- Siblings each pick an animal and keep their own stars and stickers.
+- 57 new picture words.
+- Star jar, sticker play scenes and a fridge of your child's handwriting.
+- After a letter is written, the next one comes by itself.
+</en-US>
+<ko-KR>
+쓰기가 내 것이 됐어요!
+- 내 이름: 아이 이름을 등록하면 "리하의 소리블록"으로 열리고, 이름을 따라 써요 (받침 포함)
+- 이름을 가족 목소리로 녹음하면 다 썼을 때 불러 줘요
+- 형제자매는 동물을 골라 별과 스티커를 따로 모아요
+- 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리…
+- 별 병, 스티커 놀이판, 아이 글씨 냉장고
+- 글자를 다 쓰면 다음 글자로 저절로 넘어가요
+</ko-KR>
+```
+
 **앱 이름 (30자 이내):** `소리블록 - 유아 한글떼기` / `Sori Blocks - Hangul for Kids`
 **그림 (자막 버전):** `store/captioned/{ko,en}/play-phone-*`, `play-tablet7-*`, `play-tablet10-*`
 
@@ -274,7 +326,9 @@ Writing just got more fun!
 ```
 This is a Korean letter-sound app for young children. Three tabs at the bottom: Sound (tap a consonant or vowel tile to hear its sound), Build (tap a consonant and a vowel to build a syllable and hear it), Write (trace letters with a finger).
 
-Parents-only screen: tap the settings button (top right), tap the microphone button, then answer the multiplication question (parental gate). There a parent can record the sounds in their own voice and see the child's writing record. The microphone is used only on that screen, and recordings stay on the device.
+Parents-only screen: tap the settings button (top right), tap the padlock button, then answer the multiplication question (parental gate). There a parent can add a child's name and animal (optional; with two or more children the app asks "who's playing?" at launch), record the sounds in their own voice, and see the child's writing record. The microphone is used only on that screen. Names, progress and recordings stay on the device; nothing is sent anywhere.
+
+New in 1.3: with a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
 
 Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 
