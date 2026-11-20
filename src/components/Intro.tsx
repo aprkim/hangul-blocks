@@ -1,18 +1,20 @@
 import { useEffect, useRef } from 'react'
+import { currentChild } from '../children'
 import { t } from '../i18n'
 import { tapFeedback } from '../native'
 import { layoutSyllable, strokePath } from '../strokes'
 
 // A 1.3-second opening, once per launch: a red ㄱ and a blue ㅏ slide in from either side and
-// click together into 가, the idea the whole app teaches. With a child's name, "리하의 소리블록"
-// appears under it and the opening stays a little longer. No sound (it would need a tap first),
+// click together into 가, the idea the whole app teaches, with the app's name under it ("리하의
+// 소리블록" and the child's animal once a name is added). No sound (it would need a tap first),
 // any tap skips it, and it is skipped entirely when the system asks for reduced motion.
 
-const TOTAL_MS = 1300
-const NAMED_MS = 2100
+const TOTAL_MS = 1900
+const NAMED_MS = 2300
 const { cons: CONS, vowel: VOWEL } = layoutSyllable('ㄱ', 'ㅏ', 'side')
 
 export function Intro({ name, onDone }: { name?: string; onDone: () => void }) {
+  const animal = name ? currentChild()?.animal : undefined
   const rootRef = useRef<HTMLDivElement>(null)
   const consRef = useRef<SVGGElement>(null)
   const vowelRef = useRef<SVGGElement>(null)
@@ -94,12 +96,19 @@ export function Intro({ name, onDone }: { name?: string; onDone: () => void }) {
           ))}
         </g>
       </svg>
-      {name && (
-        <div ref={titleRef} className="intro-title" style={{ opacity: 0 }}>
-          <span className="intro-name">{name}</span>
-          {t('의 소리블록', "'s Sori Blocks")}
-        </div>
-      )}
+      {/* The app's name under the letter, every time: with a child's name it is theirs
+          ("리하의 소리블록", with their animal), otherwise just 소리블록. */}
+      <div ref={titleRef} className="intro-title" style={{ opacity: 0 }}>
+        {name ? (
+          <>
+            {animal && <span className="intro-animal">{animal}</span>}
+            <span className="intro-name">{name}</span>
+            {t('의 소리블록', "'s Sori Blocks")}
+          </>
+        ) : (
+          t('소리블록', 'Sori Blocks')
+        )}
+      </div>
     </div>
   )
 }
