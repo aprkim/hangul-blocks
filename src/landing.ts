@@ -16,8 +16,8 @@ if (standalone || new URLSearchParams(location.search).has('record')) {
   location.replace('/play/' + location.search)
 }
 
-/** Flip to true once 소리블록 is live on Google Play (the link 404s until then). */
-const PLAY_LIVE = false
+/** 소리블록 is live on Google Play (since November 2026): show its badge. */
+const PLAY_LIVE = true
 
 const appStore = document.querySelector<HTMLAnchorElement>('[data-app-store]')
 if (appStore) {
