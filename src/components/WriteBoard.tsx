@@ -63,14 +63,23 @@ const JAMO: Target[] = [
   })),
 ]
 
-/** All syllables, set by set (SYLLABLES is sorted that way), so the open ones are a prefix. */
-const SYLS: Target[] = SYLLABLES.map(({ char, cons, vowel }) => ({
-  char,
-  group: 'syllable',
-  strokes: syllableStrokes(cons.char, vowel.char, vowel.layout),
-  sound: syllableSound(cons, vowel),
-  syl: { cons, vowel },
-}))
+/**
+ * All syllables, set by set (SYLLABLES is sorted that way), so the open ones are a prefix.
+ * A syllable's strokes are worked out the first time they are needed: laying out all 140 as the
+ * app starts held up the first screen (seconds on an older tablet).
+ */
+const SYLS: Target[] = SYLLABLES.map(({ char, cons, vowel }) => {
+  let strokes: Target['strokes'] | null = null
+  return {
+    char,
+    group: 'syllable',
+    get strokes() {
+      return (strokes ??= syllableStrokes(cons.char, vowel.char, vowel.layout))
+    },
+    sound: syllableSound(cons, vowel),
+    syl: { cons, vowel },
+  }
+})
 
 const COLOR: Record<Part, string> = { consonant: 'var(--color-consonant)', vowel: 'var(--color-vowel)', final: 'var(--color-consonant)' }
 

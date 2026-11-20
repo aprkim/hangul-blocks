@@ -31,7 +31,9 @@ export function celebrateFeedback() {
 export async function initNative() {
   if (!isNativeApp) return
   await StatusBar.hide().catch(() => {})
-  await SplashScreen.hide().catch(() => {})
+  // Hide the splash only once the first screen has been painted (two frames after render).
+  await new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done())))
+  await SplashScreen.hide({ fadeOutDuration: 200 }).catch(() => {})
 }
 
 /** Save a file to the app's cache and open the iOS share sheet (Save to Files, AirDrop, ...). */

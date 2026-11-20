@@ -11,7 +11,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 600,
+      // The app takes the splash down itself once its first screen is drawn (native.ts), so
+      // there is never a blank moment in between. This duration is only the longest it may stay
+      // if that call never comes.
+      launchShowDuration: 4000,
       backgroundColor: '#f6eedd',
       showSpinner: false,
     },
