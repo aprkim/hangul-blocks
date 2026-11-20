@@ -1,10 +1,12 @@
-// App Store preview video (iPad, 1600 x 1200, about 20 seconds), recorded from the web build:
-// intro -> Sound -> Build 가, 고 -> Write 가 -> sticker play. The browser recording has no
+// Store preview video (about 25 seconds), recorded from the web build:
+// intro -> Sound -> Build 가, 고 -> word puzzle 나비 -> Write 가 -> sticker play.
+// Sizes: 1600 x 1200 for the App Store's iPad preview (the default), 1920 x 1080 for YouTube
+// (Google Play takes a YouTube link). The browser recording has no
 // sound, so every sound the app plays is logged with its time and mixed back in afterwards
 // from public/audio (the reward chimes are re-made as tones).
 //
 //   npm run build && npx vite preview --port 4173 &
-//   node scripts/store-shots/preview.cjs <work dir>      -> <work dir>/preview-ipad.mp4
+//   node scripts/store-shots/preview.cjs <work dir> [width height]   -> <work dir>/preview-<width>x<height>.mp4
 const { chromium } = require('playwright')
 const { execFileSync } = require('child_process')
 const fs = require('fs')
@@ -12,7 +14,7 @@ const path = require('path')
 
 const WORK = process.argv[2]
 const ROOT = path.resolve(__dirname, '../..')
-const W = 1600, H = 1200
+const W = Number(process.argv[3]) || 1600, H = Number(process.argv[4]) || 1200
 
 ;(async () => {
   fs.mkdirSync(WORK, { recursive: true })
@@ -25,14 +27,16 @@ const W = 1600, H = 1200
     const CONS = [...'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'], VOW = [...'ㅏㅑㅓㅕㅣㅗㅛㅜㅠㅡ']
     const written = Object.fromEntries([...CONS, ...VOW, '고', '나', '무'].map((c) => [c, 1]))
     return {
+      'soriblocks.children.v1': JSON.stringify({ list: [{ id: 'c1', name: '하늘', animal: '🐰' }], current: 'c1' }),
       'soriblocks.progress.v1': JSON.stringify({ written, stars: 27, jar: 7, treasures: ['🦖', '🚀'], pendingGift: null, syllablesOpen: true, setsOpen: 1 }),
+      'soriblocks.puzzle.v1': JSON.stringify({ solved: ['코', '소', '비', '차'] }),
       'soriblocks.scenes.v1': JSON.stringify({ home: [], sea: [], space: [], park: [
-        { key: 1, id: 's:고', x: 0.24, y: 0.72, s: 1.4 }, { key: 2, id: 's:나', x: 0.52, y: 0.3, s: 1 }, { key: 3, id: 't:🚀', x: 0.15, y: 0.26, s: 1 } ] }),
+        { key: 1, id: 'p:소', x: 0.26, y: 0.72, s: 1.9 }, { key: 2, id: 'p:차', x: 0.74, y: 0.74, s: 1.4 }, { key: 3, id: 't:🚀', x: 0.15, y: 0.26, s: 1.4 } ] }),
     }
   })
   await setup.close()
 
-  const ctx = await b.newContext({ viewport: { width: W, height: H }, recordVideo: { dir: WORK, size: { width: W, height: H } }, hasTouch: true })
+  const ctx = await b.newContext({ viewport: { width: W, height: H }, recordVideo: { dir: WORK, size: { width: W, height: H } }, hasTouch: true, locale: 'ko-KR' })
   await ctx.addInitScript((st) => {
     if (!sessionStorage.getItem('seeded')) {
       for (const [k, v] of Object.entries(st)) localStorage.setItem(k, v)
@@ -78,7 +82,7 @@ const W = 1600, H = 1200
   const clickStart = Date.now()
   await p.mouse.click(W / 2, H / 2) // unlocks audio (a parent's first touch); also skips nothing: intro restarts below
   await p.reload()
-  await p.waitForTimeout(1700) // the intro: ㄱ and ㅏ snap into 가
+  await p.waitForTimeout(2500) // the intro: ㄱ and ㅏ snap into 가, then the child's name
 
   const tap = async (sel, wait = 650) => {
     const bb = await p.locator(sel).first().boundingBox()
@@ -94,6 +98,12 @@ const W = 1600, H = 1200
   await tap('.tray button:has-text("ㄱ")', 450)
   await tap('.tray button:has-text("ㅏ")', 2100)
   await tap('.tray button:has-text("ㅗ")', 2100)
+  // Word puzzle: 나비
+  await tap('[aria-label=words]', 900)
+  await tap('.tray button:has-text("ㄴ")', 450)
+  await tap('.tray button:has-text("ㅏ")', 1300)
+  await tap('.tray button:has-text("ㅂ")', 450)
+  await tap('.tray button:has-text("ㅣ")', 2900)
   // Write 가
   await tap('[aria-label=write]', 700)
   await tap('.road-stop[data-char="가"]', 700)
@@ -109,18 +119,14 @@ const W = 1600, H = 1200
     await p.mouse.up(); await p.waitForTimeout(120)
   }
   await p.waitForTimeout(2300)
-  // Sticker play: open the jar, the park scene, drag the new 가방 sticker in, tap it
+  // Sticker play: open the jar, the park scene, tap the new butterfly sticker onto it, tap it
   await tap('#star-jar', 600)
   await tap('[aria-label="sticker play"]', 400)
-  await tap('[aria-label=park]', 500)
-  const item = p.locator('.play-tray-item[aria-label="가방"]')
-  await item.scrollIntoViewIfNeeded()
+  await tap('[aria-label=park]', 600)
+  await p.locator('.play-tray-item[aria-label="나비"]').scrollIntoViewIfNeeded()
   await p.waitForTimeout(300)
-  const ib = await item.boundingBox(), sc = await p.locator('.play-scene').boundingBox()
-  await p.mouse.move(ib.x + ib.width / 2, ib.y + ib.height / 2, { steps: 4 }); await p.mouse.down()
-  await p.mouse.move(sc.x + sc.width * 0.66, sc.y + sc.height * 0.62, { steps: 22 }); await p.mouse.up()
-  await p.waitForTimeout(1400)
-  await tap('.play-placed[aria-label="고양이"]', 1300)
+  await tap('.play-tray-item[aria-label="나비"]', 1300)
+  await tap('.play-placed[aria-label="나비"]', 1300)
 
   const sounds = await p.evaluate(() => window.__sounds)
   const end = Date.now()
@@ -144,7 +150,7 @@ const W = 1600, H = 1200
   })
   const labels = filters.map((f) => f.slice(f.lastIndexOf('[')))
   const mix = labels.length ? `${filters.join(';')};${labels.join('')}amix=inputs=${labels.length}:normalize=0,apad[aout]` : 'anullsrc=r=48000:cl=stereo[aout]'
-  const out = path.join(WORK, 'preview-ipad.mp4')
+  const out = path.join(WORK, `preview-${W}x${H}.mp4`)
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', cut.toFixed(2), '-i', webm, ...inputs,
     '-filter_complex', `[0:v]fps=30,scale=${W}:${H},format=yuv420p[v];${mix}`,
     '-map', '[v]', '-map', '[aout]', '-t', Math.min(29.5, dur).toFixed(2),
