@@ -135,6 +135,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
   const player = useRef<HTMLAudioElement | null>(null)
   const stopTimer = useRef<number | undefined>(undefined)
   const autoStop = useRef<number | undefined>(undefined)
+  const stuckTimer = useRef<number | undefined>(undefined)
   const meterRaf = useRef<number | undefined>(undefined)
   const [level, setLevel] = useState(0)
   const [elapsed, setElapsed] = useState(0)
@@ -334,9 +335,18 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     if (performance.now() - startedAt.current < MIN_PRESS_MS) discard.current = true
     setPhase('processing')
     stopTimer.current = window.setTimeout(() => rec.stop(), RELEASE_TAIL_MS)
+    // Some browsers never report the end of a recording (the mic was taken away): don't leave
+    // the button dead. If nothing has come back in a few seconds, start fresh.
+    window.clearTimeout(stuckTimer.current)
+    stuckTimer.current = window.setTimeout(() => {
+      dropStream()
+      setPhase('idle')
+      setNote(t('녹음이 끝나지 않았어요. 한 번 더 눌러 주세요.', "The recording didn't finish. Please try again."))
+    }, RELEASE_TAIL_MS + 4000)
   }
 
   async function finishTake(target: RecordItem, mimeType: string) {
+    window.clearTimeout(stuckTimer.current)
     setPhase('processing')
     try {
       if (discard.current) {
@@ -670,6 +680,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
             )}
           </div>
         </details>
+        <p className="parent-sub text-center">{t('버전', 'Build')} {__BUILD__}</p>
       </div>
     </div>
   )
