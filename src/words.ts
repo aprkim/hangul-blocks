@@ -4,7 +4,6 @@
 //
 // Audio: w-{consonant}{vowel}.mp3 in public/audio/ (or recorded in the app), e.g. 가방 -> w-ga.mp3.
 
-import { hasSound } from './audio'
 import {
   CONSONANTS,
   CHART_VOWELS,
@@ -51,11 +50,7 @@ export const WORDS: Record<string, Word> = {
   비: { word: '비행기', emoji: '✈️' },
 }
 
-/**
- * Words for the later sets (ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ). They have no bundled audio yet: a parent records
- * them on the recording page (5차). Until a word has a sound, its syllable shows an animal friend
- * instead, so nothing ever pops up silently.
- */
+/** Words for the later sets (ㄷㄹㅅㅇ, ㅈㅊㅋ, ㅌㅍㅎ), recorded and bundled like the first set's. */
 export const MORE_WORDS: Record<string, Word> = {
   다: { word: '다람쥐', emoji: '🐿️' },
   더: { word: '더하기', emoji: '➕' },
@@ -118,10 +113,10 @@ export const MORE_WORDS: Record<string, Word> = {
 
 export const wordSound = (c: Consonant, v: Vowel) => `w-${c.roman}${v.roman}`
 
-/** The word to show for a syllable right now: bundled words always, later words once they have a sound. */
+/** The picture word for a syllable, if it has one. */
 export function wordFor(c: Consonant, v: Vowel): Word | undefined {
   const syl = composeSyllable(c, v)
-  return WORDS[syl] ?? (hasSound(wordSound(c, v)) ? MORE_WORDS[syl] : undefined)
+  return WORDS[syl] ?? MORE_WORDS[syl]
 }
 
 const each = <T,>(words: Record<string, Word>, f: (c: Consonant, v: Vowel, w: Word) => T): T[] =>
@@ -132,12 +127,9 @@ const each = <T,>(words: Record<string, Word>, f: (c: Consonant, v: Vowel, w: Wo
     }),
   )
 
-/**
- * Word sounds to load at startup: the bundled ones. The later sets' words have no files yet;
- * one a parent records is loaded when it is saved (audio.setLocalRecording).
- */
+/** Word sounds to load at startup. */
 export function wordSoundNames(): string[] {
-  return each(WORDS, wordSound)
+  return [...each(WORDS, wordSound), ...each(MORE_WORDS, wordSound)]
 }
 
 const recordItem = (c: Consonant, v: Vowel, w: Word) => ({ name: wordSound(c, v), shown: w.word, say: w.word })
