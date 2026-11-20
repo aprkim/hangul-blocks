@@ -12,10 +12,11 @@ import {
   useProgress,
 } from '../progress'
 import { currentChild, useChildren } from '../children'
+import { PUZZLE_WORDS } from '../puzzleWords'
 import { GOALS, dayOf, goalMet, setGoal, today, useDaily, type GoalSize } from '../daily'
 import { lang, t } from '../i18n'
 import { SET_COUNT } from '../jamo'
-import { resetKeepsakes, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
+import { resetKeepsakes, useHandwriting, usePuzzle, writtenOrder, type Writing } from '../keepsakes'
 import { Capacitor } from '@capacitor/core'
 import { isNativeApp, shareFileNative } from '../native'
 
@@ -106,6 +107,7 @@ export function ParentProgress() {
     )
   }
   // The last seven days: the day's goal reached, played a little, or not opened.
+  const built = usePuzzle().solved.length
   const daily = useDaily()
   const week = Array.from({ length: 7 }, (_, i) => {
     const d = new Date()
@@ -121,6 +123,7 @@ export function ParentProgress() {
         <div><b>{p.stars}</b><span>{t('별', 'Stars')}</span></div>
         <div><b>{jamoWrittenCount(p)}<small>/{JAMO_CHARS.length}</small></b><span>{t('쓴 자음·모음', 'Letters written')}</span></div>
         <div><b>{sylDone}<small>/{SYLLABLE_CHARS.length}</small></b><span>{t('쓴 글자', 'Syllables written')}</span></div>
+        <div><b>{built}<small>/{PUZZLE_WORDS.length}</small></b><span>{t('만든 낱말', 'Words built')}</span></div>
         <div><b>{p.treasures.length}<small>/{TREASURES.length}</small></b><span>{t('보물 스티커', 'Treasures')}</span></div>
       </div>
       <div className="parent-week" aria-label={t('이번 주', 'This week')}>

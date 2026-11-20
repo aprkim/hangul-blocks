@@ -22,7 +22,7 @@ export function DailyMeter({ beside = false }: { beside?: boolean }) {
     )
   }
   return (
-    <div className={`daily-meter ${beside ? 'is-beside' : ''}`} aria-label="today">
+    <div className={`daily-meter ${beside ? 'is-beside' : ''} ${g > 8 ? 'is-many' : ''}`} aria-label="today">
       {Array.from({ length: g }, (_, i) => (
         <i key={i} className={i < d.letters ? 'is-letter is-on' : i < d.letters + d.words ? 'is-word is-on' : ''} />
       ))}

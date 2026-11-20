@@ -16,8 +16,8 @@
   /* Final consonant (jongseong). Reserved for P2: defined, not used anywhere yet. */
   --color-final: #c98200;
   /* Stars and rewards (Write tab). */
-  --color-star: #f4b400;
-  --color-star-dark: #c98f00;
+  --color-star: #ffc93c;
+  --color-star-dark: #f0a20a;
 
   /* Text and icons */
   --color-ink: #2a2520;

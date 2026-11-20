@@ -115,7 +115,9 @@ export function ParentIcon() {
 
 const STAR = 'var(--color-star)'
 const STAR_DARK = 'var(--color-star-dark)'
-export const STAR_PATH = 'M24 4.5L29.6 17.8L44 19L33 28.4L36.3 42.5L24 35L11.7 42.5L15 28.4L4 19L18.4 17.8Z'
+// A chubby star: wide between the points, every tip and inner corner rounded (48 x 48).
+export const STAR_PATH =
+  'M19.8 10.2Q24.0 4.0 28.2 10.2L29.4 11.9Q31.4 14.8 34.8 15.8L36.8 16.4Q44.0 18.5 39.4 24.5L38.1 26.1Q36.0 28.9 36.1 32.4L36.1 34.5Q36.3 42.0 29.3 39.5L27.3 38.8Q24.0 37.6 20.7 38.8L18.7 39.5Q11.7 42.0 11.9 34.5L11.9 32.4Q12.0 28.9 9.9 26.1L8.6 24.5Q4.0 18.5 11.2 16.4L13.2 15.8Q16.6 14.8 18.6 11.9Z'
 
 /** A reward star: gold with a darker rim, round corners. */
 export function StarShape({ className = 'h-full w-full' }: { className?: string }) {

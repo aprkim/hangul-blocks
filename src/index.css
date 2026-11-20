@@ -1380,7 +1380,7 @@ body {
 }
 .parent-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 10px;
 }
 .parent-stats div {
@@ -1962,6 +1962,13 @@ body {
   border-radius: 50%;
   background: var(--color-card-shadow);
 }
+.daily-meter.is-many {
+  gap: calc(var(--settings) * 0.07);
+}
+.daily-meter.is-many i {
+  width: calc(var(--settings) * 0.14);
+  height: calc(var(--settings) * 0.14);
+}
 .daily-meter i.is-word {
   border-radius: 28%;
 }
@@ -2075,4 +2082,13 @@ body {
   display: flex;
   gap: 6px;
   flex: none;
+}
+
+/* Phones held upright: no room beside the road button (the star jar is close), so the day's
+   dots sit under it. */
+@media (max-width: 520px) {
+  .daily-meter.is-beside {
+    left: calc(env(safe-area-inset-left) + var(--settings-gap));
+    top: calc(env(safe-area-inset-top) + 2 * var(--settings-gap) + var(--settings));
+  }
 }
