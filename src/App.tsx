@@ -4,6 +4,7 @@ import { ChildPicker } from './components/ChildPicker'
 import { stop } from './audio'
 import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
+import { PuzzleBoard } from './components/PuzzleBoard'
 import { ParentGate, gatePassed } from './components/ParentGate'
 import { Recorder } from './components/Recorder'
 import { Intro } from './components/Intro'
@@ -48,6 +49,7 @@ export default function App() {
       <main className="min-h-0 flex-1">
         {screen === 'jamo' && <JamoBoard onRecord={() => go('record')} />}
         {screen === 'assemble' && <AssemblyBoard />}
+        {screen === 'puzzle' && <PuzzleBoard key={writeKey} />}
         {screen === 'write' && <WriteBoard key={writeKey} />}
       </main>
       <TabBar tab={screen} onTab={go} />

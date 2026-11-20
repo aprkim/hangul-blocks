@@ -1820,3 +1820,122 @@ body {
   width: auto;
   height: auto;
 }
+
+/* ---------- Word puzzle ---------- */
+.puzzle-top {
+  gap: max(2vh, 12px);
+}
+.puzzle-row {
+  /* The picture and one box per syllable, as big as the room allows. */
+  --cell: min(34dvh, calc((100vw - 2 * var(--tile) - 14vh) / var(--cells)), 300px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: max(1.6vh, 10px);
+  min-width: 0;
+}
+.puzzle-pic,
+.puzzle-slot {
+  width: var(--cell);
+  height: var(--cell);
+  flex: none;
+  border-radius: calc(var(--cell) * 0.16);
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow);
+}
+.puzzle-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  box-shadow: none;
+  touch-action: none;
+}
+.puzzle-pic span {
+  font-size: calc(var(--cell) * 0.72);
+  line-height: 1;
+}
+.puzzle-pic.is-won {
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-star-dark), 0 0 0 5px var(--color-star);
+}
+.puzzle-slot {
+  padding: 6%;
+}
+.puzzle-slot.is-now {
+  box-shadow: 0 8px 0 var(--color-card-shadow), 0 0 0 5px var(--color-ink);
+}
+.puzzle-slot.is-done {
+  box-shadow: 0 8px 0 var(--color-star-dark), 0 0 0 5px var(--color-star);
+}
+/* The syllable to build, faint (one color, like the tracing guide). */
+.puzzle-guide .syl-stroke {
+  stroke: var(--color-guide-strong) !important;
+  opacity: 0.55;
+}
+/* Short screens (a phone on its side): smaller boxes, so the trays keep clear of the tabs. */
+@media (max-height: 520px) {
+  .puzzle-row {
+    --cell: min(27dvh, calc((100vw - 2 * var(--tile) - 14vh) / var(--cells)));
+  }
+}
+.puzzle-guide .syl-slot {
+  display: none;
+}
+.puzzle-pick .syl-slot {
+  display: none;
+}
+.puzzle-arrow.is-off {
+  opacity: 0.25;
+  pointer-events: none;
+}
+/* After a miss: the pieces that fit. */
+.tile.is-hint {
+  animation: puzzle-hint 0.9s ease-in-out infinite;
+}
+@keyframes puzzle-hint {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  30% {
+    transform: rotate(-5deg) scale(1.08);
+  }
+  65% {
+    transform: rotate(5deg) scale(1.08);
+  }
+}
+/* The sticker book button: where the star jar sits on the Write tab. */
+.puzzle-book {
+  position: fixed;
+  z-index: 30;
+  top: calc(env(safe-area-inset-top) + var(--settings-gap));
+  right: calc(env(safe-area-inset-right) + 2 * var(--settings-gap) + var(--settings));
+  width: var(--settings);
+  height: var(--settings);
+  border-radius: 28%;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+/* Phones held upright: smaller arrows, so the boxes get the width. */
+@media (max-aspect-ratio: 1/1) {
+  .puzzle-row {
+    --cell: min(26dvh, calc((100vw - 5vh - (var(--cells) - 1) * 10px) / var(--cells)));
+  }
+  .puzzle-top {
+    flex-wrap: wrap;
+    align-content: center;
+  }
+  .puzzle-row {
+    order: -1;
+    flex: 0 0 100%;
+  }
+  .puzzle-arrow {
+    width: calc(var(--tile) * 0.8) !important;
+    height: calc(var(--tile) * 0.8) !important;
+  }
+}

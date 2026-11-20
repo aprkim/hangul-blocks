@@ -1,13 +1,14 @@
 import type { ComponentType } from 'react'
 import { tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
-import { BuildIcon, PencilIcon, SoundIcon } from './Icons'
+import { BuildIcon, PencilIcon, PuzzleIcon, SoundIcon } from './Icons'
 
-export type Tab = 'jamo' | 'assemble' | 'write'
+export type Tab = 'jamo' | 'assemble' | 'puzzle' | 'write'
 
 const TABS: { id: Tab; icon: ComponentType; label: string }[] = [
   { id: 'jamo', icon: SoundIcon, label: 'sound' },
   { id: 'assemble', icon: BuildIcon, label: 'build' },
+  { id: 'puzzle', icon: PuzzleIcon, label: 'words' },
   { id: 'write', icon: PencilIcon, label: 'write' },
 ]
 

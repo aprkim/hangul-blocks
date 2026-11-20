@@ -41,6 +41,17 @@ export function BuildIcon() {
   )
 }
 
+/** Word puzzle tab: a picture (a gold star) and the boxes to build its word in, one filled. */
+export function PuzzleIcon() {
+  return (
+    <svg {...box}>
+      <path d="M24 3l3.6 7.4 8.1 1-5.9 5.6 1.5 8-7.3-4-7.3 4 1.5-8-5.9-5.600 8.100-1z" fill="var(--color-star)" stroke="var(--color-star-dark)" strokeWidth={2} />
+      <rect x="5" y="29" width="17" height="16" rx="5" fill={RED} />
+      <rect x="26.500" y="30.500" width="15" height="13" rx="4" stroke={GUIDE} strokeWidth={3} strokeDasharray="4 3.5" />
+    </svg>
+  )
+}
+
 /** Write tab: the tracing card in miniature: a pale ㄱ guide on a card, traced in red from its start dot. */
 export function PencilIcon() {
   return (

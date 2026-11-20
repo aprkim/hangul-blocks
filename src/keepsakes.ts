@@ -7,6 +7,7 @@ import { childKey, onChildSwitch } from './children'
 import { CHART_VOWELS, CONSONANTS, consonantSound, syllableSound, vowelSound } from './jamo'
 import { SYLLABLES, TREASURES, timesWritten, type Progress } from './progress'
 import type { Pt } from './strokes'
+import { PUZZLE_WORDS, puzzleSound } from './puzzleWords'
 import { cardFor } from './words'
 
 /** A piece of the current child's data (see children.ts), reloaded when another child is chosen. */
@@ -46,7 +47,8 @@ function store<T>(key: string, empty: T) {
 
 // ---------- stickers ----------
 
-/** Sticker ids: 'j:ㄱ' a jamo the child wrote, 's:가' a syllable's picture word, 't:🦖' a treasure. */
+/** Sticker ids: 'p:나비' a word built in the word puzzle, 's:가' a syllable's picture word, 't:🦖' a treasure
+    ('j:ㄱ', a written jamo, is no longer given but stays wherever a child already placed one). */
 export type StickerId = string
 
 export type StickerInfo = {
@@ -70,6 +72,10 @@ export function stickerInfo(id: StickerId): StickerInfo | null {
   const [kind, value] = [id.slice(0, 1), id.slice(2)]
   if (kind === 'j') return JAMO_INFO.find((j) => j.id === id) ?? null
   if (kind === 't') return { id, kind: 'treasure', face: value, label: value }
+  if (kind === 'p') {
+    const w = PUZZLE_WORDS.find((x) => x.word === value)
+    return w ? { id, kind: 'word', face: w.emoji, sound: puzzleSound(w.word), label: w.word } : null
+  }
   const syl = SYLLABLES.find((s) => s.char === value)
   if (!syl) return null
   const card = cardFor(syl.cons, syl.vowel)
@@ -77,19 +83,32 @@ export function stickerInfo(id: StickerId): StickerInfo | null {
 }
 
 /**
- * The play tray, pictures first: treasures, then picture words, then the letters themselves.
- * A new child has only letters, so they show; once pictures come, the letters move to the end.
+ * The play tray: treasures, words built in the word puzzle, then the picture words of written
+ * syllables (one sticker per picture: 나비 built and 나 written are the same butterfly).
  */
-export function earnedStickers(p: Progress): StickerInfo[] {
-  return [
+export function earnedStickers(p: Progress, solved: readonly string[] = puzzle.get().solved): StickerInfo[] {
+  const all = [
     ...TREASURES.filter((t) => p.treasures.includes(t)).map((t) => stickerInfo(`t:${t}`)!),
+    ...PUZZLE_WORDS.filter((w) => solved.includes(w.word)).map((w) => stickerInfo(`p:${w.word}`)!),
     ...SYLLABLES.filter((s) => timesWritten(p, s.char) > 0).map((s) => stickerInfo(`s:${s.char}`)!),
-    ...JAMO_INFO.filter((j) => timesWritten(p, j.face) > 0),
   ]
+  const seen = new Set<string>()
+  return all.filter((i) => !seen.has(i.label) && (seen.add(i.label), true))
 }
 
 /** All jamo stickers (earned or not), for the sticker book. */
 export const ALL_JAMO_STICKERS = JAMO_INFO
+
+// ---------- word puzzle ----------
+
+/** Words the child has built in the word puzzle, in the order they were built. */
+export const PUZZLE_KEY = 'soriblocks.puzzle.v1'
+const puzzle = store<{ solved: string[] }>(PUZZLE_KEY, { solved: [] })
+export const usePuzzle = puzzle.use
+export function solvePuzzle(word: string) {
+  const s = puzzle.get()
+  if (!s.solved.includes(word)) puzzle.set({ solved: [...s.solved, word] })
+}
 
 // ---------- play scenes ----------
 
@@ -184,6 +203,7 @@ export function recordWriting(char: string, parts: ('consonant' | 'vowel' | 'fin
 export function resetKeepsakes() {
   scenes.set({ home: [], park: [], sea: [], space: [] })
   handwriting.set({})
+  puzzle.set({ solved: [] })
 }
 
 /** The sound of a written letter (jamo or syllable). */

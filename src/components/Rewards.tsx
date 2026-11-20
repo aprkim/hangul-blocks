@@ -5,11 +5,11 @@ import { successFeedback, tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
 import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
-import { ALL_JAMO_STICKERS } from '../keepsakes'
+import { usePuzzle } from '../keepsakes'
+import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
 import { Fridge } from './Fridge'
 import { BookIcon, CloseIcon, FridgeIcon, GiftIcon, SceneIcon, STAR_PATH, StarShape } from './Icons'
 import { ScenePlay } from './ScenePlay'
-import { StickerFace } from './StickerFace'
 
 // Rewards on the Write tab: the star jar (top right, beside settings), the gift that a full jar
 // gives, and the sticker book (opened by tapping the jar). Pictures only, no numbers.
@@ -206,19 +206,27 @@ export function StickerBook({ onClose }: { onClose: () => void }) {
 
 function BookPage() {
   const p = useProgress()
+  const { solved } = usePuzzle()
   return (
     <div className="book-scroll" data-scroll>
       <div className="book-page">
-        {/* Every jamo written gives its own sticker: the first stickers a child earns. */}
-        <div className="book-grid jamo">
-          {ALL_JAMO_STICKERS.map((j) => {
-            const have = timesWritten(p, j.face) > 0
+        {/* Words built in the word puzzle: the stickers a child makes themselves. */}
+        <div className="book-grid letters">
+          {PUZZLE_WORDS.map((w) => {
+            const have = solved.includes(w.word)
             return (
-              <Sticker key={j.id} have={have} emoji="" label={j.label} onTap={() => (have && j.sound ? play(j.sound) : chime('soft'))}>
-                <StickerFace info={j} />
+              <Sticker key={w.word} have={have} emoji={w.emoji} label={w.word} onTap={() => (have ? play(puzzleSound(w.word)) : chime('soft'))}>
+                {have && (
+                  <span className="sticker-word">
+                    <b>{w.word}</b>
+                  </span>
+                )}
               </Sticker>
             )
           })}
+        </div>
+        <div className="book-divider" aria-hidden>
+          <StarShape className="h-full" />
         </div>
         <div className="book-grid letters">
           {reachableSyllables(p).map(({ char, cons, vowel }) => {

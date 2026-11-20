@@ -11,6 +11,7 @@ import {
   restoreScene,
   STICKER_SIZES,
   stickerInfo,
+  usePuzzle,
   useScenes,
   type Placed,
   type SceneId,
@@ -63,7 +64,7 @@ export function ScenePlay() {
   const [scene, setScene] = useState<SceneId>('home')
   const [drag, setDrag] = useState<Drag | null>(null)
   const sceneRef = useRef<HTMLDivElement>(null)
-  const earned = earnedStickers(p)
+  const earned = earnedStickers(p, usePuzzle().solved)
   // Clearing is immediate (a confirm dialog means nothing to a child who can't read); for a
   // few seconds an undo button brings everything back.
   const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)

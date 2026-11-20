@@ -8,6 +8,7 @@ import { allSoundNames } from './jamo'
 import { initNative } from './native'
 import { applyTheme, loadTheme } from './theme'
 import { loadRecordings } from './recordings'
+import { PUZZLE_WORDS, puzzleSound } from './puzzleWords'
 import { wordSoundNames } from './words'
 
 // Restore the background theme before the first paint.
@@ -26,7 +27,7 @@ document.addEventListener('dblclick', block)
 // On-device recordings (from the recorder page) take priority over public/audio/.
 loadRecordings().then((takes) => {
   takes.forEach((mp3, name) => setLocalRecording(name, mp3))
-  preload([...allSoundNames(), ...wordSoundNames()])
+  preload([...new Set([...allSoundNames(), ...wordSoundNames(), ...PUZZLE_WORDS.map((w) => puzzleSound(w.word))])])
 })
 installUnlock()
 void initNative()
