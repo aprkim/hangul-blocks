@@ -1843,20 +1843,19 @@ body {
   background: var(--color-card);
   box-shadow: 0 8px 0 var(--color-card-shadow);
 }
+/* The picture is a card from the start, like the boxes beside it (it used to appear as a card
+   only once the word was built, which read as the picture "arriving late"). */
 .puzzle-pic {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  box-shadow: none;
   touch-action: none;
 }
 .puzzle-pic span {
-  font-size: calc(var(--cell) * 0.72);
+  font-size: calc(var(--cell) * 0.62);
   line-height: 1;
 }
 .puzzle-pic.is-won {
-  background: var(--color-card);
   box-shadow: 0 0 0 5px var(--color-star), 0 8px 0 5px var(--color-star-dark);
 }
 .puzzle-slot {
