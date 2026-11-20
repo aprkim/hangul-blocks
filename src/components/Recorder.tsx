@@ -302,7 +302,7 @@ export function Recorder({ onExit }: { onExit: () => void }) {
     window.clearTimeout(waiting)
     if (!rec || !source) {
       holding.current = false
-      setNote(t('마이크를 쓸 수 없어요. 앱: 설정 → 소리블록 → 마이크 켜기. Mac Safari: Safari → 설정 → 웹사이트 → 마이크 → soriblocks.lihallc.com 허용. Chrome: 주소창 왼쪽 아이콘 → 마이크 허용. 그다음 페이지를 새로고침해 주세요.', 'The microphone is not available. App: Settings → Sori Blocks → Microphone on. Mac Safari: Safari → Settings → Websites → Microphone → allow soriblocks.lihallc.com. Chrome: the icon left of the address → allow microphone. Then reload the page.'))
+      setNote(t('마이크를 쓸 수 없어요. 앱: 설정 → 소리블록 → 마이크 켜기. iPhone·iPad Safari: 주소창 옆 아이콘 → 웹사이트 설정 → 마이크 허용 (또는 설정 → 앱 → Safari → 마이크 → 허용). Mac Safari: Safari → 설정 → 웹사이트 → 마이크 → soriblocks.lihallc.com 허용. Chrome: 주소창 왼쪽 아이콘 → 마이크 허용. 그다음 페이지를 새로고침해 주세요.', 'The microphone is not available. App: Settings → Sori Blocks → Microphone on. iPhone/iPad Safari: the icon by the address → Website Settings → Microphone → Allow (or Settings → Apps → Safari → Microphone → Allow). Mac Safari: Safari → Settings → Websites → Microphone → allow soriblocks.lihallc.com. Chrome: the icon left of the address → allow microphone. Then reload the page.'))
       return
     }
     chunks.current = []
