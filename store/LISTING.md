@@ -305,7 +305,7 @@ Writing becomes theirs!
 - Record the name in a family voice; the app says it when it is written.
 - Siblings each pick an animal and keep their own stars and stickers.
 - 57 new picture words.
-- Star jar, sticker play scenes and a fridge of your child's handwriting.
+- Star jar, sticker play and a handwriting fridge.
 - A small daily goal with an "all done for today" scene. Nothing is locked.
 </en-US>
 <ko-KR>
