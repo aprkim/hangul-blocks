@@ -23,6 +23,11 @@ export function decompose(ch: string): Parts | null {
   return { cho: CHO[Math.floor(code / 588)], jung: JUNG[Math.floor((code % 588) / 28)], jong: JONG[code % 28] }
 }
 
+/** A syllable from its pieces (ㄱ ㅏ ㅁ = 감); the final may be empty. */
+export function compose(cho: string, jung: string, jong = ''): string {
+  return String.fromCharCode(0xac00 + (CHO.indexOf(cho) * 21 + JUNG.indexOf(jung)) * 28 + JONG.indexOf(jong))
+}
+
 const BASIC_CONS = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'
 const BASIC_VOWELS = 'ㅏㅑㅓㅕㅣㅗㅛㅜㅠㅡ'
 const SIDE = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅣ'

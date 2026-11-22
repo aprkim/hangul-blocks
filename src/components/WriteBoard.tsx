@@ -123,8 +123,9 @@ const WIGGLE: Keyframe[] = [
 
 type View = { group: 'jamo' | 'syllable' | 'name'; index: number }
 
-export function WriteBoard() {
-  const [view, setView] = useState<View | null>(null)
+/** `startName`: open straight on the first letter of the child's name (from the name puzzle). */
+export function WriteBoard({ startName = false }: { startName?: boolean }) {
+  const [view, setView] = useState<View | null>(() => (startName && currentChild() ? { group: 'name', index: 0 } : null))
   const [lastChar, setLastChar] = useState<string | null>(null)
   const [book, setBook] = useState(false)
 

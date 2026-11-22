@@ -105,6 +105,9 @@ export const ALL_JAMO_STICKERS = JAMO_INFO
 export const PUZZLE_KEY = 'soriblocks.puzzle.v1'
 const puzzle = store<{ solved: string[] }>(PUZZLE_KEY, { solved: [] })
 export const usePuzzle = puzzle.use
+export const getPuzzle = puzzle.get
+/** The key under which a child's name puzzle is kept once built (a new name is a new puzzle). */
+export const namePuzzleKey = (name: string) => `name:${name}`
 export function solvePuzzle(word: string) {
   const s = puzzle.get()
   if (!s.solved.includes(word)) puzzle.set({ solved: [...s.solved, word] })

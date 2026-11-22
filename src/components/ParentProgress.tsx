@@ -107,7 +107,8 @@ export function ParentProgress() {
     )
   }
   // The last seven days: the day's goal reached, played a little, or not opened.
-  const built = usePuzzle().solved.length
+  const solvedWords = usePuzzle().solved
+  const built = PUZZLE_WORDS.filter((w) => solvedWords.includes(w.word)).length
   const daily = useDaily()
   const week = Array.from({ length: 7 }, (_, i) => {
     const d = new Date()

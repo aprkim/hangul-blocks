@@ -2198,3 +2198,186 @@ body {
     height: calc(var(--settings) * 0.12);
   }
 }
+
+/* ---------- Word puzzle: a third row for final consonants, and the pencil after my name ---------- */
+/* With three rows of pieces the tiles and boxes get a little smaller, so everything still fits. */
+@media (min-aspect-ratio: 1/1) {
+  .puzzle.has-final {
+    --tile: clamp(48px, min(10vw, 12dvh), 150px);
+  }
+  .puzzle.has-final .puzzle-row {
+    --cell: min(28dvh, calc((100vw - 2 * var(--tile) - 14vh) / var(--cells)), 260px);
+  }
+}
+@media (min-aspect-ratio: 1/1) and (max-height: 520px) {
+  .puzzle.has-final {
+    gap: 1.5vh;
+    padding-block: 1.5vh;
+  }
+  .puzzle.has-final .trays {
+    gap: 12px;
+  }
+  /* No room for arrows here, and none is needed: a word with a final is being built. */
+  .puzzle.has-final .puzzle-arrow {
+    display: none;
+  }
+  .puzzle.has-final .puzzle-row {
+    /* Clear of the day's meter in the corner. */
+    margin-left: 9vw;
+    --cell: min(18dvh, calc((100vw - 2 * var(--tile) - 14vh) / var(--cells)));
+  }
+}
+.tray-final {
+  animation: tray-in 0.3s ease-out;
+}
+@keyframes tray-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+.puzzle-write {
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-star-dark), 0 0 0 5px var(--color-star);
+  touch-action: none;
+}
+.puzzle-write svg {
+  width: 62%;
+  height: 62%;
+}
+
+/* ---------- Welcome: the child's name, asked once ---------- */
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  padding: 20px;
+  background: var(--color-page);
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: auto;
+  width: min(100%, 460px);
+  padding: 30px 26px 24px;
+  border-radius: 32px;
+  background: var(--color-card);
+  box-shadow: 0 8px 0 var(--color-card-shadow);
+  text-align: center;
+}
+.welcome-animal {
+  font-size: 72px;
+  line-height: 1;
+}
+.welcome h1 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.welcome p {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  text-wrap: balance;
+}
+.welcome-input {
+  width: 100%;
+  font: inherit;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 3px solid var(--color-card-shadow);
+  background: var(--color-page);
+  color: var(--color-ink);
+  user-select: text;
+  -webkit-user-select: text;
+}
+.welcome-input:focus {
+  outline: none;
+  border-color: var(--color-vowel);
+}
+.welcome-warn {
+  color: var(--color-consonant) !important;
+  font-weight: 600;
+}
+.welcome-animals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.welcome-animals button {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  font-size: 30px;
+  line-height: 1;
+  background: var(--color-page);
+}
+.welcome-animals button.is-current {
+  box-shadow: 0 0 0 3px var(--color-ink);
+}
+.welcome-go {
+  width: 100%;
+  margin-top: 6px;
+  padding: 16px;
+  border-radius: 999px;
+  background: var(--color-consonant);
+  color: var(--color-on-tile);
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 6px 0 var(--color-consonant-dark);
+}
+.welcome-go:disabled {
+  opacity: 0.4;
+}
+.welcome-skip {
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* Short screens (a phone on its side): no big animal, tighter card, everything reachable. */
+@media (max-height: 520px) {
+  .welcome {
+    padding: 10px;
+  }
+  .welcome-card {
+    gap: 8px;
+    padding: 14px 22px 10px;
+    width: min(100%, 560px);
+  }
+  .welcome-animal {
+    display: none;
+  }
+  .welcome h1 {
+    font-size: 20px;
+  }
+  .welcome p {
+    font-size: 13px;
+  }
+  .welcome-input {
+    font-size: 22px;
+    padding: 6px 12px;
+  }
+  .welcome-animals button {
+    width: 44px;
+    height: 44px;
+    font-size: 26px;
+  }
+  .welcome-go {
+    margin-top: 0;
+    padding: 11px;
+  }
+  .welcome-skip {
+    padding: 4px 14px;
+  }
+}
