@@ -2381,3 +2381,25 @@ body {
     padding: 4px 14px;
   }
 }
+
+/* Sound board on a phone held sideways: the letters reach the top-left corner, so the day's
+   dots stand in a column under the friend, inside the margin beside the board (in a row they
+   covered the ㄱ tile). */
+@media (orientation: landscape) and (max-height: 600px) {
+  .jamo-board .daily-meter {
+    flex-direction: column;
+    height: auto;
+  }
+  .jamo-board .daily-row {
+    flex-direction: column;
+    height: auto;
+    width: calc(var(--settings) * 0.5);
+    padding: calc(var(--settings) * 0.12) 0;
+    gap: calc(var(--settings) * 0.06);
+  }
+  .jamo-board .daily-row i,
+  .jamo-board .daily-meter.is-many .daily-row i {
+    width: calc(var(--settings) * 0.2);
+    height: calc(var(--settings) * 0.2);
+  }
+}

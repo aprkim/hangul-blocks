@@ -32,6 +32,9 @@ const RED = '#D23B2E', BLUE = '#2259B8', GOLD = '#FFC93C', GREEN = '#4E9E4A', OR
 
 // The story, in the order a parent sees it.
 const SLIDES = [
+  { scene: 'name', bg: BLUE, fg: '#fff',
+    ko: ['내 이름부터 읽고&nbsp;써요', '처음 만드는 낱말은 우리 아이&nbsp;이름이에요'],
+    en: ['Their own name first', 'The first word they build and write is their name'] },
   { scene: 'build', bg: RED, fg: '#fff',
     ko: ['ㄱ + ㅏ = 가', '소리를 조립하면 글자가 돼요'],
     en: ['ㄱ + ㅏ = 가', 'Snap sounds together into letters'] },

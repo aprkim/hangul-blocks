@@ -28,7 +28,7 @@ const seed = () => {
   for (const c of 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣ가갸거고구나너노누마모무바보부') written[c] = 1
   localStorage.setItem('soriblocks.children.v1', JSON.stringify({ list: [{ id: 'c1', name: '하늘', animal: '🐰' }], current: 'c1' }))
   localStorage.setItem('soriblocks.progress.v1', JSON.stringify({ written, stars: 37, jar: 7, treasures: ['🦖', '🚀', '🍦'], pendingGift: null, syllablesOpen: true, setsOpen: 1 }))
-  localStorage.setItem('soriblocks.puzzle.v1', JSON.stringify({ solved: ['코', '소', '비', '차'] }))
+  localStorage.setItem('soriblocks.puzzle.v1', JSON.stringify({ solved: ['name:하늘', '코', '소', '비', '차'] }))
   const d = new Date()
   const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
   localStorage.setItem('soriblocks.daily.v1', JSON.stringify({ days: { [key]: { letters: 3, words: 2 } } }))
@@ -60,6 +60,18 @@ const seed = () => {
       const bb = await p.locator('.tray .tile', { hasText: ch }).first().boundingBox()
       await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down(); await p.mouse.up(); await p.waitForTimeout(wait)
     }
+    // Name first: the child's own name, just built (하 + 늘, final ㄹ included), the pencil waiting.
+    await p.goto(URL); await p.waitForTimeout(300)
+    await p.evaluate(() => localStorage.setItem('soriblocks.puzzle.v1', JSON.stringify({ solved: ['코', '소', '비', '차'] })))
+    await p.reload(); await p.waitForTimeout(3200)
+    const piece = async (row, ch, wait = 350) => {
+      const bb = await p.locator(`.trays .tray:nth-child(${row}) .tile`, { hasText: ch }).first().boundingBox()
+      await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down(); await p.mouse.up(); await p.waitForTimeout(wait)
+    }
+    await piece(1, 'ㅎ'); await piece(2, 'ㅏ', 1400)
+    await piece(1, 'ㄴ'); await piece(2, 'ㅡ'); await piece(3, 'ㄹ', 2600)
+    await shot('name')
+
     await p.goto(URL); await p.waitForTimeout(3000)
     await shot('sound')
 
