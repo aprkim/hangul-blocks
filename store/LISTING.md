@@ -106,8 +106,8 @@ https://soriblocks.lihallc.com
 쓰기가 내 것이 됐어요
 
 - 낱말 퍼즐(새 탭): 그림을 보고 글자를 조립해 낱말을 완성해요. 코, 나비, 바나나 등 37개. 완성한 낱말은 스티커가 돼요.
-- 내 이름: 부모님 화면에서 아이 이름을 등록하면 앱이 "리하의 소리블록"으로 열려요. 쓰기 맨 위에서 내 이름을 한 글자씩 따라 써요. 받침 있는 이름도 돼요.
-- 이름을 가족 목소리로 녹음하면, 다 썼을 때 그 목소리로 이름을 불러 줘요.
+- 내 이름부터: 처음 켜면 아이 이름을 물어봐요. 첫 낱말 퍼즐이 내 이름이고, 다 만들면 연필을 눌러 바로 따라 써요. 앱은 "리하의 소리블록"으로 열려요. 받침 있는 이름도 돼요.
+- 앱이 이름을 소리 내어 읽어 줘요. 가족 목소리로 녹음하면 그 목소리로 불러 줘요.
 - 형제자매: 아이마다 동물을 골라요. 별과 스티커, 아이 글씨는 아이마다 따로 모여요.
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리, 토마토, 하마 등 모든 자음에 그림 단어가 생겼어요.
 - 하루 분량: 글자 쓰기와 낱말 만들기를 합쳐 8번 하면 트로피와 함께 오늘 목표 달성을 축하해 줘요. 잠기지 않고, 부모님 화면에서 양을 고를 수 있어요.
@@ -122,8 +122,8 @@ https://soriblocks.lihallc.com
 Writing becomes theirs
 
 - Word puzzle (new tab): see a picture, build its word block by block. 37 words like 코, 나비 and 바나나. Each finished word becomes a sticker.
-- My name: add your child's name on the parents' page and the app opens as "리하's Sori Blocks". The name sits at the top of the Write tab to trace, syllable by syllable, final consonants included.
-- Record the name in a family voice, and the app says it when the name is finished.
+- Name first: at the first launch the app asks for your child's name. Their first word puzzle is their own name, and a pencil takes them straight to tracing it. The app opens as "리하's Sori Blocks". Final consonants included.
+- The app reads the name out loud. Record it in a family voice and it uses that voice.
 - Siblings: each child picks an animal. Stars, stickers and handwriting are kept per child.
 - 57 new picture words (다람쥐, 사과, 자동차, 코끼리 and more): every consonant now has them.
 - A day's goal: after 8 letters or words, a trophy scene celebrates the day's goal. Nothing is locked, and parents can choose the amount.
@@ -296,13 +296,13 @@ Writing just got more fun!
 </ko-KR>
 ```
 
-**출시 노트 (1.4, versionCode 2): 첫 출시 다음에 올릴 버전**
+**출시 노트 (1.4, versionCode 3): 첫 출시 다음에 올릴 버전**
 ```
 <en-US>
 Writing becomes theirs!
 - Word puzzle: see a picture, build its word, earn its sticker.
-- My name: add your child's name and the app opens as theirs. They trace it syllable by syllable.
-- Record the name in a family voice; the app says it when it is written.
+- Name first: their first word to build and write is their own name.
+- The app reads the name aloud, or in a family voice if you record it.
 - Siblings each pick an animal and keep their own stars and stickers.
 - 57 new picture words.
 - Star jar, sticker play and a handwriting fridge.
@@ -311,8 +311,8 @@ Writing becomes theirs!
 <ko-KR>
 쓰기가 내 것이 됐어요!
 - 낱말 퍼즐: 그림을 보고 글자를 조립해 낱말을 완성하면 스티커가 돼요
-- 내 이름: 아이 이름을 등록하면 "리하의 소리블록"으로 열리고, 이름을 따라 써요 (받침 포함)
-- 이름을 가족 목소리로 녹음하면 다 썼을 때 불러 줘요
+- 내 이름부터: 첫 낱말이 내 이름이에요. 만들고 바로 따라 써요 (받침 포함)
+- 이름을 소리 내어 읽어 주고, 녹음하면 가족 목소리로 불러 줘요
 - 형제자매는 동물을 골라 별과 스티커를 따로 모아요
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리…
 - 별 병, 스티커 놀이판, 아이 글씨 냉장고
@@ -334,7 +334,7 @@ This is a Korean letter-sound app for young children. Four tabs at the bottom: S
 
 Parents-only screen: tap the settings button (top right), tap the padlock button, then answer the multiplication question (parental gate). There a parent can add a child's name and animal (optional; with two or more children the app asks "who's playing?" at launch), record the sounds in their own voice, and see the child's writing record. The microphone is used only on that screen. Names, progress and recordings stay on the device; nothing is sent anywhere.
 
-New in 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). With a name added, the app opens as "<name>의 소리블록" and the name appears at the top of the Write tab to trace.
+New in 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). At the first launch the app asks a parent for the child's name (in Hangul) and an animal; tap "나중에 할게요" (Later) to skip it. With a name, the app opens as "<name>의 소리블록", the first word puzzle is the child's name, and the name appears at the top of the Write tab to trace.
 
 Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 
