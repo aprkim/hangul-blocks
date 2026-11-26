@@ -103,11 +103,11 @@ https://soriblocks.lihallc.com
 ## 1.4 새 기능 (What's New)
 
 ```
-쓰기가 내 것이 됐어요
+내 이름부터 읽고 써요
 
-- 낱말 퍼즐(새 탭): 그림을 보고 글자를 조립해 낱말을 완성해요. 코, 나비, 바나나 등 37개. 완성한 낱말은 스티커가 돼요.
 - 내 이름부터: 처음 켜면 아이 이름을 물어봐요. 첫 낱말 퍼즐이 내 이름이고, 다 만들면 연필을 눌러 바로 따라 써요. 앱은 "리하의 소리블록"으로 열려요. 받침 있는 이름도 돼요.
 - 앱이 이름을 소리 내어 읽어 줘요. 가족 목소리로 녹음하면 그 목소리로 불러 줘요.
+- 낱말 퍼즐(새 탭): 그림을 보고 글자를 조립해 낱말을 완성해요. 코, 나비, 바나나 등 37개. 완성한 낱말은 스티커가 돼요.
 - 형제자매: 아이마다 동물을 골라요. 별과 스티커, 아이 글씨는 아이마다 따로 모여요.
 - 새 그림 단어 57개: 다람쥐, 사과, 자동차, 코끼리, 토마토, 하마 등 모든 자음에 그림 단어가 생겼어요.
 - 하루 분량: 글자 쓰기와 낱말 만들기를 합쳐 8번 하면 트로피와 함께 오늘 목표 달성을 축하해 줘요. 잠기지 않고, 부모님 화면에서 양을 고를 수 있어요.
@@ -119,11 +119,11 @@ https://soriblocks.lihallc.com
 ```
 
 ```
-Writing becomes theirs
+Their own name first
 
-- Word puzzle (new tab): see a picture, build its word block by block. 37 words like 코, 나비 and 바나나. Each finished word becomes a sticker.
 - Name first: at the first launch the app asks for your child's name. Their first word puzzle is their own name, and a pencil takes them straight to tracing it. The app opens as "리하's Sori Blocks". Final consonants included.
 - The app reads the name out loud. Record it in a family voice and it uses that voice.
+- Word puzzle (new tab): see a picture, build its word block by block. 37 words like 코, 나비 and 바나나. Each finished word becomes a sticker.
 - Siblings: each child picks an animal. Stars, stickers and handwriting are kept per child.
 - 57 new picture words (다람쥐, 사과, 자동차, 코끼리 and more): every consonant now has them.
 - A day's goal: after 8 letters or words, a trophy scene celebrates the day's goal. Nothing is locked, and parents can choose the amount.
