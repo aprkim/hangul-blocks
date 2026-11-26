@@ -107,8 +107,9 @@ export const reachableSyllables = (p: Progress) => SYLLABLES.filter((s) => s.set
  * A letter was written to the end: count it and drop one star in the jar.
  * Returns true when that star filled the jar (a gift is now waiting).
  */
-export function addStar(char: string): boolean {
-  countLetter()
+export function addStar(char: string, countForDay = true): boolean {
+  // Writing the same letter a second time in a row earns its star but counts once for the day.
+  if (countForDay) countLetter()
   const p = state
   const written = { ...p.written, [char]: timesWritten(p, char) + 1 }
   const jar = p.jar + 1

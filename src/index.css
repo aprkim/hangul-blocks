@@ -1319,7 +1319,7 @@ body {
   height: 72% !important;
 }
 .play-size-btn:disabled {
-  opacity: 0.35;
+  opacity: 0.55;
 }
 
 /* ---------- Parents' page: calm, flat, readable (no child-screen blocks) ---------- */
@@ -1556,7 +1556,7 @@ body {
   color: var(--color-on-tile);
 }
 .rec-actions button:disabled {
-  opacity: 0.35;
+  opacity: 0.55;
 }
 .rec-legend {
   display: flex;
@@ -2578,4 +2578,33 @@ body {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* Writing each letter twice: the second time "on your own" has only a faint guide. */
+.write-card.is-alone .stroke-guide {
+  opacity: 0.55;
+}
+.write-rounds {
+  position: absolute;
+  left: 50%;
+  bottom: 2.2%;
+  translate: -50% 0;
+  display: flex;
+  gap: 1.6cqmin;
+  pointer-events: none;
+}
+.write-rounds i {
+  width: 2.6cqmin;
+  height: 2.6cqmin;
+  min-width: 9px;
+  min-height: 9px;
+  border-radius: 50%;
+  background: var(--color-page);
+  box-shadow: inset 0 0 0 2px var(--color-card-shadow);
+  transition: background 0.2s;
+}
+.write-rounds i.is-on {
+  background: var(--color-star);
+  box-shadow: inset 0 0 0 2px var(--color-star-dark);
+  animation: daily-pop 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.5) both;
 }

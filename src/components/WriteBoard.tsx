@@ -338,6 +338,12 @@ function GiftGate({ ready, dots, onOpen }: { ready: boolean; dots: string[]; onO
 
 // ---------- tracing ----------
 
+/**
+ * Every letter is written twice: first over the guide with the moving demo, then once more
+ * "on your own" (a faint guide and only the start dot; the demo comes back after a miss). Two
+ * dots under the card show which time it is. This long after the first, the second begins.
+ */
+const SECOND_TRY_MS = 1500
 /** After a letter's celebration, the next letter comes by itself after this long... */
 const AUTO_NEXT_MS = 2500
 /** ...or this long when a picture word popped out (time to see it and hear the word). */
@@ -361,6 +367,10 @@ function Tracer({
   const [ink, setInk] = useState<Pt[]>([])
   const [miss, setMiss] = useState(0) // bumps to restart the guide animation after a miss
   const [card, setCard] = useState<Card | null>(null)
+  // 0: the first time, with the guide. 1: once more, on your own.
+  const [round, setRound] = useState<0 | 1>(0)
+  // The stroke a miss happened on in the second round: the demo shows again for it.
+  const [helpAt, setHelpAt] = useState(-1)
   const svgRef = useRef<SVGSVGElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const stickerRef = useRef<HTMLButtonElement>(null)
@@ -404,8 +414,10 @@ function Tracer({
     if (card) stickerRef.current?.animate(WORD_POP, { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1.25)' })
   }, [card])
 
-  function restart() {
+  function restart(nextRound: 0 | 1 = 0) {
     cancelAuto()
+    setRound(nextRound)
+    setHelpAt(-1)
     accepted.current = []
     setDone(0)
     setInk([])
@@ -424,8 +436,9 @@ function Tracer({
     e.preventDefault()
     if (drawing.current) return // ignore a second finger
     if (complete) {
-      // Tapping a finished letter: write it again (another star to earn).
-      restart()
+      // Tapping a finished letter: write it again (another star to earn). Right after the first
+      // time, that is the second time, a little early.
+      restart(round === 0 ? 1 : 0)
       cardRef.current?.animate(POP, { duration: 360 })
       return
     }
@@ -454,8 +467,17 @@ function Tracer({
     cardRef.current?.animate(POP, { duration: 480, easing: 'cubic-bezier(.2,.8,.3,1.2)' })
     const rect = cardRef.current?.getBoundingClientRect()
     const char = target.char
-    if (rect) flyStar(rect, () => addStar(char))
-    else addStar(char)
+    const first = round === 0
+    if (rect) flyStar(rect, () => addStar(char, first))
+    else addStar(char, first)
+    if (first) {
+      // Once more, on your own.
+      autoTimer.current = window.setTimeout(() => {
+        restart(1)
+        cardRef.current?.animate(POP, { duration: 360 })
+      }, SECOND_TRY_MS)
+      return
+    }
     // Worked out now, not at startup: a word shows only once it has a sound (see words.ts).
     // The last syllable of my name: the whole name, in the family's voice if recorded.
     if (target.name?.last) {
@@ -499,10 +521,13 @@ function Tracer({
       else tapFeedback()
     } else {
       setMiss((m) => m + 1) // no "wrong": just show the stroke again
+      if (round === 1) setHelpAt(done)
     }
   }
 
   const current = complete ? null : strokes[done]
+  // On your own: no moving demo, unless this stroke was just missed.
+  const showDemo = round === 0 || helpAt === done
 
   return (
     <div className="write-trace flex h-full items-center justify-between gap-[2vh] p-[2.5vh]">
@@ -518,7 +543,7 @@ function Tracer({
       <div className="write-wrap flex h-full min-w-0 flex-1 items-center justify-center">
         <div
           ref={cardRef}
-          className={`write-card relative rounded-[8cqmin] bg-card ${complete ? 'is-complete' : ''} ${isSyl ? 'is-syllable' : ''}`}
+          className={`write-card relative rounded-[8cqmin] bg-card ${complete ? 'is-complete' : ''} ${isSyl ? 'is-syllable' : ''} ${round === 1 ? 'is-alone' : ''}`}
         >
           <svg
             ref={svgRef}
@@ -543,7 +568,7 @@ function Tracer({
             {/* The stroke to write now: drawn along its direction, with a start dot */}
             {current && (
               <g key={`c${done}-${miss}`}>
-                <path d={strokePath(current.stroke)} className="stroke-demo" pathLength={100} />
+                {showDemo && <path d={strokePath(current.stroke)} className="stroke-demo" pathLength={100} />}
                 <circle
                   cx={current.stroke[0][0]}
                   cy={current.stroke[0][1]}
@@ -558,6 +583,11 @@ function Tracer({
               <path d={strokePath(ink)} className="stroke-ink" style={{ stroke: COLOR[current?.part ?? 'consonant'] }} />
             )}
           </svg>
+          {/* First time, second time. */}
+          <div className="write-rounds" aria-hidden>
+            <i className={round === 1 || complete ? 'is-on' : ''} />
+            <i className={round === 1 && complete ? 'is-on' : ''} />
+          </div>
           {nameCard && target.name && (
             <button
               type="button"
