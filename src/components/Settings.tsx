@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { chime, hasSound, play } from '../audio'
-import { chooseChild, nameSound, useChildren, type Child } from '../children'
+import { chime } from '../audio'
+import { sayName } from '../sayName'
+import { chooseChild, useChildren, type Child } from '../children'
 import { tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
 import { THEMES, applyTheme, loadTheme, saveTheme, type ThemeId } from '../theme'
@@ -88,8 +89,7 @@ export function Settings({ onParent, onSwitch }: { onParent: () => void; onSwitc
                         tapFeedback()
                         setOpen(false)
                         if (c.id === kids.current) return
-                        if (hasSound(nameSound(c))) play(nameSound(c))
-                        else chime('star')
+                        if (!sayName(c)) chime('star')
                         chooseChild(c.id)
                         onSwitch(c)
                       }}

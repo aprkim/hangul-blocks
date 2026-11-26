@@ -39,6 +39,8 @@ let ctx: AudioContext | null = null
 let current: AudioBufferSourceNode | null = null
 /** The latest sound asked for; a slow load must not play over a newer tap. */
 let wanted: string | null = null
+/** The clips of a word read syllable by syllable (playSequence), so stop() can end them all. */
+let sequence: AudioBufferSourceNode[] = []
 
 const audioSession = () => (navigator as Navigator & { audioSession?: { type: string } }).audioSession
 let recordingSession = false
@@ -182,6 +184,14 @@ export function preload(names: string[]) {
 
 export function stop() {
   wanted = null
+  for (const s of sequence) {
+    try {
+      s.stop()
+    } catch {
+      /* already stopped */
+    }
+  }
+  sequence = []
   if (currentHtml) {
     currentHtml.pause()
     currentHtml = null
@@ -228,6 +238,32 @@ export function play(name: string) {
     if (wanted !== name) return
     if (c) start(c)
     else playHtml(name)
+  })
+}
+
+/**
+ * Several clips back to back, as one word (a name read syllable by syllable: 리, 하). Waits
+ * until every clip is loaded, so a slow first load never drops or overlaps a syllable.
+ */
+export function playSequence(names: string[], gapMs = 60) {
+  if (names.length === 1) return play(names[0])
+  stop()
+  const token = `seq:${names.join('+')}:${Date.now()}`
+  wanted = token
+  const ac = audioContext()
+  if (ac.state !== 'running') void ac.resume()
+  void Promise.all(names.map(load)).then((loaded) => {
+    if (wanted !== token) return
+    let at = ac.currentTime + 0.02
+    for (const clip of loaded) {
+      if (!clip) continue
+      const src = ac.createBufferSource()
+      src.buffer = clip.buffer
+      src.connect(ac.destination)
+      src.start(at, clip.offset)
+      at += clip.buffer.duration - clip.offset + gapMs / 1000
+      sequence.push(src)
+    }
   })
 }
 

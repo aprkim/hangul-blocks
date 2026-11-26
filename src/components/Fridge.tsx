@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
-import { chime, hasSound, play } from '../audio'
-import { currentChild, nameSound, useChildren } from '../children'
+import { chime, play } from '../audio'
+import { sayName } from '../sayName'
+import { currentChild, useChildren } from '../children'
 import { soundOf, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { FridgeIcon } from './Icons'
@@ -73,8 +74,7 @@ export function Fridge() {
           className="fridge-paper fridge-name"
           onClick={() => {
             tapFeedback()
-            if (hasSound(nameSound(child))) play(nameSound(child))
-            else chime('star')
+            if (!sayName(child)) chime('star')
           }}
         >
           <i className="fridge-name-animal">{child.animal}</i>

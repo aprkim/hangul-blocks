@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { chime, hasSound, play } from '../audio'
+import { sayName } from '../sayName'
 import { buddy } from '../buddy'
-import { currentChild, nameSound, useChildren, type Child } from '../children'
+import { currentChild, useChildren, type Child } from '../children'
 import { fullStrokes, nameSyllableSound } from '../hangul'
 import { confetti, flyStar } from '../effects'
 import { CHART_VOWELS, CONSONANTS, SET_COUNT, VOWELS, consonantSound, syllableSound, vowelSound, type Consonant, type Vowel } from '../jamo'
@@ -462,8 +463,7 @@ function Tracer({
       timers.current.push(
         window.setTimeout(() => {
           setNameCard(true)
-          if (hasSound(nameSound(who))) play(nameSound(who))
-          else chime('fanfare')
+          if (!sayName(who)) chime('fanfare')
           confetti(cardRef.current?.getBoundingClientRect())
         }, 650),
       )
@@ -566,8 +566,7 @@ function Tracer({
               onPointerDown={(e) => {
                 e.preventDefault()
                 const who = target.name!.child
-                if (hasSound(nameSound(who))) play(nameSound(who))
-                else chime('star')
+                if (!sayName(who)) chime('star')
               }}
             >
               <span className="word-emoji">{target.name.child.animal}</span>

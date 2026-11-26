@@ -1,5 +1,6 @@
-import { chime, hasSound, play } from '../audio'
-import { chooseChild, nameSound, useChildren, type Child } from '../children'
+import { chime } from '../audio'
+import { sayName } from '../sayName'
+import { chooseChild, useChildren, type Child } from '../children'
 import { tapFeedback } from '../native'
 
 /**
@@ -21,8 +22,7 @@ export function ChildPicker({ onDone }: { onDone: (c: Child) => void }) {
             onPointerDown={(e) => {
               e.preventDefault()
               tapFeedback()
-              if (hasSound(nameSound(c))) play(nameSound(c))
-              else chime('star')
+              if (!sayName(c)) chime('star')
               chooseChild(c.id)
               onDone(c)
             }}

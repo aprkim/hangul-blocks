@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { chime, hasSound, play } from '../audio'
+import { chime, play } from '../audio'
 import { buddy } from '../buddy'
-import { currentChild, nameSound, useChildren, type Child } from '../children'
+import { currentChild, useChildren, type Child } from '../children'
 import { confetti } from '../effects'
 import { countWord } from '../daily'
-import { CHO, JONG, JUNG, compose, decompose, fullStrokes, isBasicSyllable, nameSyllableSound, type Parts } from '../hangul'
-import { CONSONANTS, VOWELS, consonantSound, syllableSound, vowelSound } from '../jamo'
+import { CHO, JONG, JUNG, compose, decompose, fullStrokes, type Parts } from '../hangul'
+import { CONSONANTS, VOWELS, consonantSound, vowelSound } from '../jamo'
 import { namePuzzleKey, solvePuzzle, usePuzzle } from '../keepsakes'
 import { celebrateFeedback, successFeedback, tapFeedback } from '../native'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
@@ -13,6 +13,7 @@ import { strokePath } from '../strokes'
 import { useTap } from '../touchGuard'
 import { DailyMeter } from './Daily'
 import { ArrowIcon, BookIcon, PencilIcon } from './Icons'
+import { sayName, syllableClip } from '../sayName'
 import { StickerBook } from './Rewards'
 import { Tile } from './Tile'
 
@@ -74,14 +75,6 @@ const pieceSound = (kind: 'cons' | 'vowel', char: string): string | null => {
 }
 
 /** The sound of a built syllable, when the app has one: the basic ones, or a family recording. */
-function syllableClip(char: string): string | null {
-  if (isBasicSyllable(char)) {
-    const d = decompose(char)!
-    return syllableSound(CONSONANTS.find((c) => c.char === d.cho)!, VOWELS.find((v) => v.char === d.jung)!)
-  }
-  return hasSound(nameSyllableSound(char)) ? nameSyllableSound(char) : null
-}
-
 /** A syllable's strokes in its box: every part in its color, or only some parts. */
 function Glyph({ char, only }: { char: string; only?: { consonant: boolean; vowel: boolean; final: boolean } }) {
   return (
@@ -138,11 +131,7 @@ export function PuzzleBoard({ onWriteName }: { onWriteName: () => void }) {
   /** Say the whole word: its recording, or for a name nobody recorded, the syllables it has sounds for. */
   function sayWord() {
     if (!item.child) return play(puzzleSound(item.word))
-    if (hasSound(nameSound(item.child))) return play(nameSound(item.child))
-    parts.forEach((p, i) => {
-      const clip = syllableClip(p.char)
-      if (clip) later(() => play(clip), i * 650)
-    })
+    sayName(item.child)
   }
 
   // A new puzzle: say its word.
