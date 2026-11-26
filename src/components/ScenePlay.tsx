@@ -9,18 +9,21 @@ import {
   removeSticker,
   resizeSticker,
   restoreScene,
+  savePicture,
   STICKER_SIZES,
   stickerInfo,
   usePuzzle,
   useScenes,
+  type Picture,
   type Placed,
   type SceneId,
   type StickerInfo,
 } from '../keepsakes'
-import { tapFeedback } from '../native'
+import { celebrateFeedback, tapFeedback } from '../native'
 import { useProgress } from '../progress'
-import { SizeIcon, SweepIcon, UndoIcon } from './Icons'
+import { CameraIcon, SizeIcon, SweepIcon, UndoIcon } from './Icons'
 import { SceneArt } from './SceneArt'
+import { ScenePicture } from './ScenePicture'
 import { StickerFace } from './StickerFace'
 
 // Sticker play: tap an earned sticker in the tray to put it on the scene (or drag it there) (home, park, sea, space), move
@@ -70,6 +73,93 @@ export function ScenePlay() {
   const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)
   // The sticker last touched gets a dashed ring and the bigger / smaller buttons.
   const [selected, setSelected] = useState<number | null>(null)
+  // The word of the sticker just tapped, shown big above it while it is said ("기차").
+  const [word, setWord] = useState<{ text: string; x: number; y: number; below: boolean; n: number } | null>(null)
+  useEffect(() => {
+    if (!word) return
+    const t = window.setTimeout(() => setWord(null), 1800)
+    return () => window.clearTimeout(t)
+  }, [word])
+  const showWord = (info: StickerInfo, el: Element | null | undefined) => {
+    // Treasures (🦖, 🚀) have no word to read.
+    if (!el || info.kind === 'treasure') return
+    const r = el.getBoundingClientRect()
+    const below = r.top < 90
+    setWord({ text: info.label, x: r.left + r.width / 2, y: below ? r.bottom : r.top, below, n: (word?.n ?? 0) + 1 })
+  }
+
+  // The picture just taken: it pops up as a photo, then flies to the fridge.
+  const [snap, setSnap] = useState<Picture | null>(null)
+  const snapRef = useRef<HTMLDivElement>(null)
+  const flashRef = useRef<HTMLDivElement>(null)
+
+  /** "Done!": keep the picture on the fridge and give the child a fresh scene. */
+  const takePicture = () => {
+    const r = sceneRef.current?.getBoundingClientRect()
+    if (!r || snap) return
+    const min = Math.min(r.width, r.height)
+    // The same sticker size as on the screen (see .play-placed), as a share of the shorter side.
+    const unit = Math.min(110, Math.max(36, min * 0.15)) / min
+    const pic = savePicture(scene, r.width / r.height, unit)
+    if (!pic) return
+    celebrateFeedback()
+    chime('fanfare')
+    setSelected(null)
+    setWord(null)
+    flashRef.current?.animate([{ opacity: 0.95 }, { opacity: 0 }], { duration: 420, easing: 'ease-out' })
+    setSnap(pic)
+  }
+
+  // The photo: pops in, holds, then flies to the fridge tab; the scene is cleared behind it
+  // (the undo button can still bring it back for a few seconds).
+  useEffect(() => {
+    if (!snap) return
+    const el = snapRef.current
+    const placed = scenes[snap.scene]
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      setSnap(null)
+      setCleared({ scene: snap.scene, placed: clearScene(snap.scene) })
+      const tab = document.querySelector<HTMLElement>('.room-tab[aria-label="my letters"]')
+      tab?.animate(BOUNCE, { duration: 420 })
+    }
+    if (!el) {
+      finish()
+      return
+    }
+    el.animate(
+      [
+        { transform: 'scale(0.6) rotate(-8deg)', opacity: 0 },
+        { transform: 'scale(1.04) rotate(-3deg)', opacity: 1, offset: 0.6 },
+        { transform: 'scale(1) rotate(-3deg)', opacity: 1 },
+      ],
+      { duration: 420, easing: 'cubic-bezier(.2,.8,.3,1.2)', fill: 'both' },
+    )
+    const t = window.setTimeout(() => {
+      const from = el.getBoundingClientRect()
+      const to = document.querySelector('.room-tab[aria-label="my letters"]')?.getBoundingClientRect()
+      const dx = to ? to.left + to.width / 2 - (from.left + from.width / 2) : 0
+      const dy = to ? to.top + to.height / 2 - (from.top + from.height / 2) : -from.bottom
+      el.animate(
+        [
+          { transform: 'scale(1) rotate(-3deg)', opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(0.08) rotate(12deg)`, opacity: 0.7 },
+        ],
+        { duration: 650, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'both' },
+      ).onfinish = finish
+    }, 1300)
+    // Safety: never leave the photo hanging (e.g. the room closed mid-animation).
+    const safety = window.setTimeout(finish, 3000)
+    void placed
+    return () => {
+      window.clearTimeout(t)
+      window.clearTimeout(safety)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snap])
+
   useEffect(() => {
     if (!cleared) return
     const t = window.setTimeout(() => setCleared(null), UNDO_MS)
@@ -130,6 +220,7 @@ export function ScenePlay() {
       if (d.key !== null) {
         setSelected(d.key)
         el.animate(BOUNCE, { duration: 320 })
+        showWord(d.info, el.firstElementChild ?? el)
       } else {
         // A tap in the tray puts the sticker on the scene (dragging all the way up is hard for
         // a small hand): near the middle, a little to one side each time so taps don't pile up,
@@ -139,9 +230,11 @@ export function ScenePlay() {
         const r = n ? 0.08 + (n % 4) * 0.05 : 0
         const key = placeSticker(scene, d.info.id, 0.5 + Math.cos(angle) * r, 0.5 + Math.sin(angle) * r * 1.3)
         setSelected(key)
-        requestAnimationFrame(() =>
-          sceneRef.current?.querySelector<HTMLElement>(`[data-key="${key}"]`)?.animate(POP_IN, { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1.3)' }),
-        )
+        requestAnimationFrame(() => {
+          const placedEl = sceneRef.current?.querySelector<HTMLElement>(`[data-key="${key}"]`)
+          placedEl?.animate(POP_IN, { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1.3)' })
+          showWord(d.info, placedEl?.firstElementChild ?? placedEl)
+        })
       }
       return
     }
@@ -149,8 +242,13 @@ export function ScenePlay() {
     if (d.key === null) {
       if (at) {
         tapFeedback()
-        setSelected(placeSticker(scene, d.info.id, at.fx, at.fy))
+        const key = placeSticker(scene, d.info.id, at.fx, at.fy)
+        setSelected(key)
         say(d.info)
+        requestAnimationFrame(() => {
+          const placedEl = sceneRef.current?.querySelector<HTMLElement>(`[data-key="${key}"]`)
+          showWord(d.info, placedEl?.firstElementChild ?? placedEl)
+        })
       }
     } else if (at) {
       moveSticker(scene, d.key, at.fx, at.fy)
@@ -185,6 +283,22 @@ export function ScenePlay() {
         }}
       >
         <SceneArt scene={scene} className="play-art" />
+        <div ref={flashRef} className="play-flash" aria-hidden />
+        {placed.length > 0 && !canUndo && (
+          <button
+            type="button"
+            aria-label="done"
+            className="play-done"
+            onPointerDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              tapFeedback()
+              takePicture()
+            }}
+          >
+            <CameraIcon />
+          </button>
+        )}
         {(placed.length > 0 || canUndo) && (
           <button
             type="button"
@@ -298,6 +412,20 @@ export function ScenePlay() {
           ))}
         </div>
       </div>
+
+      {word && (
+        <div key={word.n} className={`play-word ${word.below ? 'is-below' : ''}`} style={{ left: word.x, top: word.y }} aria-live="polite">
+          {word.text}
+        </div>
+      )}
+
+      {snap && (
+        <div className="play-snap" aria-hidden>
+          <div ref={snapRef} className="play-snap-photo">
+            <ScenePicture pic={snap} />
+          </div>
+        </div>
+      )}
 
       {/* What the finger is carrying. */}
       {drag?.moved && (

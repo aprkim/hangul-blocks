@@ -2,9 +2,10 @@ import { useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { sayName } from '../sayName'
 import { currentChild, useChildren } from '../children'
-import { soundOf, useHandwriting, writtenOrder, type Writing } from '../keepsakes'
+import { soundOf, useGallery, useHandwriting, writtenOrder, type Picture, type Writing } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { FridgeIcon } from './Icons'
+import { ScenePicture } from './ScenePicture'
 
 // The fridge: every letter the child has written, in the child's own strokes, on a paper held
 // by a magnet. Tapping one shows it big, with the very first try beside it, and says it.
@@ -44,7 +45,9 @@ export function Fridge() {
   // on its own long paper at the top.
   const nameChars = child ? [...child.name] : []
   const nameDone = nameChars.length > 0 && nameChars.every((c) => h[c])
+  const { pictures } = useGallery()
   const [open, setOpen] = useState<string | null>(null)
+  const [openPic, setOpenPic] = useState<Picture | null>(null)
   const bigRef = useRef<HTMLDivElement>(null)
 
   const show = (c: string) => {
@@ -55,7 +58,14 @@ export function Fridge() {
     requestAnimationFrame(() => bigRef.current?.animate(POP, { duration: 260, easing: 'cubic-bezier(.2,.8,.3,1.2)' }))
   }
 
-  if (chars.length === 0 && !nameDone) {
+  const showPic = (pic: Picture) => {
+    tapFeedback()
+    chime('star')
+    setOpenPic(pic)
+    requestAnimationFrame(() => bigRef.current?.animate(POP, { duration: 260, easing: 'cubic-bezier(.2,.8,.3,1.2)' }))
+  }
+
+  if (chars.length === 0 && !nameDone && pictures.length === 0) {
     return (
       <div className="fridge-empty" aria-hidden>
         <FridgeIcon />
@@ -85,6 +95,24 @@ export function Fridge() {
           ))}
         </button>
       )}
+      {/* Sticker pictures the child finished (the camera on the play scene), newest first. */}
+      {pictures.length > 0 && (
+        <div className="fridge-pics">
+          {pictures.map((pic, i) => (
+            <button
+              key={pic.at}
+              type="button"
+              aria-label="picture"
+              className="fridge-photo"
+              style={{ rotate: `${((i * 53) % 9) - 4}deg` }}
+              onClick={() => showPic(pic)}
+            >
+              <i className="fridge-magnet" style={{ background: MAGNETS[(i + 1) % 3] }} />
+              <ScenePicture pic={pic} />
+            </button>
+          ))}
+        </div>
+      )}
       <div className="fridge-grid">
         {chars.map((c, i) => (
           <button
@@ -102,6 +130,20 @@ export function Fridge() {
           </button>
         ))}
       </div>
+
+      {openPic && (
+        <div
+          className="fridge-zoom"
+          onPointerDown={(e) => {
+            e.preventDefault()
+            setOpenPic(null)
+          }}
+        >
+          <div ref={bigRef} className="fridge-zoom-photo" style={{ aspectRatio: openPic.aspect }}>
+            <ScenePicture pic={openPic} />
+          </div>
+        </div>
+      )}
 
       {item && open && (
         <div

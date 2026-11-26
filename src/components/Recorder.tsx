@@ -6,6 +6,7 @@ import { PUZZLE_RECORD_GROUP } from '../puzzleWords'
 import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress, ParentSettings } from './ParentProgress'
 import { ParentChildren } from './ParentChildren'
+import { ParentPictures } from './ParentPictures'
 import { nameSound, useChildren } from '../children'
 import { nameSyllableSound, unvoicedSyllables } from '../hangul'
 import {
@@ -556,6 +557,8 @@ export function Recorder({ onExit }: { onExit: () => void }) {
         />
 
         <ParentProgress />
+
+        <ParentPictures />
 
         {/* ---------- family voice (optional) ---------- */}
         <section className="parent-card" ref={voiceRef}>

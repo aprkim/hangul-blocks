@@ -237,3 +237,31 @@ export function restoreScene(scene: SceneId, placed: Placed[]) {
   const s = scenes.get()
   scenes.set({ ...s, [scene]: placed })
 }
+
+// ---------- finished pictures ----------
+
+/**
+ * A sticker picture the child said was finished (the camera button on the play scene): kept as
+ * data, not an image, so it is tiny and redrawn sharp at any size. `aspect` is the scene's shape
+ * when it was taken and `unit` the sticker size as a share of its shorter side, so it looks the
+ * same as it did on the screen.
+ */
+export type Picture = { at: number; scene: SceneId; placed: Placed[]; aspect: number; unit: number }
+
+export const GALLERY_KEY = 'soriblocks.gallery.v1'
+/** The fridge keeps the most recent pictures; older ones make room. */
+export const GALLERY_LIMIT = 12
+const gallery = store<{ pictures: Picture[] }>(GALLERY_KEY, { pictures: [] })
+export const useGallery = gallery.use
+
+export function savePicture(scene: SceneId, aspect: number, unit: number): Picture | null {
+  const placed = scenes.get()[scene]
+  if (!placed.length) return null
+  const pic: Picture = { at: Date.now(), scene, placed, aspect, unit }
+  gallery.set({ pictures: [pic, ...gallery.get().pictures].slice(0, GALLERY_LIMIT) })
+  return pic
+}
+
+export function removePicture(at: number) {
+  gallery.set({ pictures: gallery.get().pictures.filter((p) => p.at !== at) })
+}

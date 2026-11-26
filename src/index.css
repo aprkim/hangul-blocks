@@ -2403,3 +2403,179 @@ body {
     height: calc(var(--settings) * 0.2);
   }
 }
+
+/* ---------- Sticker play: "done!" (the camera), the photo, and the word of a tapped sticker ---------- */
+.play-done {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: calc(12px + clamp(48px, 9dvh, 72px) + 12px);
+  width: clamp(48px, 9dvh, 72px);
+  height: clamp(48px, 9dvh, 72px);
+  border-radius: 20px;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.play-done svg {
+  width: 74% !important;
+  height: 74% !important;
+}
+.play-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+.play-snap {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.play-snap-photo {
+  width: min(62vw, 88vh, 620px);
+  padding: 2.2% 2.2% 7%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.45);
+}
+.play-snap-photo .scene-pic {
+  border-radius: 4px;
+}
+.play-word {
+  position: fixed;
+  z-index: 75;
+  translate: -50% calc(-100% - 14px);
+  padding: 0.18em 0.55em 0.22em;
+  border-radius: 0.6em;
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-size: clamp(34px, 9vmin, 76px);
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow: 0 6px 0 var(--color-card-shadow), 0 12px 30px -12px var(--color-drop-shadow);
+  pointer-events: none;
+  animation: play-word 1.8s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+.play-word.is-below {
+  translate: -50% 14px;
+}
+@keyframes play-word {
+  0% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  14% {
+    opacity: 1;
+    scale: 1.06;
+  }
+  22%,
+  80% {
+    opacity: 1;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+/* A finished picture drawn from its data: the scene, and its stickers at the size they had. */
+.scene-pic {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  container-type: size;
+}
+.scene-pic-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.scene-pic-sticker {
+  position: absolute;
+  translate: -50% -50%;
+  font-size: calc(var(--unit) * 100cqmin * var(--s, 1));
+  line-height: 1;
+  filter: drop-shadow(0 0.04em 0 rgb(0 0 0 / 0.12));
+}
+.scene-pic-sticker .sticker-jamo {
+  font-size: 0.55em;
+}
+
+/* The fridge: finished pictures as photos under a magnet, above the letters. */
+.fridge-pics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 26vmin, 260px), 1fr));
+  gap: max(3vh, 20px);
+  max-width: 1100px;
+  margin: 1vh auto 5vh;
+}
+.fridge-photo {
+  position: relative;
+  padding: 5% 5% 12%;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 14px -6px var(--color-drop-shadow), 0 2px 0 var(--color-card-shadow);
+  touch-action: pan-y;
+}
+.fridge-photo .scene-pic {
+  border-radius: 3px;
+}
+.fridge-photo .fridge-magnet {
+  z-index: 1;
+}
+.fridge-zoom-photo {
+  width: min(86vw, 120vh, 900px);
+  max-height: 80vh;
+  padding: 2%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px -20px var(--color-drop-shadow);
+  display: flex;
+}
+.fridge-zoom-photo .scene-pic {
+  border-radius: 4px;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  margin: auto;
+}
+
+/* Parents' page: the child's finished pictures. */
+.parent-pics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 12px;
+}
+.parent-pic {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.parent-pic-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 0 var(--color-card-shadow);
+}
+.parent-pic-date {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.parent-pic-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

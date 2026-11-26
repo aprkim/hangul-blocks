@@ -262,3 +262,17 @@ export function SizeIcon({ big }: { big: boolean }) {
     </svg>
   )
 }
+
+/** "Done!": a little camera that keeps the sticker picture on the fridge. */
+export function CameraIcon() {
+  return (
+    <svg {...box}>
+      <path d="M17 13l3-5h8l3 5" fill={BLUE} />
+      <rect x="5" y="13" width="38" height="27" rx="6" fill={BLUE} />
+      <circle cx="24" cy="26.5" r="9" fill="var(--color-card)" />
+      <circle cx="24" cy="26.5" r="5" fill={INK} />
+      <circle cx="22" cy="24.5" r="1.6" fill="var(--color-card)" />
+      <circle cx="36.5" cy="18.5" r="2.2" fill={STAR} />
+    </svg>
+  )
+}
