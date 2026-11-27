@@ -266,3 +266,15 @@ export function CameraIcon() {
     </svg>
   )
 }
+
+/** Throw a picture away: a little bin. */
+export function TrashIcon() {
+  return (
+    <svg {...box}>
+      <path d="M10 13h28" stroke={INK} strokeWidth={4} />
+      <path d="M19 13V8h10v5" stroke={INK} strokeWidth={3.5} />
+      <path d="M13 17h22l-2 23a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3z" fill={RED} />
+      <path d="M20 23v13M28 23v13" stroke={ON_TILE} strokeWidth={3} />
+    </svg>
+  )
+}

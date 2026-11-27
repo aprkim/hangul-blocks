@@ -2608,3 +2608,38 @@ body {
   box-shadow: inset 0 0 0 2px var(--color-star-dark);
   animation: daily-pop 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.5) both;
 }
+
+/* The fridge: throw a picture away (on the big photo), and undo for a few seconds. */
+.fridge-zoom-photo {
+  position: relative;
+}
+.fridge-trash,
+.fridge-undo {
+  width: clamp(52px, 9dvh, 72px);
+  height: clamp(52px, 9dvh, 72px);
+  border-radius: 20px;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.fridge-trash svg,
+.fridge-undo svg {
+  width: 70% !important;
+  height: 70% !important;
+}
+.fridge-trash {
+  position: absolute;
+  right: -14px;
+  bottom: -14px;
+}
+.fridge-undo {
+  position: fixed;
+  z-index: 61;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 4vh);
+  translate: -50% 0;
+  animation: next-ready 1.2s ease-in-out infinite;
+}

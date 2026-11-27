@@ -272,3 +272,9 @@ export function savePicture(scene: SceneId, aspect: number, unit: number): Pictu
 export function removePicture(at: number) {
   gallery.set({ pictures: gallery.get().pictures.filter((p) => p.at !== at) })
 }
+
+/** Put a removed picture back (undo), in its place by time. */
+export function restorePicture(pic: Picture) {
+  const pictures = gallery.get().pictures.filter((p) => p.at !== pic.at)
+  gallery.set({ pictures: [...pictures, pic].sort((a, b) => b.at - a.at).slice(0, GALLERY_LIMIT) })
+}

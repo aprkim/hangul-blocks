@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { sayName } from '../sayName'
 import { currentChild, useChildren } from '../children'
-import { soundOf, useGallery, useHandwriting, writtenOrder, type Picture, type Writing } from '../keepsakes'
+import { removePicture, restorePicture, soundOf, useGallery, useHandwriting, writtenOrder, type Picture, type Writing } from '../keepsakes'
 import { tapFeedback } from '../native'
-import { FridgeIcon } from './Icons'
+import { FridgeIcon, TrashIcon, UndoIcon } from './Icons'
 import { ScenePicture } from './ScenePicture'
 
 // The fridge: every letter the child has written, in the child's own strokes, on a paper held
@@ -48,6 +48,13 @@ export function Fridge() {
   const { pictures } = useGallery()
   const [open, setOpen] = useState<string | null>(null)
   const [openPic, setOpenPic] = useState<Picture | null>(null)
+  // A picture just thrown away: an undo button brings it back for a few seconds.
+  const [thrown, setThrown] = useState<Picture | null>(null)
+  useEffect(() => {
+    if (!thrown) return
+    const t = window.setTimeout(() => setThrown(null), 5000)
+    return () => window.clearTimeout(t)
+  }, [thrown])
   const bigRef = useRef<HTMLDivElement>(null)
 
   const show = (c: string) => {
@@ -65,7 +72,7 @@ export function Fridge() {
     requestAnimationFrame(() => bigRef.current?.animate(POP, { duration: 260, easing: 'cubic-bezier(.2,.8,.3,1.2)' }))
   }
 
-  if (chars.length === 0 && !nameDone && pictures.length === 0) {
+  if (chars.length === 0 && !nameDone && pictures.length === 0 && !thrown) {
     return (
       <div className="fridge-empty" aria-hidden>
         <FridgeIcon />
@@ -141,8 +148,41 @@ export function Fridge() {
         >
           <div ref={bigRef} className="fridge-zoom-photo" style={{ aspectRatio: openPic.aspect }}>
             <ScenePicture pic={openPic} />
+            <button
+              type="button"
+              aria-label="throw away"
+              className="fridge-trash"
+              onPointerDown={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                tapFeedback()
+                chime('soft')
+                removePicture(openPic.at)
+                setThrown(openPic)
+                setOpenPic(null)
+              }}
+            >
+              <TrashIcon />
+            </button>
           </div>
         </div>
+      )}
+
+      {thrown && (
+        <button
+          type="button"
+          aria-label="undo"
+          className="fridge-undo"
+          onPointerDown={(e) => {
+            e.preventDefault()
+            tapFeedback()
+            chime('star')
+            restorePicture(thrown)
+            setThrown(null)
+          }}
+        >
+          <UndoIcon />
+        </button>
       )}
 
       {item && open && (
