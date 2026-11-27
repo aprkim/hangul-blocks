@@ -1147,9 +1147,18 @@ body {
 }
 .play-empty {
   flex: 1;
-  height: 60%;
+  height: 76%;
   border-radius: 14px;
   border: 3px dashed var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  touch-action: none;
+}
+.play-empty svg {
+  height: 78% !important;
+  width: auto !important;
 }
 /* Phones held upright: scene picker above the tray. */
 @media (max-aspect-ratio: 1/1) {
@@ -2454,13 +2463,14 @@ body {
 .play-snap-photo .scene-pic {
   border-radius: 4px;
 }
-/* The word sits in the free space at the top, between the room tabs and the close button. */
+/* The word sits in the free space at the top of the Play tab. */
 .play-word-bar {
   position: fixed;
-  z-index: 47;
+  z-index: 31;
   top: calc(env(safe-area-inset-top) + var(--settings-gap));
-  left: calc(env(safe-area-inset-left) + 4 * var(--settings-gap) + 3 * var(--settings));
-  right: calc(env(safe-area-inset-right) + 2 * var(--settings-gap) + var(--settings));
+  /* Between the day's dots (left) and the fridge and settings buttons (right). */
+  left: calc(env(safe-area-inset-left) + 2 * var(--settings-gap) + 4.4 * var(--settings));
+  right: calc(env(safe-area-inset-right) + 3 * var(--settings-gap) + 2 * var(--settings));
   height: var(--settings);
   display: flex;
   align-items: center;
@@ -2705,4 +2715,51 @@ body {
 .fridge-photo,
 .fridge-zoom-photo {
   container-type: inline-size;
+}
+
+/* ---------- The Play tab: sticker play under a top row (the friend, the word, fridge, settings) ---------- */
+.play-tab {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(env(safe-area-inset-top) + var(--settings) + 2 * var(--settings-gap));
+}
+/* The tab bar is right below: no extra space under the sticker tray. */
+.play-tab .play {
+  padding-bottom: max(1vh, 6px);
+}
+/* The fridge: the child's letters and the pictures the camera keeps. Beside settings. */
+.play-fridge {
+  position: fixed;
+  z-index: 30;
+  top: calc(env(safe-area-inset-top) + var(--settings-gap));
+  right: calc(env(safe-area-inset-right) + 2 * var(--settings-gap) + var(--settings));
+  width: var(--settings);
+  height: var(--settings);
+  border-radius: 28%;
+  background: var(--color-card);
+  box-shadow: 0 5px 0 var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.play-fridge svg {
+  width: 74%;
+  height: 74%;
+}
+/* Phones held upright: smaller dots, so the friend's row stops short of the fridge button. */
+@media (max-width: 520px) {
+  .play-tab .daily-row {
+    padding: 0 calc(var(--settings) * 0.12);
+    gap: calc(var(--settings) * 0.05);
+  }
+  .play-tab .daily-row i {
+    width: calc(var(--settings) * 0.16);
+    height: calc(var(--settings) * 0.16);
+  }
+  .play-tab .daily-meter.is-many .daily-row i {
+    width: calc(var(--settings) * 0.11);
+    height: calc(var(--settings) * 0.11);
+  }
 }

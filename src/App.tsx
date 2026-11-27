@@ -7,6 +7,7 @@ import { DailyDone } from './components/Daily'
 import { stop } from './audio'
 import { AssemblyBoard } from './components/AssemblyBoard'
 import { JamoBoard } from './components/JamoBoard'
+import { PlayBoard } from './components/PlayBoard'
 import { PuzzleBoard } from './components/PuzzleBoard'
 import { ParentGate, gatePassed } from './components/ParentGate'
 import { Recorder } from './components/Recorder'
@@ -79,6 +80,7 @@ export default function App() {
           />
         )}
         {screen === 'write' && <WriteBoard key={writeKey} startName={writeName} />}
+        {screen === 'play' && <PlayBoard onWrite={() => go('write')} />}
       </main>
       <TabBar tab={screen} onTab={go} />
       <DailyDone />

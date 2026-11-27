@@ -97,9 +97,7 @@ const seed = () => {
 
     // Sticker play on the park scene.
     await p.goto(URL); await p.waitForTimeout(3000)
-    await tab('write')
-    await p.locator('#star-jar').click({ force: true }); await p.waitForTimeout(700)
-    await p.locator('[aria-label="sticker play"]').dispatchEvent('pointerdown'); await p.waitForTimeout(400)
+    await tab('play')
     await p.locator('[aria-label=park]').dispatchEvent('pointerdown'); await p.waitForTimeout(600)
     await shot('play')
     await ctx.close()

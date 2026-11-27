@@ -7,9 +7,7 @@ import { JAR_SIZE, TREASURES, TREASURE_NAMES, openGift, reachableSyllables, time
 import { cardFor } from '../words'
 import { usePuzzle } from '../keepsakes'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
-import { Fridge } from './Fridge'
-import { BookIcon, CloseIcon, FridgeIcon, GiftIcon, SceneIcon, STAR_PATH, StarShape } from './Icons'
-import { ScenePlay } from './ScenePlay'
+import { CloseIcon, GiftIcon, STAR_PATH, StarShape } from './Icons'
 
 // Rewards on the Write tab: the star jar (top right, beside settings), the gift that a full jar
 // gives, and the sticker book (opened by tapping the jar). Pictures only, no numbers.
@@ -142,41 +140,11 @@ export function GiftReveal() {
  * word, or its animal friend), and the treasures from full jars. Ones still to find show as a
  * faint silhouette: something to look forward to, not something missing.
  */
-type Room = 'book' | 'play' | 'fridge'
-const ROOMS: { id: Room; icon: () => React.JSX.Element; label: string }[] = [
-  { id: 'book', icon: BookIcon, label: 'sticker book' },
-  { id: 'play', icon: SceneIcon, label: 'sticker play' },
-  { id: 'fridge', icon: FridgeIcon, label: 'my letters' },
-]
 
-/**
- * Opened by tapping the star jar. Three rooms, switched by the picture buttons at the top left:
- * the sticker book (what has been collected, silhouettes for what is still to find), sticker
- * play (put stickers on scenes), and the fridge (the child's own handwriting).
- */
+/** Opened by tapping the star jar (or the book on the Words tab): what has been collected. */
 export function StickerBook({ onClose }: { onClose: () => void }) {
-  const [room, setRoom] = useState<Room>('book')
   return (
     <div className="book-overlay" role="dialog" aria-label="stickers">
-      <div className="room-tabs" role="tablist">
-        {ROOMS.map(({ id, icon: Icon, label }) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-label={label}
-            aria-selected={room === id}
-            className={`room-tab ${room === id ? 'is-current' : ''}`}
-            onPointerDown={(e) => {
-              e.preventDefault()
-              tapFeedback()
-              setRoom(id)
-            }}
-          >
-            <Icon />
-          </button>
-        ))}
-      </div>
       <button
         type="button"
         className="book-close"
@@ -189,17 +157,7 @@ export function StickerBook({ onClose }: { onClose: () => void }) {
       >
         <CloseIcon />
       </button>
-      {room === 'book' && <BookPage />}
-      {room === 'play' && (
-        <div className="room-body">
-          <ScenePlay />
-        </div>
-      )}
-      {room === 'fridge' && (
-        <div className="room-body">
-          <Fridge />
-        </div>
-      )}
+      <BookPage />
     </div>
   )
 }

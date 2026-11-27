@@ -100,6 +100,36 @@ https://soriblocks.lihallc.com
 
 ---
 
+## 1.5 새 기능 (What's New)
+
+```
+그림판이 가까워졌어요
+
+- 그림판 탭: 스티커 그림판이 아래 다섯 번째 탭이 됐어요. 어디서든 한 번에 가요.
+- 사진 찍기: 그림판에서 사진기를 누르면 그림이 냉장고에 사진으로 붙어요. 만든 날짜도 찍혀요. 찍은 뒤에도 계속 꾸밀 수 있어요.
+- 부모님 화면에서 아이 그림을 사진 앱에 저장하거나 가족에게 보낼 수 있어요.
+- 스티커를 누르면 낱말이 크게 보여요: 기차, 나비, 공룡…
+- 글자를 두 번 써요: 한 번은 따라 쓰고, 한 번은 흐린 안내선만 보고 혼자 써요.
+- ㅅ ㅈ ㅊ 쓰는 모양이 글자 타일과 같아졌어요.
+- 더, 거, 가 같은 글자에서 모음의 짧은 획이 자음 가운데에 와요.
+- 별 병을 누르면 스티커북이 바로 열려요.
+```
+
+```
+The play scene, one tap away
+
+- Play tab: sticker play is now the fifth tab at the bottom, one tap from anywhere.
+- Camera: tap it and the picture goes on the fridge as a photo, with the day it was made. Keep changing it afterwards.
+- Parents can save a picture to Photos or send it to family from the parents' page.
+- Tap a sticker to see its word: 기차, 나비, 공룡…
+- Every letter is written twice: once over the guide, once on your own with a faint guide.
+- ㅅ ㅈ ㅊ are traced the same way the letter tiles show them.
+- In 더, 거 and 가 the vowel's short bar sits level with the middle of the consonant.
+- The star jar opens the sticker book directly.
+```
+
+---
+
 ## 1.4 새 기능 (What's New)
 
 ```
@@ -296,6 +326,28 @@ Writing just got more fun!
 </ko-KR>
 ```
 
+**출시 노트 (1.5, versionCode 4)**
+```
+<en-US>
+The play scene, one tap away!
+- Play tab: sticker play is the fifth tab at the bottom.
+- Camera: the picture goes on the fridge as a photo, with its date.
+- Parents can save a picture or send it to family.
+- Tap a sticker to see its word.
+- Every letter is written twice: once over the guide, once on your own.
+- ㅅ ㅈ ㅊ are traced the way the tiles show them.
+</en-US>
+<ko-KR>
+그림판이 가까워졌어요!
+- 그림판 탭: 스티커 그림판이 아래 다섯 번째 탭이에요
+- 사진 찍기: 그림이 날짜와 함께 냉장고에 사진으로 붙어요
+- 부모님 화면에서 그림을 저장하거나 가족에게 보내요
+- 스티커를 누르면 낱말이 보여요
+- 글자를 두 번 써요: 따라 쓰고, 혼자 써요
+- ㅅ ㅈ ㅊ 모양이 글자 타일과 같아졌어요
+</ko-KR>
+```
+
 **출시 노트 (1.4, versionCode 3): 첫 출시 다음에 올릴 버전**
 ```
 <en-US>
@@ -330,11 +382,11 @@ Writing becomes theirs!
 ## 심사 정보 (App Review Information → Notes)
 
 ```
-This is a Korean letter-sound app for young children. Four tabs at the bottom: Sound (tap a consonant or vowel tile to hear its sound), Build (tap a consonant and a vowel to build a syllable and hear it), Words (a picture and empty boxes: build the word syllable by syllable to earn its sticker), Write (trace letters with a finger).
+This is a Korean letter-sound app for young children. Five tabs at the bottom: Sound (tap a consonant or vowel tile to hear its sound), Build (tap a consonant and a vowel to build a syllable and hear it), Words (a picture and empty boxes: build the word syllable by syllable to earn its sticker), Write (trace letters with a finger; each letter is traced twice), Play (put earned stickers on a scene; the camera keeps the picture on the child's "fridge", opened with the button at the top right).
 
 Parents-only screen: tap the settings button (top right), tap the padlock button, then answer the multiplication question (parental gate). There a parent can add a child's name and animal (optional; with two or more children the app asks "who's playing?" at launch), record the sounds in their own voice, and see the child's writing record. The microphone is used only on that screen. Names, progress and recordings stay on the device; nothing is sent anywhere.
 
-New in 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). At the first launch the app asks a parent for the child's name (in Hangul) and an animal; tap "나중에 할게요" (Later) to skip it. With a name, the app opens as "<name>의 소리블록", the first word puzzle is the child's name, and the name appears at the top of the Write tab to trace.
+New in 1.5: the Play tab (sticker play used to open from the star jar), the camera, and on the parents' screen "Pictures your child made" with Save · Send (the system share sheet; children cannot reach it, it is behind the parental gate). Since 1.4: a Words tab (word puzzle), and a small daily goal: after a few letters and words a trophy picture celebrates once a day (nothing is locked). At the first launch the app asks a parent for the child's name (in Hangul) and an animal; tap "나중에 할게요" (Later) to skip it. With a name, the app opens as "<name>의 소리블록", the first word puzzle is the child's name, and the name appears at the top of the Write tab to trace.
 
 Write tab: trace a letter to earn a star; 10 stars give a sticker. Rewards are only visual, there is nothing to buy. Syllable writing and the later consonant sets open as the child writes. To see everything right away, open the parents' screen and tap "Open all letters now" (Korean: "모든 글자 바로 열기"). On the Build screen all 14 consonants are always available (arrows at the ends of the consonant row switch sets).
 

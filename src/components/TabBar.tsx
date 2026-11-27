@@ -1,15 +1,17 @@
 import type { ComponentType } from 'react'
 import { tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
-import { BuildIcon, PencilIcon, PuzzleIcon, SoundIcon } from './Icons'
+import { BuildIcon, PencilIcon, PuzzleIcon, SceneIcon, SoundIcon } from './Icons'
 
-export type Tab = 'jamo' | 'assemble' | 'puzzle' | 'write'
+export type Tab = 'jamo' | 'assemble' | 'puzzle' | 'write' | 'play'
 
 const TABS: { id: Tab; icon: ComponentType; label: string }[] = [
   { id: 'jamo', icon: SoundIcon, label: 'sound' },
   { id: 'assemble', icon: BuildIcon, label: 'build' },
   { id: 'puzzle', icon: PuzzleIcon, label: 'words' },
   { id: 'write', icon: PencilIcon, label: 'write' },
+  // The four ways to learn, then the place to play with what was earned.
+  { id: 'play', icon: SceneIcon, label: 'play' },
 ]
 
 /** One tab. Fires on a clean tap, never while a letter is being written (touchGuard). */

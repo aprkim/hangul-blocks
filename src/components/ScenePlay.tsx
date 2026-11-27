@@ -21,7 +21,7 @@ import {
 } from '../keepsakes'
 import { celebrateFeedback, tapFeedback } from '../native'
 import { useProgress } from '../progress'
-import { CameraIcon, SizeIcon, SweepIcon, UndoIcon } from './Icons'
+import { CameraIcon, PencilIcon, SizeIcon, StarShape, SweepIcon, UndoIcon } from './Icons'
 import { SceneArt } from './SceneArt'
 import { ScenePicture } from './ScenePicture'
 import { StickerFace } from './StickerFace'
@@ -61,7 +61,7 @@ function say(info: StickerInfo) {
   else chime('star')
 }
 
-export function ScenePlay() {
+export function ScenePlay({ onWrite }: { onWrite?: () => void }) {
   const p = useProgress()
   const scenes = useScenes()
   const [scene, setScene] = useState<SceneId>('home')
@@ -119,7 +119,7 @@ export function ScenePlay() {
       if (done) return
       done = true
       setSnap(null)
-      const tab = document.querySelector<HTMLElement>('.room-tab[aria-label="my letters"]')
+      const tab = document.querySelector<HTMLElement>('.play-fridge')
       tab?.animate(BOUNCE, { duration: 420 })
     }
     if (!el) {
@@ -136,7 +136,7 @@ export function ScenePlay() {
     )
     const t = window.setTimeout(() => {
       const from = el.getBoundingClientRect()
-      const to = document.querySelector('.room-tab[aria-label="my letters"]')?.getBoundingClientRect()
+      const to = document.querySelector('.play-fridge')?.getBoundingClientRect()
       const dx = to ? to.left + to.width / 2 - (from.left + from.width / 2) : 0
       const dy = to ? to.top + to.height / 2 - (from.top + from.height / 2) : -from.bottom
       el.animate(
@@ -391,7 +391,22 @@ export function ScenePlay() {
           ))}
         </div>
         <div className="play-tray" data-scroll>
-          {earned.length === 0 && <span className="play-empty" aria-hidden />}
+          {/* Nothing to stick yet: stickers come from writing. The pencil goes there. */}
+          {earned.length === 0 && (
+            <button
+              type="button"
+              aria-label="write to earn stickers"
+              className="play-empty"
+              onPointerDown={(e) => {
+                e.preventDefault()
+                tapFeedback()
+                onWrite?.()
+              }}
+            >
+              <PencilIcon />
+              <StarShape />
+            </button>
+          )}
           {earned.map((info) => (
             <button
               key={info.id}
