@@ -41,21 +41,23 @@ export const STROKES: Record<string, Stroke[]> = {
     [[26, 48], [74, 48]],
     [[26, 82], [74, 82]],
   ],
+  // ㅅ ㅈ ㅊ: both legs come down from one point, mirror images, the way the app's letter tiles
+  // (and the gothic print children see most) draw them, so tracing matches what they tap.
   ㅅ: [
     [[50, 16], [18, 82]],
-    [[40.5, 35.5], [82, 82]], // the right leg starts on the left stroke, a third of the way down (as in school print)
+    [[50, 16], [82, 82]],
   ],
   ㅇ: [circle(50, 50, 30)],
   ㅈ: [
     [[22, 20], [78, 20]],
     [[50, 20], [18, 84]],
-    [[40.5, 39], [82, 84]],
+    [[50, 20], [82, 84]],
   ],
   ㅊ: [
     [[50, 8], [50, 20]],
     [[22, 28], [78, 28]],
     [[50, 28], [18, 88]],
-    [[40.5, 46], [82, 88]],
+    [[50, 28], [82, 88]],
   ],
   ㅋ: [
     [[22, 18], [78, 18], [78, 84]],

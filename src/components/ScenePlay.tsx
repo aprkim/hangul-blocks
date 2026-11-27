@@ -73,8 +73,9 @@ export function ScenePlay() {
   const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)
   // The sticker last touched gets a dashed ring and the bigger / smaller buttons.
   const [selected, setSelected] = useState<number | null>(null)
-  // The word of the sticker just tapped, shown big above it while it is said ("기차").
-  const [word, setWord] = useState<{ text: string; x: number; y: number; below: boolean; n: number } | null>(null)
+  // The word of the sticker just tapped, shown at the top of the screen (never over the picture)
+  // while it is said: "🚂 기차".
+  const [word, setWord] = useState<{ text: string; face: string; n: number } | null>(null)
   useEffect(() => {
     if (!word) return
     const t = window.setTimeout(() => setWord(null), 1800)
@@ -83,9 +84,7 @@ export function ScenePlay() {
   const showWord = (info: StickerInfo, el: Element | null | undefined) => {
     // A sticker with no word to read (a treasure without a name) shows nothing.
     if (!el || info.label === info.face) return
-    const r = el.getBoundingClientRect()
-    const below = r.top < 90
-    setWord({ text: info.label, x: r.left + r.width / 2, y: below ? r.bottom : r.top, below, n: (word?.n ?? 0) + 1 })
+    setWord({ text: info.label, face: info.kind === 'jamo' ? '' : info.face, n: (word?.n ?? 0) + 1 })
   }
 
   // The picture just taken: it pops up as a photo, then flies to the fridge.
@@ -411,8 +410,11 @@ export function ScenePlay() {
       </div>
 
       {word && (
-        <div key={word.n} className={`play-word ${word.below ? 'is-below' : ''}`} style={{ left: word.x, top: word.y }} aria-live="polite">
-          {word.text}
+        <div className="play-word-bar" aria-live="polite">
+          <div key={word.n} className="play-word">
+            {word.face && <span className="play-word-face">{word.face}</span>}
+            {word.text}
+          </div>
         </div>
       )}
 
