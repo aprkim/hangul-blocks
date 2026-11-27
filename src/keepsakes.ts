@@ -258,7 +258,14 @@ export function savePicture(scene: SceneId, aspect: number, unit: number): Pictu
   const placed = scenes.get()[scene]
   if (!placed.length) return null
   const pic: Picture = { at: Date.now(), scene, placed, aspect, unit }
-  gallery.set({ pictures: [pic, ...gallery.get().pictures].slice(0, GALLERY_LIMIT) })
+  const pictures = gallery.get().pictures
+  // The same picture again (the camera tapped twice): the newest photo is already it.
+  const last = pictures[0]
+  if (last && last.scene === scene && JSON.stringify(last.placed) === JSON.stringify(placed)) {
+    gallery.set({ pictures: [{ ...last, at: pic.at }, ...pictures.slice(1)] })
+    return { ...last, at: pic.at }
+  }
+  gallery.set({ pictures: [pic, ...pictures].slice(0, GALLERY_LIMIT) })
   return pic
 }
 

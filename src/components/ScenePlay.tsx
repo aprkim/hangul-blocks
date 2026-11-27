@@ -93,7 +93,7 @@ export function ScenePlay() {
   const snapRef = useRef<HTMLDivElement>(null)
   const flashRef = useRef<HTMLDivElement>(null)
 
-  /** "Done!": keep the picture on the fridge and give the child a fresh scene. */
+  /** "Done!": keep a copy of the picture on the fridge. */
   const takePicture = () => {
     const r = sceneRef.current?.getBoundingClientRect()
     if (!r || snap) return
@@ -110,18 +110,16 @@ export function ScenePlay() {
     setSnap(pic)
   }
 
-  // The photo: pops in, holds, then flies to the fridge tab; the scene is cleared behind it
-  // (the undo button can still bring it back for a few seconds).
+  // The photo: pops in, holds, then flies to the fridge tab. The scene stays as it was, so the
+  // child can keep changing it (and take another photo); the broom starts a new one.
   useEffect(() => {
     if (!snap) return
     const el = snapRef.current
-    const placed = scenes[snap.scene]
     let done = false
     const finish = () => {
       if (done) return
       done = true
       setSnap(null)
-      setCleared({ scene: snap.scene, placed: clearScene(snap.scene) })
       const tab = document.querySelector<HTMLElement>('.room-tab[aria-label="my letters"]')
       tab?.animate(BOUNCE, { duration: 420 })
     }
@@ -152,7 +150,6 @@ export function ScenePlay() {
     }, 1300)
     // Safety: never leave the photo hanging (e.g. the room closed mid-animation).
     const safety = window.setTimeout(finish, 3000)
-    void placed
     return () => {
       window.clearTimeout(t)
       window.clearTimeout(safety)
@@ -284,7 +281,7 @@ export function ScenePlay() {
       >
         <SceneArt scene={scene} className="play-art" />
         <div ref={flashRef} className="play-flash" aria-hidden />
-        {placed.length > 0 && !canUndo && (
+        {placed.length > 0 && (
           <button
             type="button"
             aria-label="done"
