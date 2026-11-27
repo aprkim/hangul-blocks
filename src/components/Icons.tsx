@@ -242,23 +242,13 @@ export function UndoIcon() {
   )
 }
 
-/** Sticker size: a small dot beside a big circle, with the one meant filled in. */
+/** Sticker size: a minus or a plus in a circle. */
 export function SizeIcon({ big }: { big: boolean }) {
+  // Same size for both: red minus (smaller), blue plus (bigger).
   return (
     <svg {...box}>
-      {big ? (
-        <>
-          <circle cx="11" cy="31" r="4" stroke={GUIDE} strokeWidth={3} />
-          <circle cx="30" cy="22" r="13" fill={BLUE} />
-          <path d="M30 15v14M23 22h14" stroke={ON_TILE} strokeWidth={4} />
-        </>
-      ) : (
-        <>
-          <circle cx="15" cy="24" r="6" fill={RED} />
-          <path d="M11 24h8" stroke={ON_TILE} strokeWidth={3} />
-          <circle cx="33" cy="24" r="10" stroke={GUIDE} strokeWidth={3} />
-        </>
-      )}
+      <circle cx="24" cy="24" r="17" fill={big ? BLUE : RED} />
+      <path d={big ? 'M24 15v18M15 24h18' : 'M15 24h18'} stroke={ON_TILE} strokeWidth={5} />
     </svg>
   )
 }
