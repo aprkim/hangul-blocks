@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { currentChild, useChildren } from '../children'
 import { t } from '../i18n'
-import { GALLERY_LIMIT, removePicture, useGallery, type Picture } from '../keepsakes'
+import { GALLERY_LIMIT, pictureDate, removePicture, useGallery, type Picture } from '../keepsakes'
 import { pictureFile, shareOrSave } from '../pictureExport'
 import { ScenePicture } from './ScenePicture'
 
@@ -13,13 +13,12 @@ function Item({ pic, caption }: { pic: Picture; caption: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const d = new Date(pic.at)
   return (
     <div className="parent-pic">
       <div ref={ref} className="parent-pic-frame">
         <ScenePicture pic={pic} />
       </div>
-      <span className="parent-pic-date">{d.toLocaleDateString()}</span>
+      <span className="parent-pic-date">{pictureDate(pic.at)}</span>
       <div className="parent-pic-actions">
         <button
           type="button"

@@ -773,7 +773,8 @@ body {
   height: 100%;
   overflow-y: auto;
   touch-action: pan-y;
-  padding: 1vh 2.5vh 4vh;
+  /* Enough at the top for the magnets that stick up over the first row. */
+  padding: max(1.5vh, 14px) 2.5vh 4vh;
 }
 .book-page {
   --sticker: clamp(60px, calc((100vw - 120px) / 10.6), 112px);
@@ -1171,7 +1172,8 @@ body {
   min-height: 0;
   overflow-y: auto;
   touch-action: pan-y;
-  padding: 1vh 2.5vh 4vh;
+  /* Enough at the top for the magnets that stick up over the first row. */
+  padding: max(1.5vh, 14px) 2.5vh 4vh;
 }
 .fridge-grid {
   display: grid;
@@ -1808,7 +1810,8 @@ body {
   gap: 2%;
   width: min(92%, 640px) !important;
   aspect-ratio: auto !important;
-  margin: 0 auto 4vh;
+  /* Room above for the animal, which sits half over the paper's top edge. */
+  margin: calc(clamp(30px, 6vh, 56px) * 0.55) auto 4vh;
   padding: 3% 4% !important;
   rotate: -1deg;
 }
@@ -2554,7 +2557,7 @@ body {
 .fridge-zoom-photo {
   width: min(86vw, 120vh, 900px);
   max-height: 80vh;
-  padding: 2%;
+  padding: 2% 2% 6%;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 20px 50px -20px var(--color-drop-shadow);
@@ -2677,4 +2680,29 @@ body {
   .play-word-face {
     display: none;
   }
+}
+
+/* The day it was made, written on the photo's white strip. */
+.fridge-photo-date {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 1.6vmin, 15px);
+  font-weight: 700;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+.fridge-zoom-photo .fridge-photo-date {
+  height: 6cqw;
+  font-size: clamp(13px, 2.2vmin, 20px);
+}
+.fridge-photo,
+.fridge-zoom-photo {
+  container-type: inline-size;
 }

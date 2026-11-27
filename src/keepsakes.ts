@@ -269,6 +269,12 @@ export function savePicture(scene: SceneId, aspect: number, unit: number): Pictu
   return pic
 }
 
+/** The day a picture was made, as written on the photo: 2026.11.27 */
+export function pictureDate(at: number): string {
+  const d = new Date(at)
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
+}
+
 export function removePicture(at: number) {
   gallery.set({ pictures: gallery.get().pictures.filter((p) => p.at !== at) })
 }

@@ -2,7 +2,7 @@
 // Drawn on a canvas from the picture's data: the scene art (the SVG already on the page, with
 // its color tokens written out), then each sticker, framed like a photo with a caption.
 
-import { stickerInfo, type Picture } from './keepsakes'
+import { pictureDate, stickerInfo, type Picture } from './keepsakes'
 import { isNativeApp, shareFileNative } from './native'
 
 const WIDTH = 2048
@@ -118,7 +118,7 @@ export async function pictureFile(pic: Picture, art: SVGSVGElement, caption: str
   ctx.font = `700 ${strip * 0.34}px ${font}`
   ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
-  ctx.fillText(caption, pad, H + pad + strip / 2)
+  ctx.fillText(`${caption} · ${pictureDate(pic.at)}`, pad, H + pad + strip / 2)
   ctx.fillStyle = cssVar('--color-muted') || '#8a8075'
   ctx.font = `700 ${strip * 0.26}px ${font}`
   ctx.textAlign = 'right'

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { chime, play } from '../audio'
 import { sayName } from '../sayName'
 import { currentChild, useChildren } from '../children'
-import { removePicture, restorePicture, soundOf, useGallery, useHandwriting, writtenOrder, type Picture, type Writing } from '../keepsakes'
+import { pictureDate, removePicture, restorePicture, soundOf, useGallery, useHandwriting, writtenOrder, type Picture, type Writing } from '../keepsakes'
 import { tapFeedback } from '../native'
 import { FridgeIcon, TrashIcon, UndoIcon } from './Icons'
 import { ScenePicture } from './ScenePicture'
@@ -116,6 +116,7 @@ export function Fridge() {
             >
               <i className="fridge-magnet" style={{ background: MAGNETS[(i + 1) % 3] }} />
               <ScenePicture pic={pic} />
+              <span className="fridge-photo-date">{pictureDate(pic.at)}</span>
             </button>
           ))}
         </div>
@@ -148,6 +149,7 @@ export function Fridge() {
         >
           <div ref={bigRef} className="fridge-zoom-photo" style={{ aspectRatio: openPic.aspect }}>
             <ScenePicture pic={openPic} />
+            <span className="fridge-photo-date">{pictureDate(openPic.at)}</span>
             <button
               type="button"
               aria-label="throw away"
