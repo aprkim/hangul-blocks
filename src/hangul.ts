@@ -8,7 +8,7 @@
 
 import { FULL_BOXES, type FullBoxes } from './fullBoxes'
 import type { Box } from './syllableBoxes'
-import { MIN_GAP, STROKES, consonantIn, fit, gap, layoutSyllable, round, type Stroke } from './strokes'
+import { MIN_GAP, STROKES, centerBars, consonantIn, fit, gap, layoutSyllable, round, type Stroke } from './strokes'
 
 export const CHO = [...'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ']
 export const JUNG = [...'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ']
@@ -177,6 +177,8 @@ export function fullStrokes(ch: string): FullStroke[] | null {
     v = vowelStrokes()
     f = finalStrokes()
   }
+
+  if (layout === 'side') v = centerBars(c, v, f)
 
   const out: FullStroke[] = [
     ...c.map((stroke) => ({ stroke, part: 'consonant' as const })),

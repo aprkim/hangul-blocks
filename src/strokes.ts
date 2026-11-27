@@ -292,12 +292,47 @@ export function layoutSyllable(
       if (g >= MIN_GAP) break
     }
   }
-  const result = { cons: c, vowel: v }
+  const result = { cons: c, vowel: layout === 'side' && c && v ? centerBars(c, v) : v }
   laidOut.set(key, result)
   return result
 }
 
 /** Strokes of a syllable on the 100 x 100 frame: consonant strokes, then vowel strokes (Korean stroke order). */
+/**
+ * A vowel beside the consonant (ㅏ ㅓ ㅑ ㅕ, and the side parts of others): print puts its short
+ * bars level with the middle of the consonant (더, 가), not halfway down the long stem. Moves the
+ * bars there, keeping them on the stem and clear of the consonant (less far if it would touch).
+ * `others` are strokes the bars must also stay clear of (a final consonant).
+ */
+export function centerBars(cons: Stroke[], vowel: Stroke[], others: Stroke[] = []): Stroke[] {
+  if (!cons.length || !vowel.length) return vowel
+  const flat = (s: Stroke) => s.length === 2 && Math.abs(s[0][1] - s[1][1]) < 0.5 && Math.abs(s[0][0] - s[1][0]) < 30
+  const upright = (s: Stroke) => s.length === 2 && Math.abs(s[0][0] - s[1][0]) < 0.5
+  const stems = vowel.filter(upright)
+  const bars = vowel.filter(flat)
+  if (!stems.length || !bars.length) return vowel
+  // Only bars that hang off a long stem standing beside the consonant.
+  const stem = stems.reduce((a, b) => (Math.abs(b[1][1] - b[0][1]) > Math.abs(a[1][1] - a[0][1]) ? b : a))
+  const top = Math.min(stem[0][1], stem[1][1])
+  const bottom = Math.max(stem[0][1], stem[1][1])
+  const consXs = cons.flatMap((s) => s.map((p) => p[0]))
+  if (stem[0][0] < Math.max(...consXs)) return vowel // not beside the consonant
+  const ys = cons.flatMap((s) => s.map((p) => p[1]))
+  const mid = (Math.min(...ys) + Math.max(...ys)) / 2
+  const barYs = bars.map((b) => b[0][1])
+  const center = (Math.min(...barYs) + Math.max(...barYs)) / 2
+  const margin = 6
+  const want = Math.max(top + margin - Math.min(...barYs), Math.min(bottom - margin - Math.max(...barYs), mid - center))
+  const shifted = (d: number) => vowel.map((s) => (bars.includes(s) ? s.map(([x, y]) => [x, y + d] as Pt) : s))
+  const before = Math.min(gap(cons, vowel), others.length ? gap(others, vowel) : Infinity)
+  const need = Math.min(MIN_GAP, before)
+  for (let k = 1; k > 0; k -= 0.125) {
+    const v = shifted(want * k)
+    if (Math.min(gap(cons, v), others.length ? gap(others, v) : Infinity) >= need) return v
+  }
+  return vowel
+}
+
 export function syllableStrokes(cons: string, vowel: string, layout: VowelLayout): { stroke: Stroke; part: 'consonant' | 'vowel' }[] {
   const { cons: c, vowel: v } = layoutSyllable(cons, vowel, layout)
   return [
