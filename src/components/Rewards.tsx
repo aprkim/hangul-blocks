@@ -3,7 +3,7 @@ import { chime, play } from '../audio'
 import { confetti } from '../effects'
 import { celebrateFeedback, tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
-import { JAR_SIZE, TREASURES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
+import { JAR_SIZE, TREASURES, TREASURE_NAMES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
 import { usePuzzle } from '../keepsakes'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
@@ -257,7 +257,16 @@ function BookPage() {
         <div className="book-grid treasures">
           {TREASURES.map((t) => {
             const have = p.treasures.includes(t)
-            return <Sticker key={t} have={have} emoji={t} label={t} onTap={() => chime(have ? 'star' : 'soft')} />
+            const name = TREASURE_NAMES[t] ?? t
+            return (
+              <Sticker key={t} have={have} emoji={t} label={name} onTap={() => chime(have ? 'star' : 'soft')}>
+                {have && (
+                  <span className="sticker-word">
+                    <b>{name}</b>
+                  </span>
+                )}
+              </Sticker>
+            )
           })}
         </div>
       </div>

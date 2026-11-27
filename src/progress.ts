@@ -28,6 +28,14 @@ export const TREASURES = [
   '🍩', '🦋', '🌻', '🐙', '🎂', '🚁', '🐳', '🍉', '🦁', '🌙',
 ]
 
+/** What each treasure is called: shown when it is tapped on the play scene. */
+export const TREASURE_NAMES: Record<string, string> = {
+  '🦖': '공룡', '🚀': '로켓', '🍦': '아이스크림', '🎈': '풍선', '🦄': '유니콘',
+  '🌟': '별', '🍓': '딸기', '🐬': '돌고래', '🚒': '소방차', '🧸': '곰인형',
+  '🍩': '도넛', '🦋': '나비', '🌻': '해바라기', '🐙': '문어', '🎂': '케이크',
+  '🚁': '헬리콥터', '🐳': '고래', '🍉': '수박', '🦁': '사자', '🌙': '달',
+}
+
 export type Progress = {
   /** How many times each letter (jamo or syllable) was written to the end. */
   written: Record<string, number>

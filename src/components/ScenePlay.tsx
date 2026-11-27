@@ -81,8 +81,8 @@ export function ScenePlay() {
     return () => window.clearTimeout(t)
   }, [word])
   const showWord = (info: StickerInfo, el: Element | null | undefined) => {
-    // Treasures (🦖, 🚀) have no word to read.
-    if (!el || info.kind === 'treasure') return
+    // A sticker with no word to read (a treasure without a name) shows nothing.
+    if (!el || info.label === info.face) return
     const r = el.getBoundingClientRect()
     const below = r.top < 90
     setWord({ text: info.label, x: r.left + r.width / 2, y: below ? r.bottom : r.top, below, n: (word?.n ?? 0) + 1 })
