@@ -36,6 +36,24 @@ export const TREASURE_NAMES: Record<string, string> = {
   '🚁': '헬리콥터', '🐳': '고래', '🍉': '수박', '🦁': '사자', '🌙': '달',
 }
 
+/**
+ * The recording of each treasure's name (file name without .mp3). Two are words the app already
+ * says (나비, 사자); the rest are recorded on the parents' page ("보물 스티커") and bundled once
+ * they exist. Until one has a sound, its sticker shows the word and chimes.
+ */
+export const TREASURE_SOUNDS: Record<string, string> = {
+  '🦖': 't-gongnyong', '🚀': 't-roket', '🍦': 't-aiseukeurim', '🎈': 't-pungseon', '🦄': 't-yunikon',
+  '🌟': 't-byeol', '🍓': 't-ttalgi', '🐬': 't-dolgorae', '🚒': 't-sobangcha', '🧸': 't-gominhyeong',
+  '🍩': 't-doneot', '🦋': 'w-na', '🌻': 't-haebaragi', '🐙': 't-muneo', '🎂': 't-keikeu',
+  '🚁': 't-hellikopteo', '🐳': 't-gorae', '🍉': 't-subak', '🦁': 'pz-saja', '🌙': 't-dal',
+}
+/** The treasure names still to record: what to show, what to say, the file it becomes. */
+export const TREASURE_RECORD_ITEMS = TREASURES.filter((e) => TREASURE_SOUNDS[e].startsWith('t-')).map((e) => ({
+  name: TREASURE_SOUNDS[e],
+  shown: `${e} ${TREASURE_NAMES[e]}`,
+  say: TREASURE_NAMES[e],
+}))
+
 export type Progress = {
   /** How many times each letter (jamo or syllable) was written to the end. */
   written: Record<string, number>

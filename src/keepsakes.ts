@@ -5,7 +5,7 @@
 import { useSyncExternalStore } from 'react'
 import { childKey, onChildSwitch } from './children'
 import { CHART_VOWELS, CONSONANTS, consonantSound, syllableSound, vowelSound } from './jamo'
-import { SYLLABLES, TREASURES, TREASURE_NAMES, timesWritten, type Progress } from './progress'
+import { SYLLABLES, TREASURES, TREASURE_NAMES, TREASURE_SOUNDS, timesWritten, type Progress } from './progress'
 import type { Pt } from './strokes'
 import { PUZZLE_WORDS, puzzleSound } from './puzzleWords'
 import { cardFor } from './words'
@@ -71,7 +71,7 @@ const JAMO_INFO: StickerInfo[] = [
 export function stickerInfo(id: StickerId): StickerInfo | null {
   const [kind, value] = [id.slice(0, 1), id.slice(2)]
   if (kind === 'j') return JAMO_INFO.find((j) => j.id === id) ?? null
-  if (kind === 't') return { id, kind: 'treasure', face: value, label: TREASURE_NAMES[value] ?? value }
+  if (kind === 't') return { id, kind: 'treasure', face: value, label: TREASURE_NAMES[value] ?? value, sound: TREASURE_SOUNDS[value] }
   if (kind === 'p') {
     const w = PUZZLE_WORDS.find((x) => x.word === value)
     return w ? { id, kind: 'word', face: w.emoji, sound: puzzleSound(w.word), label: w.word } : null

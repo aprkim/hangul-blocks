@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { chime, play } from '../audio'
+import { chime, hasSound, play, preload } from '../audio'
 import {
   SCENES,
   clearScene,
@@ -57,7 +57,8 @@ type Drag = {
 }
 
 function say(info: StickerInfo) {
-  if (info.sound) play(info.sound)
+  // A treasure's name may not be recorded yet: then it chimes (its word still shows).
+  if (info.sound && (info.kind !== 'treasure' || hasSound(info.sound))) play(info.sound)
   else chime('star')
 }
 
@@ -68,6 +69,11 @@ export function ScenePlay({ onWrite }: { onWrite?: () => void }) {
   const [drag, setDrag] = useState<Drag | null>(null)
   const sceneRef = useRef<HTMLDivElement>(null)
   const earned = earnedStickers(p, usePuzzle().solved)
+  // Find out which treasure names have a sound (loads them, so the first tap speaks at once).
+  const treasureSounds = earned.filter((i) => i.kind === 'treasure' && i.sound).map((i) => i.sound!).join(' ')
+  useEffect(() => {
+    if (treasureSounds) preload(treasureSounds.split(' '))
+  }, [treasureSounds])
   // Clearing is immediate (a confirm dialog means nothing to a child who can't read); for a
   // few seconds an undo button brings everything back.
   const [cleared, setCleared] = useState<{ scene: SceneId; placed: Placed[] } | null>(null)

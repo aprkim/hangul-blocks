@@ -3,6 +3,7 @@ import { setLocalRecording, setRecordingSession, stop as stopGameAudio } from '.
 import { RECORD_GROUPS as JAMO_GROUPS, type RecordItem } from '../jamo'
 import { MORE_WORD_RECORD_GROUP, WORD_RECORD_GROUP } from '../words'
 import { PUZZLE_RECORD_GROUP } from '../puzzleWords'
+import { TREASURE_RECORD_ITEMS } from '../progress'
 import { isNativeApp, shareFileNative } from '../native'
 import { ParentProgress, ParentSettings } from './ParentProgress'
 import { ParentChildren } from './ParentChildren'
@@ -38,7 +39,8 @@ const MIN_PRESS_MS = 300
 /** Shorter than this (after trimming) is a mis-tap, not a sound. */
 const MIN_TAKE_S = 0.2
 
-const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP, PUZZLE_RECORD_GROUP]
+const TREASURE_RECORD_GROUP = { id: 'treasures', label: t('7차 · 보물 스티커', '7 · Treasure stickers'), items: TREASURE_RECORD_ITEMS }
+const RECORD_GROUPS = [...JAMO_GROUPS, WORD_RECORD_GROUP, MORE_WORD_RECORD_GROUP, PUZZLE_RECORD_GROUP, TREASURE_RECORD_GROUP]
 
 /** What parents see: three kinds of sound, not the production batches. */
 type UiGroup = { id: string; label: string; items: RecordItem[] }
@@ -46,7 +48,8 @@ const UI_GROUPS: UiGroup[] = [
   { id: 'jamo', label: t('자음·모음', 'Letters'), items: JAMO_GROUPS[0].items },
   { id: 'syllables', label: t('글자', 'Syllables'), items: JAMO_GROUPS.slice(1).flatMap((g) => g.items) },
   { id: 'words', label: t('그림 단어', 'Picture words'), items: [...WORD_RECORD_GROUP.items, ...MORE_WORD_RECORD_GROUP.items] },
-  // The word puzzle's own words (PUZZLE_RECORD_GROUP) get a tab here when the puzzle ships (1.4).
+  // The names of the treasure stickers (공룡, 로켓...): heard when one is tapped in sticker play.
+  { id: 'treasures', label: t('보물 스티커', 'Treasure stickers'), items: TREASURE_RECORD_ITEMS },
 ]
 
 /** Names of takes whose deployed file is byte-for-byte the same size, i.e. already uploaded. */

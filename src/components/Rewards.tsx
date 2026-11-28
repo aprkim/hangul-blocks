@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { chime, play } from '../audio'
+import { chime, hasSound, play, preload } from '../audio'
 import { confetti } from '../effects'
 import { celebrateFeedback, tapFeedback } from '../native'
 import { useTap } from '../touchGuard'
-import { JAR_SIZE, TREASURES, TREASURE_NAMES, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
+import { JAR_SIZE, TREASURES, TREASURE_NAMES, TREASURE_SOUNDS, openGift, reachableSyllables, timesWritten, useProgress } from '../progress'
 import { cardFor } from '../words'
 import { usePuzzle } from '../keepsakes'
 import { PUZZLE_WORDS, puzzleSound } from '../puzzleWords'
@@ -165,6 +165,10 @@ export function StickerBook({ onClose }: { onClose: () => void }) {
 function BookPage() {
   const p = useProgress()
   const { solved } = usePuzzle()
+  const mine = p.treasures.join('')
+  useEffect(() => {
+    preload([...mine].map((t) => TREASURE_SOUNDS[t]).filter(Boolean))
+  }, [mine])
   return (
     <div className="book-scroll" data-scroll>
       <div className="book-page">
@@ -217,7 +221,7 @@ function BookPage() {
             const have = p.treasures.includes(t)
             const name = TREASURE_NAMES[t] ?? t
             return (
-              <Sticker key={t} have={have} emoji={t} label={name} onTap={() => chime(have ? 'star' : 'soft')}>
+              <Sticker key={t} have={have} emoji={t} label={name} onTap={() => (have && hasSound(TREASURE_SOUNDS[t]) ? play(TREASURE_SOUNDS[t]) : chime(have ? 'star' : 'soft'))}>
                 {have && (
                   <span className="sticker-word">
                     <b>{name}</b>
